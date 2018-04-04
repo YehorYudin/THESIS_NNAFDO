@@ -3,7 +3,18 @@ The physical problem for which the Topology Optimization (TO) is perfromd is def
 The former has a view of Dirichlet BC and define the parts of the element that experience no displaycement anf the latter is in genral form a filed of forces applied to all the poitn of the element. 
 Translated in the deiscetised form used in the Finite Element Analysis (FEA) perfromed during the TO, the former defined the fixed degrees of freedom and the latter defines the non-zero elements of the right-hand-side vector of loads.
 
-To obtain a set of TO res
+To obtain a set of TO results that could be used as training and testign samples for the Artificcial Neural Network (ANN) we choose perfrom TO for various combination of values of the boundary conditions and load cases.
+
+As Boundary Condtion we can chose to fix one of sides of the domain (one of four walls). 
+We can also choose to leave a /{1/3} of th side unfixed or fix only the exteem point of the wall.
+
+As a simple load case we consider only the situatuin where a force is applied to a single poitn of the element. 
+The variable aprramteres are the coordinates of the force application (X, Y) and the direction of the force.
+We keep the magnitude of the force constant and choose one of the eith possible directions: along one of the axis in one of the direction or a cobination of those.
+
+In the end we obtain number of possible imput parameter equal: 4(fixed side) x 3(type of BC) x 8(force direction) x 32(Y coordinate) x 16(X coordinate)
+
+
  
 
 %The Boundary Coditions used during Topology Optimization as an input to the Finite Element Analysis constitute of the fixed degrees of freedom
