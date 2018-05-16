@@ -1,0 +1,21 @@
+Variables:
+
+	Boundary conditins : used 3 cases
+			Wall fixed
+			Corner points
+			middle third interval deleted
+		one of 4 sizes chosen
+		
+	Volume fraction: used 3 cases 
+			0.1 
+			0.2
+			0.4
+		imput as a low-dim channel
+		+ penlty on Vf in loss function (calculated on batch size)
+		
+	Resolution: used 2 cases:
+			32 x 32
+			16 x 16
+			
+	Forces location: 1 point of application in right half of the domain
+	
