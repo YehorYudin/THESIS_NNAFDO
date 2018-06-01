@@ -3,6 +3,47 @@
 \chapter{Introduction}
 \label{chapter:Introduction}
 
+
+\section{Motivation}
+
+Topology Optimization stay an essentially computationally complex problem...
+\todo{find complexity of TO}
+\todo{find real numbers on performance of TO, with hardware}
+\bigskip
+
+The optimization is made in iterations for each of which the Finite Element Analysis is performed in order to assure that the result is correct and corresponds the physics of the problem as well as functional gradient are possible to derive.
+This step is the most expensive step of all and can be internally optimized to increase the speed of computation but the other aspect of performance tuning is reducing the amount of optimization iterations made.
+The convergence speed of the optimization is scarcely studied and is mostly analyzed in empirical ways...
+\todo{convergence of TO}
+\bigskip
+
+One of the ways to speed up the optimization process reducing the number of iterations is to start optimization with a certain educated guess of the material layout instead of the typical way, which is initializing the whole domain covered with the material.
+\bigskip
+
+In the ideal case the TO problem material layout could be initialized with an approximate solution which will require only a couple iterations to converge under the chosen criteria, in this way eliminating multiple initial steps  of analysis.
+The first step of the optimization typically change the layout drastically and result into a very coarse result with significant decrease of the objective function, but the value still stays much higher than for the desired outcome. 
+\bigskip
+\todo{change the rational to the idea of decrease the domain}
+
+This initial steps could be made by an algorithm which much less computationally expensive than the Topology Optimization and will not require applying FEM analysis. 
+Despite of TO results being possible only to heuristically predicted, there exist some tendencies in the dependence between the Boundary Conditions and the forced applied to the element. 
+\bigskip
+
+As one of the possible solutions for finding approximations of the TO outcome we propose using Artificial Neural Network (ANN) approach.
+The idea behind it is build Machine Learning (ML) system able to infer a coarse result of a TO process based on the initial inputs for it.
+The ML model has a from of ANN with parameters trained on a dataset which consists of the known cases of Topology Optimization problem, with inputs being preprocessed inputs of Topology Optimization and outputs being the outcome of TO, namely the final material layout design.
+
+In this work, we propose an design of a ANN system for fast inference of approximate optimal material layout for elements with constrained volume under stress based on initial conditions, constrains and parameters of the problem. 
+We propose the architecture of the problem, analyze the influence of dataset parameters and its' representation on the quality of the prediction on the quality of inference results as well as the general capacity of the system to improve performance of Topology Optimization process.  
+
+
+Unlike many of the Deep Learning applications the training dataset is principle hard to obtain, since every sample would be a pair of some initial conditional and the material layout, which is a result of an expensive TO process. 
+One of the most important question in the work is the trade-off between the size and properties of the training dataset and the quality of the inferred result with respect to their accuracy and suitability for the initial layout for TO.
+\todo{improve texting}
+\todo{reduce vain stuff and increase size of the text}
+
+
+
 \section{Topology Optimization}
 
 Restrictions on the weight and amount of material used for a certain mechanical element is not uncommon in the engineering.
@@ -18,7 +59,7 @@ In the end, the TO problem within SIMP approach is formulated as follows:
 \todo{revise formulation} 
 %\begin{equation}
 	\begin{align*}
-		\underset{\rho}{\mathrm{minimize}} \quad & c(\rho) = \mathbf{f}^\top \mathbf{u} = \mathbf{u}^\top \mathbf{K}_{e}(\rho) \mathbf{u} \\
+		\underset{\rho}{\mathrm{minimize}} \quad & c(\rho) = \mathbf{f}^{\mathsf{T}} \mathbf{u} = \mathbf{u}^{\mathsf{T}} \mathbf{K}_{e}(\rho) \mathbf{u} \\
 		\mathrm{subject \; to} \quad & \frac{V(\rho)}{V_{0}} = \alpha \\
 		& \mathbf{K}_{e}(\rho) \mathbf{u} = \mathbf{f} \\
 		& 0 < \rho_{\min} \leq \rho \leq 1
@@ -52,8 +93,15 @@ Finally, the sensitivity of the object is computed as
 \end{align*}
 
 and used in the following update step.
-The total optimization process could be visually described with Fig\ref{}
-\todo{figure, revisit}
+The total optimization process could be visually described with \ref{fig:to_flow}.
+\todo{revisit}
+
+\begin{figure}[]
+	\includegraphics[width=\linewidth]{images/TO_flowchart.pdf}
+	\caption{Flowchart of the Topology Optimization process.}
+	\label{fig:to_flow}
+\end{figure}
+
 
 
 
@@ -97,8 +145,35 @@ The goal of the \textit{training} process is to find such weights, or values of 
 
 Typically it is virtually impossible to analyze the dependency of loss function on parameters analytically, as well as to check all possible combination of weights values, because number of parameters is extremely large the dependencies are non-trivial. 
 Due to that, the training is implemented through a numerical optimization, typically based on \textit{Gradient Descend} algorithm. 
-The idea of the method is based on using the numerical gradient of the loss function with respect ot parameters to iteratively update them until some convergence criterion is reached, so that the loss function value is considered minimal for the set of found parameters values.
-S
+The idea of the method is based on finding the numerical gradient of the loss function with respect ot parameters to iteratively update them until some convergence criterion is reached, so that the loss function value is considered minimal for the set of found parameters values.
+
+We can express for the gradient decend algoritm as iterative process, where every step consists of finding derivative of loss fucnction at the current point of parametric space $\nabla L(W_{t})$, which indicates the direction of the fastest growth of the function. 
+Then, based on it value, a new point of parametric space, or updating the model weights, as $W_{t+1}=W_{t}-\alpha \nabla L(W_{t})$, where $\alpha$ is the \textit{learning rate}.
+On next iteration the gradient is found for the updated point, and the process terminates when one of the user defined criteria is met, for example the change i los function is too small or the number of iteration exeeds the maximal amount.
+\todo{add figured demostrating loss function surface, GD process and variations}
+
+However, this method has multiple disadvantages.
+The algorithm give guarantee to converge only for the convex goal functions and generally converge slow for ill-posed problems, with very slow evolution along the gradeint.
+For the non-convex shapes of the function there is a chance that it the algorith will converge to a local minimum, without any possibility to escape and discover other regions of the domain.
+Nevertheless, this approach is still being the most common way to optimize the parameters, especially if several modificitaion are inroduces as a remedy for the disadvantags.
+
+One of the simliest solution to the slow convergence is intoducing a notion of a numerical \textit{momentum}.
+It is inspired by the mechanical dynamics and now the optimiation process is closer to simlation of a particle motion wuth the goal function palying a role of the potential field.
+The update rule has an additional velocity term $V$ which adds certain inertia to the way parameters change, pushing the virtual particle more along the gradient. 
+One of the gradient descend bsed method that use the idea of momentum is \textit{Nesterov Accelerated gradient (NAG)} and it shows better convergence properties compared to simple gradient descend.
+The algorithm is interpreted as follows: 
+we take an intermediate point in teh direction of the momentum and calculate gradeint for it.
+Than we use the gradient value to update the momentum and update the parameter using the new momentum.
+\begin{align*}
+	V_{t} & =\mu V_{t} - \alpha \nabla L (W_{t}+\mu V_{t}) \\
+	W_{t+1} & = W_{t+1} + V_{t+1}
+\end{align*}
+
+
+
+
+
+\todo{adagrad, adam, SGD + figures}
 
 
 
@@ -163,42 +238,5 @@ It is based on omitting of random neurons on each step of the training of the mo
 Typically an approach of choosing any neuron with the probability of $50\%$ is used so at every step we have a different combination of neurons.
 In the end, we change the structure of the network during the learning process and the resulting network is equal to an average of several different models, which reduce the effect of over-fitting of every single network.
 
- 
 
-\section{Rational}
-
-Topology Optimization stay an essentially computationally complex problem...
-\todo{find complexity of TO}
-\todo{find real numbers on performance of TO, with hardware}
-\bigskip
-
-The optimization is made in iterations for each of which the Finite Element Analysis is performed in order to assure that the result is correct and corresponds the physics of the problem as well as functional gradient are possible to derive.
-This step is the most expensive step of all and can be internally optimized to increase the speed of computation but the other aspect of performance tuning is reducing the amount of optimization iterations made.
-The convergence speed of the optimization is scarcely studied and is mostly analyzed in empirical ways...
-\todo{convergence of TO}
-\bigskip
-
-One of the ways to speed up the optimization process reducing the number of iterations is to start optimization with a certain educated guess of the material layout instead of the typical way, which is initializing the whole domain covered with the material.
-\bigskip
-
-In the ideal case the TO problem material layout could be initialized with an approximate solution which will require only a couple iterations to converge under the chosen criteria, in this way eliminating multiple initial steps  of analysis.
-The first step of the optimization typically change the layout drastically and result into a very coarse result with significant decrease of the objective function, but the value still stays much higher than for the desired outcome. 
-\bigskip
-
-This initial steps could be made by an algorithm which much less computationally expensive than the Topology Optimization and will not require applying FEM analysis. 
-Despite of TO results being possible only to heuristically predicted, there exist some tendencies in the dependence between the Boundary Conditions and the forced applied to the element. 
-\bigskip
-
-As one of the possible solutions for finding approximations of the TO outcome we propose using Artificial Neural Network (ANN) approach.
-The idea behind it is build Machine Learning (ML) system able to infer a coarse result of a TO process based on the initial inputs for it.
-The ML model has a from of ANN with parameters trained on a dataset which consists of the known cases of Topology Optimization problem, with inputs being preprocessed inputs of Topology Optimization and outputs being the outcome of TO, namely the final material layout design.
-
-In this work, we propose an design of a ANN system for fast inference of approximate optimal material layout for elements with constrained volume under stress based on initial conditions, constrains and parameters of the problem. 
-We propose the architecture of the problem, analyze the influence of dataset parameters and its' representation on the quality of the prediction on the quality of inference results as well as the general capacity of the system to improve performance of Topology Optimization process.  
-
-
-Unlike many of the Deep Learning applications the training dataset is principle hard to obtain, since every sample would be a pair of some initial conditional and the material layout, which is a result of an expensive TO process. 
-One of the most important question in the work is the trade-off between the size and properties of the training dataset and the quality of the inferred result with respect to their accuracy and suitability for the initial layout for TO.
-\todo{improve texting}
-\todo{reduce vain stuff and increase size of the text}
 
