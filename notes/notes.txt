@@ -18,4 +18,11 @@ Variables:
 			16 x 16
 			
 	Forces location: 1 point of application in right half of the domain
+
+
+
+	??? Describe TF(1page), Loss functions(1page), Intro convoltions operations(1.5 pages), Postprocesing(1page)
+	??? Signed Distance Field
+	
+24.0.5:  --- Results Outline
 	
