@@ -1,15 +1,204 @@
 % !TEX root = ../main.tex
+
 \chapter{Introduction}
 \label{chapter:Introduction}
 
 \section{Topology Optimization}
 
 Restrictions on the weight and amount of material used for a certain mechanical element is not uncommon in the engineering.
-Various thechniques allow to find optimal layouts of the element within material that asures meeting of the requirement put on the physics og th element. 
+Various techniques allow finding optimal layouts of the element within the material that assures meeting of the requirement put on the physics of the element. 
+
+...
+
+One of the approaches used for TO is Solid Isotropic Microstructure with Penalization (SIMP).
+This method uses the idea of "artificial density"\ref{} where for every hexahedral element of discretized model some density variable $\rho$ is assigned.
+This density plays the role of design variables in the optimization process and used to present the goal function as a weighted sum of element-wise compliances.
+This approach has both well established theoretical and empirical base and easy to implement and interpret.
+In the end, the TO problem within SIMP approach is formulated as follows:
+\todo{revise formulation} 
+%\begin{equation}
+	\begin{align*}
+		\underset{\rho}{\mathrm{minimize}} \quad & c(\rho) = \mathbf{f}^\top \mathbf{u} = \mathbf{u}^\top \mathbf{K}_{e}(\rho) \mathbf{u} \\
+		\mathrm{subject \; to} \quad & \frac{V(\rho)}{V_{0}} = \alpha \\
+		& \mathbf{K}_{e}(\rho) \mathbf{u} = \mathbf{f} \\
+		& 0 < \rho_{\min} \leq \rho \leq 1
+	\end{align*} 
+%\end{equation} 
+
+In other words, our goal is to minimize compliance function $c(\rho)$ subjected to the constrain of volume fraction $\alpha = \frac{V(\rho)}{V_{0}}$, where $V(\rho)$ is volume occupied by the material and $ V_{0} $ is total volume of the design domain.
+The element stiffness matrix is denoted as $\mathbf{K}_{e}(\rho)$ and displacement and force vector are respectively $\mathbf{u}$ and $\mathbf{f}$.
+Apart from the constraints on the volume fraction and the range o density values, the displacement vector used to calculate the objective function has to be physically correct, which means that one every iteration of the optimization process a Finite Element Analysis (FEM) problem should be solved to find $\mathbf{u}$ and this step is the most computationally expensive in the whole TO process.
+
+In order to update the density values on every iteration of the optimization process, the Optimality Criteria method is used \ref{}.
+The update rule read as following:
+\todo{formulation}
+\[ \rho^{new}_{e} = 
+\begin{cases}
+	\max(\rho_{min},\rho_{e}-\delta_{\rho}) , \; \mathrm{if} \; \rho_{e}B^{\eta}_{e} \leq \max(\rho_{min},\rho_{e}-\delta_{\rho}) \\
+	\min(1,\rho_{e}+\delta_{\rho}), \; \mathrm{if} \; \min(1,\rho_{e}+\delta_{\rho}) \leq \rho_{e}B^{\eta}_{e}\\
+	\rho_{e}B^{\eta}_{e}, \; \mathrm{if} \; \max(\rho_{min},\rho_{e}-\delta_{\rho}) < \rho_{e}B^{\eta}_{e} < \min(1,\rho_{e}+\delta_{\rho}) 
+\end{cases}
+\]
+where $\delta_{\rho}$ is a non-negative increment of the design variable, the $\eta = \frac{1}{2} $ is a numerical dumping exponent coefficient.
+The sensitivity value $B_{e}$ is updated by the optimality condition:
+\begin{equation}
+	B^{\eta}_{e} = \frac{-\partial c / \partial \rho_{e}}{\lambda \partial V / \partial \rho_{e}}
+\end{equation}
+Here we shall obtain the Lagrangian multiplier $\lambda$ multiplier by a bisection algorithm.
+Finally, the sensitivity of the object is computed as 
+\begin{align*}
+	\frac{\partial c}{\partial \rho_{e}} & = -p(\rho_{e})^{p-1} \mathbf{u}^{T}_{e} \mathbf{K}_{0} \mathbf{u}_{e}\\
+	\frac{\partial V}{\partial \rho_{e}} & = 1
+\end{align*}
+
+and used in the following update step.
+The total optimization process could be visually described with Fig\ref{}
+\todo{figure, revisit}
+
 
 
 \section{Convolutional Neural Networks}
 
+...
+
+Convolution Neural Networks (CNN) is a type of ANN that primarily use \textit{convolution operations}
+
+CNNs are specifically designed to work with images and image-like spatial data.
+One of their unique features that distinguish them from other types of ANNs and make them suitable for these types of data is locality.
+That means that input pixels have influence only in the vicinity of the pixels and the output.
+
+The \textit{convolution} operations could be defined by obtaining a value of every element of the output image as a weighted sum of the values of input image elements of a region in vicinity of this output element.
+The matrix defining the weights is called \textit{filter} or \textit{kernel} and is typically a parameter that should be trained
+In other words, applying a convolutions means next operation
+\todo{add formula}
+
+This properties correspond to the nature of most of the images and drastically reduces the number of parameters to be trained as typically they are only the elements to the filter that will be applied to every block of the pixels with some shift and its size is much smaller than the size of the image.
+
+One of the other operations that is used alongside convolutions in CNN is \textit{pooling}.
+Essentially it is a reduction operation that maps values of pixels of a domain of the image into a single value, reducing the size of the image at the next layer and building a representation in a lower dimension space. 
+Typically average or max operations are used and the windows at which operation is applied slides so that there will be no overlaps between two neighboring windows, i.e. the stride of the siled is equal to the length of the kernel.
+\todo{add images}
+
+...
 
 
+The filters trained in such a layer could be understood as features. 
+During the inference, the result of applying a convolutional operation to one of the channels denote a ...
+
+
+\subsection{Optimization}
+
+The goal of the ANN training is to achieve a model that would predict the accurate results based on the various inputs.
+For that, we need to estimate how wrong are the predictions $\hat{Y} = \{\hat{y}(x), \, x \in X \}$ based on known ground-truth pairs of inputs and outputs $ (x, y) \in X \times Y $ and.
+We express the difference between the predicted on ground-truth results, as well as how generally wrong our model is, with the \textit{loss function}, which could be also called cost or objective function.
+Because typically the outputs $y_{i}$ are taken from a finite-dimensional vector spaces, one of the typical way to build a loss function is to sum the distances between all pairs of $y_{i}$ and $\hat{y}_{i}$.
+For example, we can take squared $L_{2}$ norms of the $y_{i}-\hat{y}_{i}$ errors and compute total Euclidean loss as $ L(\hat{Y}|Y) = \frac{1}{2}\sum_{\hat{y} \in \hat{Y}}(y - \hat{y})^{2} $.
+The goal of the \textit{training} process is to find such weights, or values of model parameters, that minimize the value of the loss function.
+
+Typically it is virtually impossible to analyze the dependency of loss function on parameters analytically, as well as to check all possible combination of weights values, because number of parameters is extremely large the dependencies are non-trivial. 
+Due to that, the training is implemented through a numerical optimization, typically based on \textit{Gradient Descend} algorithm. 
+The idea of the method is based on using the numerical gradient of the loss function with respect ot parameters to iteratively update them until some convergence criterion is reached, so that the loss function value is considered minimal for the set of found parameters values.
+S
+
+
+
+\subsection{Activation Function}
+
+For now, all the operations performed on the input was described as linear.
+However, not every dependency could be described and approximated as linear and such simple model could easily miss complex patterns.
+In order to build a more general and complex model, non-linear \textit{activation functions} allied to the output of the layer could be introduced.
+
+One of the most famous activation function is the \textit{sigmoid} function.
+This is a deterministic function $ \sigma : \mathbb{R} \rightarrow [0; \, 1] $ and reads as $ \sigma(x) = \frac{1}{1+e^{-x}} $.
+\todo{add figure}
+One of the issues of sigmoid function is that it is not zero centered.
+If the input values of the neuron always have the same sign it will lead to issues with the weight updates during the back-propagation process, since the values of the gradient will also always have the same sign.
+
+The other popular non-linear activation function is hyperbolic tangent which is a mapping $ \sigma : \mathbb{R} \rightarrow [-1; \, 1]$ and equal $\tanh(x)=\frac{2}{1+e^{-2x}}-1$.
+It is very similar to the sigmoid, but due to the symmetricity of the range, it is zero-centered.
+
+As it is seen from the graphs of functions, for the values of the tails of both of the sigmoid and hyperbolic tangent the value of the function is very close to either $0$ or $1$.
+This is called the \textit{saturation problem} and it is expressed in the fact that for the most of the domain the gradient of the function is very close to zero.
+The gradient of the activation function influence the gradient of the cost function which leads to very slow convergence rate of the training process.
+This phenomenon, also called the \textit{gradient vanishing} is one of the reasons why $\mathrm{sigm}$ is rarely used as an activation function nowadays, while $\tanh$ still has some use.
+
+The third family of activation functions is \textit{Rectified Linear Unit} (ReLU) and equal to thresholding the input value at zero $f(x)=\max(0,x)$. 
+
+It is the most widely used activation function in the last years and it shows better a convergence of Stochastic Gradient Descend than previously mentioned ones and it computationally very simple.
+The main disadvantage is that there is a chance that a large bias term will be calculated which will lead to so-called \textit{"dying ReLU"}. 
+That means that the gradient of the operation stays zero and the training process is stopped without any possibilities to recover. 
+
+Th common solution to this problem is to replace putting to zero at the native part of the domain with the function with small negative slope, so that gradient will never be zero. 
+This type of activation function is called parametric ReLU (PReLU) and typically defined as  
+\[ f_{PReLU}(x) = 
+\begin{cases}
+	\alpha x \, :x<0 \\
+	x \, : x \geq 0
+\end{cases}
+\]
+\todo{revisit, finish up}
+
+\subsection{Regularization}
+
+One of the common problem for then Machine Learning models is over-fitting, or low ability to generalize which occurs when the model performs very well on the training set but shows bad results with the unknown input data while evaluation.
+
+
+There are several ways to facilitate the ability of the model to generalize, and one of them is to put some restrictions on its parameters.
+One can decree the number of parameters, which would lead to a simpler, and thus more general, model.
+The other is adding a penalty term, which depends on the parameters' values, to the loss function, as $L(x|w) = L_{0}(x) + R(w)$ , which would tend to convergence to smaller values of the wights after the optimization. 
+% \[
+%	L(x|w) = L_{0}(x) + R(w)
+% \]
+Typically with large values of parameters means the model fits well to the known data samples, which in its turn means that model leaned the effect of the noise in the training dataset, and lower wights make the outputs change less with the small change of the inputs (hence the model is more stable).
+
+One of the most common types of the regularization are $L_{2}$ and $L_{1}$ regularizations.
+For the former one, the regularization term is $L_{2}$ norm of the model's parameters and could be expressed as $R=\frac{1}{2}\lambda w^{2}$ where $\lambda$ is a regularization parameter.
+For the letter it is respectively an $L_{1}$ norm of parameters $R=\lambda |w|$.
+In the result of the optimization, the $L_{2}$ regularization will lead to weights shrinking proportionally to their value, as $\frac{\partial \frac{1}{2} \lambda w^{2} }{\partial w} = \lambda w$, whereas $L_{1}$ shrinks them as constant, $\frac{\partial \lambda |w| }{\partial w} = \lambda \, \mathrm{sgn}(w) $.
+For the latter one, the weight tends to lower fast and become sparse as many of them are put to zero value in the end, which allows explicit feature selection.
+However, if there are no special restrictions on the number of parameters, typically $L_{2}$ regularization is used as it giver better results than $L_{1}$.
+
+The other way to deal with over-fitting is called \textit{dropout} and can be used together with the $L_{1}$ and $L_{2}$ regularization.
+It is based on omitting of random neurons on each step of the training of the model.
+Typically an approach of choosing any neuron with the probability of $50\%$ is used so at every step we have a different combination of neurons.
+In the end, we change the structure of the network during the learning process and the resulting network is equal to an average of several different models, which reduce the effect of over-fitting of every single network.
+
+ 
+
+\section{Rational}
+
+Topology Optimization stay an essentially computationally complex problem...
+\todo{find complexity of TO}
+\todo{find real numbers on performance of TO, with hardware}
+\bigskip
+
+The optimization is made in iterations for each of which the Finite Element Analysis is performed in order to assure that the result is correct and corresponds the physics of the problem as well as functional gradient are possible to derive.
+This step is the most expensive step of all and can be internally optimized to increase the speed of computation but the other aspect of performance tuning is reducing the amount of optimization iterations made.
+The convergence speed of the optimization is scarcely studied and is mostly analyzed in empirical ways...
+\todo{convergence of TO}
+\bigskip
+
+One of the ways to speed up the optimization process reducing the number of iterations is to start optimization with a certain educated guess of the material layout instead of the typical way, which is initializing the whole domain covered with the material.
+\bigskip
+
+In the ideal case the TO problem material layout could be initialized with an approximate solution which will require only a couple iterations to converge under the chosen criteria, in this way eliminating multiple initial steps  of analysis.
+The first step of the optimization typically change the layout drastically and result into a very coarse result with significant decrease of the objective function, but the value still stays much higher than for the desired outcome. 
+\bigskip
+
+This initial steps could be made by an algorithm which much less computationally expensive than the Topology Optimization and will not require applying FEM analysis. 
+Despite of TO results being possible only to heuristically predicted, there exist some tendencies in the dependence between the Boundary Conditions and the forced applied to the element. 
+\bigskip
+
+As one of the possible solutions for finding approximations of the TO outcome we propose using Artificial Neural Network (ANN) approach.
+The idea behind it is build Machine Learning (ML) system able to infer a coarse result of a TO process based on the initial inputs for it.
+The ML model has a from of ANN with parameters trained on a dataset which consists of the known cases of Topology Optimization problem, with inputs being preprocessed inputs of Topology Optimization and outputs being the outcome of TO, namely the final material layout design.
+
+In this work, we propose an design of a ANN system for fast inference of approximate optimal material layout for elements with constrained volume under stress based on initial conditions, constrains and parameters of the problem. 
+We propose the architecture of the problem, analyze the influence of dataset parameters and its' representation on the quality of the prediction on the quality of inference results as well as the general capacity of the system to improve performance of Topology Optimization process.  
+
+
+Unlike many of the Deep Learning applications the training dataset is principle hard to obtain, since every sample would be a pair of some initial conditional and the material layout, which is a result of an expensive TO process. 
+One of the most important question in the work is the trade-off between the size and properties of the training dataset and the quality of the inferred result with respect to their accuracy and suitability for the initial layout for TO.
+\todo{improve texting}
+\todo{reduce vain stuff and increase size of the text}
 

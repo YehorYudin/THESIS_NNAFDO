@@ -14,18 +14,41 @@
 
 \noindent {\scshape Chapter 1: Introduction}  \vspace{1mm}
 
-\noindent  This chapter presents an overview of the thesis and it purpose. Furthermore, it will discuss the sense of life in a very general approach.  
+\noindent  This chapter presents an overview of the thesis and it purpose. 
+In particular, we discuss the challenges of the Topology Optimization connected to its computational complexity and the possibilities to improve the performance.
+We consider the Machine Learning approaches to this problem and discuss the scope of applicability of Deep Learning algorithms to it.
+
+%\noindent {\scshape Chapter 1.1: Rational}  \vspace{1mm}
+%\noindent  Explanation of sources of problem, novelty of the approach and the challenges within it.
 
 \noindent {\scshape Chapter 2: Theory}  \vspace{1mm}
 
-\noindent  No thesis without theory.   \vspace{1mm}
+In the first section of this chapter we describe what is Design Optimization, what are the range of applications and the models used for them, what are the approaches for the algorithms and what are the challenges in the field.
+
+In the second section we discuss what is the Artificial Neural Networks, what are the principles behind the approach and how to design an inference system using them, as well as challenges during the design process and what are the techniques to tackle them.
+
+%\noindent {\scshape Chapter 1.1: Topology Optimizations}  \vspace{1mm}
+%\noindent  Goals of the method, its steps, approaches, challenges
+
+%\noindent {\scshape Chapter 1.2: ANN}  \vspace{1mm}
+%\noindent  What is ANN, CNN, what are architectures out there and their constituent parts, why it is good for the problem
 
 %--------------------------------------------------------------------
 \section*{Part II: The Real Work}
 
-\noindent {\scshape Chapter 3: Overview}  \vspace{1mm}
+\noindent {\scshape Chapter 3: Implementation}  \vspace{1mm}
+%\noindent  This chapter presents the requirements for the process.
 
-\noindent  This chapter presents the requirements for the process.
+\noindent  This chapter describes the steps that was done to design the inference system and evaluate its performance, as well as gives detailed description of different aspects of the design, including: 
+	\begin{itemize}
+		\item Data collection, variable properties of data-sample
+		\item Architectures chosen
+		\item Models, loss function, inputs, preprocessing
+		\item training and optimization
+		\item evaluation, metrics, best choices, dependency on train dataset
+		\item usage as accelerator, pre-processing
+	\end{itemize}
+
 %--------------------------------------------------------------------
 \section*{Part III: Future Work}
 

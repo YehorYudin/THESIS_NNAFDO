@@ -1,0 +1,63 @@
+% !TEX root = ../main.tex
+
+\chapter{Implementation}
+
+The system was designed using the Tensorflow framework. 
+\todo{should it be a library?}
+It is build in form Python program calling to the Tensorflow Pyhon API.
+\todo{how to put it? description and name should be consistent everywhere}
+The main reason of the choice of the Tensorflow and python was the easy and fast way of building, modifying and understanding the code together with little overhead of
+creating a program that is runable using GPU. 
+
+In this section we describe the important implementation aspects including the technologies and techniques used, the structure of the code and the main functions logic.
+
+\subsection{Tensorflow}
+
+Tensorflow is an open source library for high performance numerical computation.\ref{tensorflow_main} 
+It provides API for multiple languages, including Python and is easy to deploy on multiple platforms, including Nvidia GPUs.
+I was initially developed bu Google's AI Organization and primarily supports development of Machine Learning systems.
+
+Tensorflow requires a definition of the pipeline of data transformations in the code.
+This definition is made in functional manner using one of the high-level languages API and include various operations on numerical and other types of data, as well as easy means to update and optimize variable parameters using back propagation. 
+While definition, the programmer can specify the device on which a specific operation will be performed and specific variable will be stored, as well as which variable to initialize and which to read in the end of the pipeline. 
+During the pipeline descriptions user specify the placeholder for the data over which operations are performed. 
+This placeholders are typically described as multi-dimensional arrays of certain data-type called \textit{tensors}.
+The Tensorflow takes care about compiling the optimized code described using the API and the deployment of the code and data on the specified device. 
+Than user can run the defined operations for a concrete data using the mapping of the real input values with the input placeholders, the queue runners or iterators of some user pre-defined data set.
+In such manner is is able to define loops in which parameters of the model are trained as well as to use model to infer results for certain input.
+Tensorflow allows saving trained model parameters in an easy way, which in the end allow to deploy the working model on a different model using only the script describing the pipeline and the file with model parameters values.
+The other benefit of the Tensorflow is \textit{Tensorboard} utility with a web0based interface which allows runtime observation over the system status with which user can observe current values of any variable, like intermediate result or objective function without almost any intrusion in the code.
+
+Such design of the framework with API in multiple language together with intrinsic optimization for high performance at multiple platforms, as well as convenient tools for easy deployment and control over the system makes Tensorflow extremely usable for many scientific and industrial applications.
+
+
+\section{ANN Architecture}
+
+\subsection{Loss function}
+
+The optimization performed during training goals the minimization of the loss function...
+Thus one of the most important steps during design is defining a proper loss function which will precisely encapsulate our requirements on the results inferred by the model.
+
+Our idea of the result produced by the model is a bitmap describing material density layout being as close to the result of conventional TO process as possible.
+In this way we have to minimize the difference between the known optimized material design for given input and the result inferred as model.
+However the difference between two arrays of values is conventionally is not easy to describe with a single scalar and typically the influence of a single element of that is low which makes would make the optimization process extremely slow.
+
+In order to tackle all these issues we formulate our problem as classification problem for every single element of the output channel for given input. 
+We treat our reference, ground truth, image of layout as a bitmap for which every element can belong to one of two classes, namely occupied by material ({1})  or not ({0}) for which we should threshold our results of known TO problems.
+In such formulation the goal of our system is to classify every element of output bitmap based on the inputs and give the confidence for the inferred classes.
+Thus for single input our model performs binary classification for multiple outputs.
+In this way by discretizing the problem we  reducing the information flux over the model we significantly increase the speed of the model training.
+\todo{gnerelly wrtitten very uncertainly... plus good to compare training time for different losses}
+
+In thus way we define our loss function as sum over every output pixel of logits of binary cross-entropy between the output of the model and reference image.
+\todo{write formula! desciption is also so-so}
+
+
+Furthermore, in order to prevent over-fitting we incorporate an regularization term in form of a $L_{2}$ norm of all trained matrix parameters multiples by a small constant $\alpha_r{reg}$
+\todo{add formula! describe regularization? how details? or leave out?}
+
+One of the clear requirements defined by the TO problem itself is the resulting layout having a fixed volume. 
+Since the closeness to the reference data does not implicitly put any restriction on this criteria, we decided to use several ways to facilitate the inferred layout having desired volume.
+One of the ways used in the system is additional an volume fraction penalty additional term to loss function.
+For this we calculate the volume of the inferred result as count of the pixels for which the probability to be full is higher than threshold, take an absolute difference with the volume stated for the reference problem and add to the loss function with some small multiplicative constant $\beta_{Vf}$
+\todo{formula! more detail! general formula!}
