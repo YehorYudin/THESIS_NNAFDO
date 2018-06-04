@@ -2,6 +2,13 @@
 
 \chapter{Implementation}
 
+In this chapter we will describe the implementation aspects of the work.
+Here description of the ANN architecture and its reasoning, the general pipeline of computations and data manipulations applied to set up the system creating data that helps the TO performance improvement and ways for the system analysis, as well as the software used for its creation.
+Also we will talk about the aspects of choosing and preparing data for model training, as well as data pre-processing and post-processing.
+\todo{what did I just write}
+
+
+
 The system was designed using the Tensorflow framework. 
 \todo{should it be a library?}
 It is build in form Python program calling to the Tensorflow Pyhon API.
@@ -23,8 +30,8 @@ While definition, the programmer can specify the device on which a specific oper
 During the pipeline descriptions user specify the placeholder for the data over which operations are performed. 
 This placeholders are typically described as multi-dimensional arrays of certain data-type called \textit{tensors}.
 The Tensorflow takes care about compiling the optimized code described using the API and the deployment of the code and data on the specified device. 
-Than user can run the defined operations for a concrete data using the mapping of the real input values with the input placeholders, the queue runners or iterators of some user pre-defined data set.
-In such manner is is able to define loops in which parameters of the model are trained as well as to use model to infer results for certain input.
+Then user can run the defined operations for a concrete data using the mapping of the real input values with the input placeholders, the queue runners or iterators of some user predefined data set.
+In such manner is able to define loops in which parameters of the model are trained as well as to use model to infer results for certain input.
 Tensorflow allows saving trained model parameters in an easy way, which in the end allow to deploy the working model on a different model using only the script describing the pipeline and the file with model parameters values.
 The other benefit of the Tensorflow is \textit{Tensorboard} utility with a web0based interface which allows runtime observation over the system status with which user can observe current values of any variable, like intermediate result or objective function without almost any intrusion in the code.
 
@@ -40,24 +47,24 @@ Thus one of the most important steps during design is defining a proper loss fun
 
 Our idea of the result produced by the model is a bitmap describing material density layout being as close to the result of conventional TO process as possible.
 In this way we have to minimize the difference between the known optimized material design for given input and the result inferred as model.
-However the difference between two arrays of values is conventionally is not easy to describe with a single scalar and typically the influence of a single element of that is low which makes would make the optimization process extremely slow.
+However, the difference between two arrays of values is conventionally is not easy to describe with a single scalar and typically the influence of a single element of that is low which makes would make the optimization process extremely slow.
 
 In order to tackle all these issues we formulate our problem as classification problem for every single element of the output channel for given input. 
 We treat our reference, ground truth, image of layout as a bitmap for which every element can belong to one of two classes, namely occupied by material ({1})  or not ({0}) for which we should threshold our results of known TO problems.
 In such formulation the goal of our system is to classify every element of output bitmap based on the inputs and give the confidence for the inferred classes.
 Thus for single input our model performs binary classification for multiple outputs.
-In this way by discretizing the problem we  reducing the information flux over the model we significantly increase the speed of the model training.
-\todo{gnerelly wrtitten very uncertainly... plus good to compare training time for different losses}
+In this way by discretizing the problem we reduce the information flux over the model we significantly increase the speed of the model training.
+\todo{generally written very uncertainly... plus good to compare training time for different losses}
 
 In thus way we define our loss function as sum over every output pixel of logits of binary cross-entropy between the output of the model and reference image.
-\todo{write formula! desciption is also so-so}
+\todo{write formula! description is also so-so}
 
 
 Furthermore, in order to prevent over-fitting we incorporate an regularization term in form of a $L_{2}$ norm of all trained matrix parameters multiples by a small constant $\alpha_r{reg}$
 \todo{add formula! describe regularization? how details? or leave out?}
 
 One of the clear requirements defined by the TO problem itself is the resulting layout having a fixed volume. 
-Since the closeness to the reference data does not implicitly put any restriction on this criteria, we decided to use several ways to facilitate the inferred layout having desired volume.
+Since the closeness to the reference data does not implicitly put any restriction on these criteria, we decided to use several ways to facilitate the inferred layout having desired volume.
 One of the ways used in the system is additional an volume fraction penalty additional term to loss function.
 For this we calculate the volume of the inferred result as count of the pixels for which the probability to be full is higher than threshold, take an absolute difference with the volume stated for the reference problem and add to the loss function with some small multiplicative constant $\beta_{Vf}$
 \todo{formula! more detail! general formula!}
