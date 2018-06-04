@@ -166,7 +166,15 @@ Essentially, in full form, to find a single value for a fixed set of parameters,
 To avoid that, the \textit{Stochastic Gradient Descent} is used, for which we use one or only a few samples, called a \textit{minibatch}, chosen randomly to calculate the gradient.
 Besides being much faster, this simplification shows good convergence and is very popular as an NN optimizer.\ref{}
 
-
+\begin{figure*}
+	\begin{multicols}{2}
+		\includegraphics[width=\linewidth]{images/parabolic_3d.pdf}\par
+		\includegraphics[width=\linewidth]{images/nonconvex_3d.pdf}\par
+	\end{multicols}
+	\caption{Loss function forms}
+	\label{fig:lossfunc_demo}
+\end{figure*}
+	
 However, this method has multiple disadvantages.
 The algorithm give guarantee to converge only for the convex goal functions and generally converge slow for ill-posed problems, with very slow evolution along the gradient.
 For the non-convex shapes of the function there is a chance that it the algorithm will converge to a local minimum, without any possibility to escape and discover other regions of the domain.
@@ -204,8 +212,18 @@ Adam combines all mentioned over approaches and generalizes AdaGrad method.
 It uses second order momentum to adapt learning rates, a first order moment as an inertia term and bias correction multiplicative constant to prevent from update steps being close to zero.
 \todo{ references. too long/too sloppy?}
 
-\subsection{Back Propagation}
+\subsection{Backward Propagation}
 
+The optimization process requires knowing values of the gradient of loss function with respect to parameters space.
+As we told, the form of the loss function is unknown, defined on high-dimensional prameter space, dependent on data, and in principle infeasible to analyze.
+Thus, it is only possible to find it finite number of point that are of interest based on some numerical considerations.
+\todo{i don't like it either}
+One of the idea that made ANNs fast and easy to implement is \textit{automatic differentiation}.
+Since we describe the dependency between output and output of the network as a sequence of simple data transformations like convolutions or activation, called layers, it is possible to determine the gradient of every such operations and save it.
+Having the total transformation and applying the chain rule, we can easily express the total gradient using the atomic derivatives of every transformation, and the process of finding is called automatic differentiation. 
+\todo{formulas to demonstrate?}
+In its turn, the process of plugging the values on every iteration of optimization in order to find loss function gradient value and update the parameters is called \textit{backward propagation} o \textit{backpropagation}.
+It is an essential principle of ANNs and many modern software frameworks offer mean for automatic differentiation and back propagation allowing easy model set-up and good performance of its training. \ref{} 
 
 
 
