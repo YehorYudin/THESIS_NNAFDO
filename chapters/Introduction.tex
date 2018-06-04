@@ -3,6 +3,10 @@
 \chapter{Introduction}
 \label{chapter:Introduction}
 
+In this chapter we give describe the principles and application scopes of Topology Optimization algorithm and explain the performance challenges of this method.
+We present an approach to improve the performance of the method based on Artificial Neural Network, justify the applicability and novelty of such approach and show ways it may help to improve the performance of Topology Optimization. 
+Finally, together with the explanation of Topology Optimization method, we give a description of Convolutional Neural Networks, its principles and all its components.
+
 
 \section{Motivation}
 
@@ -18,22 +22,25 @@ The convergence speed of the optimization is scarcely studied and is mostly anal
 \bigskip
 
 One of the ways to speed up the optimization process reducing the number of iterations is to start optimization with a certain educated guess of the material layout instead of the typical way, which is initializing the whole domain covered with the material.
+
+\bigskip
+In the ideal case the TO problem material layout could be initialized with an approximate solution which will require only a couple iterations to converge under the chosen criteria, in this way eliminating multiple initial steps of analysis.
+The first step of the optimization typically change the layout drastically and result into a very coarse solution with significant decrease of the objective function, but the value still stays much higher than for the desired outcome. 
 \bigskip
 
-In the ideal case the TO problem material layout could be initialized with an approximate solution which will require only a couple iterations to converge under the chosen criteria, in this way eliminating multiple initial steps  of analysis.
-The first step of the optimization typically change the layout drastically and result into a very coarse result with significant decrease of the objective function, but the value still stays much higher than for the desired outcome. 
+Furthermore, such approach allows to reduce the computational domain of the problem by leaving out elements for which we know in advance that the material will not be present there. 
 \bigskip
-\todo{change the rational to the idea of decrease the domain}
+\todo{revise motivation}
 
-This initial steps could be made by an algorithm which much less computationally expensive than the Topology Optimization and will not require applying FEM analysis. 
-Despite of TO results being possible only to heuristically predicted, there exist some tendencies in the dependence between the Boundary Conditions and the forced applied to the element. 
+This initial steps could be made by an algorithm which much less computationally expensive than the Topology Optimization and will not reduce time spent on FEM analysis. 
+Despite TO results being possible only to heuristically predicted, there exist some tendencies in the dependence between the Boundary Conditions and the forced applied to the element. 
 \bigskip
 
 As one of the possible solutions for finding approximations of the TO outcome we propose using Artificial Neural Network (ANN) approach.
 The idea behind it is build Machine Learning (ML) system able to infer a coarse result of a TO process based on the initial inputs for it.
-The ML model has a from of ANN with parameters trained on a dataset which consists of the known cases of Topology Optimization problem, with inputs being preprocessed inputs of Topology Optimization and outputs being the outcome of TO, namely the final material layout design.
+The ML model has a form of ANN with parameters trained on a dataset which consists of the known cases of Topology Optimization problem, with inputs being pre-processed inputs of Topology Optimization and outputs being the outcome of TO, namely the final material layout design.
 
-In this work, we propose an design of a ANN system for fast inference of approximate optimal material layout for elements with constrained volume under stress based on initial conditions, constrains and parameters of the problem. 
+In this work, we propose a design of an ANN system for fast inference of approximate optimal material layout for elements with constrained volume under stress based on initial conditions, constrains and parameters of the problem. 
 We propose the architecture of the problem, analyze the influence of dataset parameters and its' representation on the quality of the prediction on the quality of inference results as well as the general capacity of the system to improve performance of Topology Optimization process.  
 
 
@@ -53,8 +60,8 @@ Various techniques allow finding optimal layouts of the element within the mater
 
 One of the approaches used for TO is Solid Isotropic Microstructure with Penalization (SIMP).
 This method uses the idea of "artificial density"\ref{} where for every hexahedral element of discretized model some density variable $\rho$ is assigned.
-This density plays the role of design variables in the optimization process and used to present the goal function as a weighted sum of element-wise compliances.
-This approach has both well established theoretical and empirical base and easy to implement and interpret.
+The density plays the role of design variables in the optimization process and used to present the goal function as a weighted sum of element-wise compliance.
+This approach has both well-established theoretical and empirical base and easy to implement and interpret.
 In the end, the TO problem within SIMP approach is formulated as follows:
 \todo{revise formulation} 
 %\begin{equation}
@@ -66,7 +73,7 @@ In the end, the TO problem within SIMP approach is formulated as follows:
 	\end{align*} 
 %\end{equation} 
 
-In other words, our goal is to minimize compliance function $c(\rho)$ subjected to the constrain of volume fraction $\alpha = \frac{V(\rho)}{V_{0}}$, where $V(\rho)$ is volume occupied by the material and $ V_{0} $ is total volume of the design domain.
+In other words, our goal is to minimize compliance function $c(\rho)$ subjected to the constraint of volume fraction $\alpha = \frac{V(\rho)}{V_{0}}$, where $V(\rho)$ is volume occupied by the material and $ V_{0} $ is total volume of the design domain.
 The element stiffness matrix is denoted as $\mathbf{K}_{e}(\rho)$ and displacement and force vector are respectively $\mathbf{u}$ and $\mathbf{f}$.
 Apart from the constraints on the volume fraction and the range o density values, the displacement vector used to calculate the objective function has to be physically correct, which means that one every iteration of the optimization process a Finite Element Analysis (FEM) problem should be solved to find $\mathbf{u}$ and this step is the most computationally expensive in the whole TO process.
 
@@ -85,7 +92,7 @@ The sensitivity value $B_{e}$ is updated by the optimality condition:
 \begin{equation}
 	B^{\eta}_{e} = \frac{-\partial c / \partial \rho_{e}}{\lambda \partial V / \partial \rho_{e}}
 \end{equation}
-Here we shall obtain the Lagrangian multiplier $\lambda$ multiplier by a bisection algorithm.
+Here we shall obtain the Lagrangian multiplier $\lambda$ by a bisection algorithm.
 Finally, the sensitivity of the object is computed as 
 \begin{align*}
 	\frac{\partial c}{\partial \rho_{e}} & = -p(\rho_{e})^{p-1} \mathbf{u}^{T}_{e} \mathbf{K}_{0} \mathbf{u}_{e}\\
@@ -97,7 +104,8 @@ The total optimization process could be visually described with \ref{fig:to_flow
 \todo{revisit}
 
 \begin{figure}[]
-	\includegraphics[width=\linewidth]{images/TO_flowchart.pdf}
+	\centering
+	\includegraphics[width=0.6\linewidth]{images/TO_flowchart.pdf}
 	\caption{Flowchart of the Topology Optimization process.}
 	\label{fig:to_flow}
 \end{figure}
@@ -117,14 +125,14 @@ That means that input pixels have influence only in the vicinity of the pixels a
 
 The \textit{convolution} operations could be defined by obtaining a value of every element of the output image as a weighted sum of the values of input image elements of a region in vicinity of this output element.
 The matrix defining the weights is called \textit{filter} or \textit{kernel} and is typically a parameter that should be trained
-In other words, applying a convolutions means next operation
+In other words, applying a convolution means next operation
 \todo{add formula}
 
-This properties correspond to the nature of most of the images and drastically reduces the number of parameters to be trained as typically they are only the elements to the filter that will be applied to every block of the pixels with some shift and its size is much smaller than the size of the image.
+These properties correspond to the nature of most of the images and drastically reduces the number of parameters to be trained as typically they are only the elements to the filter that will be applied to every block of the pixels with some shift and its size is much smaller than the size of the image.
 
 One of the other operations that is used alongside convolutions in CNN is \textit{pooling}.
 Essentially it is a reduction operation that maps values of pixels of a domain of the image into a single value, reducing the size of the image at the next layer and building a representation in a lower dimension space. 
-Typically average or max operations are used and the windows at which operation is applied slides so that there will be no overlaps between two neighboring windows, i.e. the stride of the siled is equal to the length of the kernel.
+Typically, average or max operations are used and the windows at which operation is applied slides so that there will be no overlaps between two neighboring windows, i.e. the stride of the slide is equal to the length of the kernel.
 \todo{add images}
 
 ...
@@ -143,37 +151,61 @@ Because typically the outputs $y_{i}$ are taken from a finite-dimensional vector
 For example, we can take squared $L_{2}$ norms of the $y_{i}-\hat{y}_{i}$ errors and compute total Euclidean loss as $ L(\hat{Y}|Y) = \frac{1}{2}\sum_{\hat{y} \in \hat{Y}}(y - \hat{y})^{2} $.
 The goal of the \textit{training} process is to find such weights, or values of model parameters, that minimize the value of the loss function.
 
-Typically it is virtually impossible to analyze the dependency of loss function on parameters analytically, as well as to check all possible combination of weights values, because number of parameters is extremely large the dependencies are non-trivial. 
+Typically, it is virtually impossible to analyze the dependency of loss function on parameters analytically, as well as to check all possible combination of weights values, because number of parameters is extremely large the dependencies are non-trivial. 
 Due to that, the training is implemented through a numerical optimization, typically based on \textit{Gradient Descend} algorithm. 
-The idea of the method is based on finding the numerical gradient of the loss function with respect ot parameters to iteratively update them until some convergence criterion is reached, so that the loss function value is considered minimal for the set of found parameters values.
+The idea of the method is based on finding the numerical gradient of the loss function with respect to parameters to iteratively update them until some convergence criterion is reached, so that the loss function value is considered minimal for the set of found parameters values.
 
-We can express for the gradient decend algoritm as iterative process, where every step consists of finding derivative of loss fucnction at the current point of parametric space $\nabla L(W_{t})$, which indicates the direction of the fastest growth of the function. 
+We can express for the gradient descend algorithm as iterative process, where every step consists of finding derivative of loss function at the current point of parametric space $\nabla L(W_{t})$, which indicates the direction of the fastest growth of the function. 
 Then, based on it value, a new point of parametric space, or updating the model weights, as $W_{t+1}=W_{t}-\alpha \nabla L(W_{t})$, where $\alpha$ is the \textit{learning rate}.
-On next iteration the gradient is found for the updated point, and the process terminates when one of the user defined criteria is met, for example the change i los function is too small or the number of iteration exeeds the maximal amount.
-\todo{add figured demostrating loss function surface, GD process and variations}
+On next iteration the gradient is found for the updated point, and the process terminates when one of the user defined criteria is met, for example the change in the loss function is too small or the number of iteration exceeds the maximal amount.
+\todo{add figured demonstrating loss function surface, GD process and variations}
+
+The classical gradient descend assumes that we could easily estimate the gradient of loss function at every point of the parametric space.
+However, in case of machine learning, the gradient value would depend on multiple values for different inputs.
+Essentially, in full form, to find a single value for a fixed set of parameters, it would require calculating and averaging gradient found for every sample in data set, which is practically infeasible.
+To avoid that, the \textit{Stochastic Gradient Descent} is used, for which we use one or only a few samples, called a \textit{minibatch}, chosen randomly to calculate the gradient.
+Besides being much faster, this simplification shows good convergence and is very popular as an NN optimizer.\ref{}
+
 
 However, this method has multiple disadvantages.
-The algorithm give guarantee to converge only for the convex goal functions and generally converge slow for ill-posed problems, with very slow evolution along the gradeint.
-For the non-convex shapes of the function there is a chance that it the algorith will converge to a local minimum, without any possibility to escape and discover other regions of the domain.
-Nevertheless, this approach is still being the most common way to optimize the parameters, especially if several modificitaion are inroduces as a remedy for the disadvantags.
+The algorithm give guarantee to converge only for the convex goal functions and generally converge slow for ill-posed problems, with very slow evolution along the gradient.
+For the non-convex shapes of the function there is a chance that it the algorithm will converge to a local minimum, without any possibility to escape and discover other regions of the domain.
+Nevertheless, this approach is still being the most common way to optimize the parameters, especially if several modification are introduces as a remedy for the disadvantage.
 
-One of the simliest solution to the slow convergence is intoducing a notion of a numerical \textit{momentum}.
-It is inspired by the mechanical dynamics and now the optimiation process is closer to simlation of a particle motion wuth the goal function palying a role of the potential field.
+One of the simplest solution to the slow convergence is introducing a notion of a numerical \textit{momentum}.
+It is inspired by the mechanical dynamics and now the optimization process is closer to simulation of a particle motion with the goal function playing a role of the potential field.
 The update rule has an additional velocity term $V$ which adds certain inertia to the way parameters change, pushing the virtual particle more along the gradient. 
-One of the gradient descend bsed method that use the idea of momentum is \textit{Nesterov Accelerated gradient (NAG)} and it shows better convergence properties compared to simple gradient descend.
+One of the gradient descend based method that use the idea of momentum is \textit{Nesterov Accelerated gradient (NAG)} and it shows better convergence properties compared to simple gradient descend.
 The algorithm is interpreted as follows: 
-we take an intermediate point in teh direction of the momentum and calculate gradeint for it.
-Than we use the gradient value to update the momentum and update the parameter using the new momentum.
+we take an intermediate point in the direction of the momentum and calculate gradient for it.
+Than we use the gradient value to update both the parameter values and the momentum.
 \begin{align*}
 	V_{t} & =\mu V_{t} - \alpha \nabla L (W_{t}+\mu V_{t}) \\
 	W_{t+1} & = W_{t+1} + V_{t+1}
 \end{align*}
 
+Apart from inability to find the region of global minimum, the other issue is fine-tuning the value of optimal parameter.
+With a large learning rate the step of the optimization stays also large, which leads to oscillating behavior of optimizer that constantly oversteps the minimum.
+To improve the accuracy during the later iterations the learning rate should be decreased with time, which is often done manually, with some predefined law. 
+However, a more general way, would be to find learning rate adaptively, based on the pass made by the optimizer in the parameter space.
+The \textit{Adaptive Gradient Algorithm (AdaGrad)} uses sum of squared, thus non-negative, gradients over time $G_{t+1} = G_{t}+\nabla L(W_{t})^2$ to define the learning rate.
+In this way the learning rate is large only while the historical gradient is small, and growth small while the gradient accumulates its value $ W_{t+1} = W_{t} -\mu \frac{\nabla L(W_{t})}{\sqrt{G_{t+1}}+\epsilon} $.
+Furthermore, here every parameter has, in the end, its own learning rate, which allows keeping total precision and convergence speed at good rate.
+Finally, the case of division by zero should be also prevented. 
 
+One of the most popular optimization algorithm treats well both finding global minimum and fine-tuning, is \textit{Adaptive Moment Estimation (Adam)} with the following update rule.
+\begin{align*}
+	M_{t+1} & = \beta_{1}M_{t} + (1-\beta_{1})\nabla L(W_{t}) \\
+	V_{t+1} & = \beta_{2} V_{t} + (1-\beta_{2})\nabla L(W_{t})^2 \\
+	W_{t+1} & = W_{t} - \mu \frac{\sqrt{1-\beta_{2}^{t+1}}}{1-\beta_{1}^{t+1}} \frac{M_{t+1}}{\sqrt{V_{t+1}}+\epsilon}
+\end{align*}		
 
+Adam combines all mentioned over approaches and generalizes AdaGrad method.
+It uses second order momentum to adapt learning rates, a first order moment as an inertia term and bias correction multiplicative constant to prevent from update steps being close to zero.
+\todo{ references. too long/too sloppy?}
 
+\subsection{Back Propagation}
 
-\todo{adagrad, adam, SGD + figures}
 
 
 
@@ -181,7 +213,7 @@ Than we use the gradient value to update the momentum and update the parameter u
 
 For now, all the operations performed on the input was described as linear.
 However, not every dependency could be described and approximated as linear and such simple model could easily miss complex patterns.
-In order to build a more general and complex model, non-linear \textit{activation functions} allied to the output of the layer could be introduced.
+In order to build a more general and simple model, non-linear \textit{activation functions} allied to the output of the layer could be introduced.
 
 One of the most famous activation function is the \textit{sigmoid} function.
 This is a deterministic function $ \sigma : \mathbb{R} \rightarrow [0; \, 1] $ and reads as $ \sigma(x) = \frac{1}{1+e^{-x}} $.
@@ -190,7 +222,7 @@ One of the issues of sigmoid function is that it is not zero centered.
 If the input values of the neuron always have the same sign it will lead to issues with the weight updates during the back-propagation process, since the values of the gradient will also always have the same sign.
 
 The other popular non-linear activation function is hyperbolic tangent which is a mapping $ \sigma : \mathbb{R} \rightarrow [-1; \, 1]$ and equal $\tanh(x)=\frac{2}{1+e^{-2x}}-1$.
-It is very similar to the sigmoid, but due to the symmetricity of the range, it is zero-centered.
+It is very similar to the sigmoid, but due to the symmetrically of the range, it is zero-centered.
 
 As it is seen from the graphs of functions, for the values of the tails of both of the sigmoid and hyperbolic tangent the value of the function is very close to either $0$ or $1$.
 This is called the \textit{saturation problem} and it is expressed in the fact that for the most of the domain the gradient of the function is very close to zero.
@@ -203,14 +235,22 @@ It is the most widely used activation function in the last years and it shows be
 The main disadvantage is that there is a chance that a large bias term will be calculated which will lead to so-called \textit{"dying ReLU"}. 
 That means that the gradient of the operation stays zero and the training process is stopped without any possibilities to recover. 
 
-Th common solution to this problem is to replace putting to zero at the native part of the domain with the function with small negative slope, so that gradient will never be zero. 
-This type of activation function is called parametric ReLU (PReLU) and typically defined as  
+The common solution to this problem is to replace putting to zero at the native part of the domain with the function with small negative slope, so that gradient will never be zero. 
+This type of activation function, shown in \ref{fig:act_func} is called parametric ReLU (PReLU) and defined as  
 \[ f_{PReLU}(x) = 
 \begin{cases}
 	\alpha x \, :x<0 \\
 	x \, : x \geq 0
 \end{cases}
 \]
+
+\begin{figure}[]
+	\centering
+	\includegraphics[width=0.4\linewidth]{images/activfunc.pdf}
+	\caption{Comparison of the different activation functions. Blue is $\mathrm{sigmoid}$, red is $\mathrm{tanh}$ and yellow is $\mathrm{PReLU}$.}
+	\label{fig:act_func}
+\end{figure}
+
 \todo{revisit, finish up}
 
 \subsection{Regularization}
@@ -224,9 +264,9 @@ The other is adding a penalty term, which depends on the parameters' values, to 
 % \[
 %	L(x|w) = L_{0}(x) + R(w)
 % \]
-Typically with large values of parameters means the model fits well to the known data samples, which in its turn means that model leaned the effect of the noise in the training dataset, and lower wights make the outputs change less with the small change of the inputs (hence the model is more stable).
+Typically, with large values of parameters means the model fits well to the known data samples, which in its turn means that model leaned the effect of the noise in the training dataset, and lower wights make the outputs change less with the small change of the inputs (hence the model is more stable).
 
-One of the most common types of the regularization are $L_{2}$ and $L_{1}$ regularizations.
+One of the most common types of the regularization are $L_{2}$ and $L_{1}$ regularization.
 For the former one, the regularization term is $L_{2}$ norm of the model's parameters and could be expressed as $R=\frac{1}{2}\lambda w^{2}$ where $\lambda$ is a regularization parameter.
 For the letter it is respectively an $L_{1}$ norm of parameters $R=\lambda |w|$.
 In the result of the optimization, the $L_{2}$ regularization will lead to weights shrinking proportionally to their value, as $\frac{\partial \frac{1}{2} \lambda w^{2} }{\partial w} = \lambda w$, whereas $L_{1}$ shrinks them as constant, $\frac{\partial \lambda |w| }{\partial w} = \lambda \, \mathrm{sgn}(w) $.
@@ -235,8 +275,8 @@ However, if there are no special restrictions on the number of parameters, typic
 
 The other way to deal with over-fitting is called \textit{dropout} and can be used together with the $L_{1}$ and $L_{2}$ regularization.
 It is based on omitting of random neurons on each step of the training of the model.
-Typically an approach of choosing any neuron with the probability of $50\%$ is used so at every step we have a different combination of neurons.
-In the end, we change the structure of the network during the learning process and the resulting network is equal to an average of several different models, which reduce the effect of over-fitting of every single network.
+Typically, an approach of choosing any neuron with the probability of $50\%$ is used so at every step we have a different combination of neurons.
+In the end, we change the structure of the network during the learning process and the resulting network is equal to an average of several models, which reduce the effect of over-fitting of every single network.
 
 
 
