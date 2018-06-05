@@ -1,26 +1,32 @@
 % !TEX root = ../main.tex
 
-\chapter{Data}
+
+
+\section{Data Preparation}
 
 In this section we describe what are the data used to train and evaluate the inference system.
 We discus the parameters used to define the Topology Optimization problem and their variability and properties.
-The other aspect ot be covered is the ways to representation these data in a way suitable for ANN system input.
-Lastly, we discuss the aspects od choosing the proper training dataset for the inference system.
+The other aspect to be covered is the ways to representation these data in a way suitable for ANN system input.
+Lastly, we discuss the aspects of choosing the proper training dataset for the inference system.
 
 \subsection{Cases}
 
 The physical problem for which the Topology Optimization (TO) is performed is defined by the Boundary Conditions (BC) and the force applied to the element. 
 The former has a view of Dirichlet BC and define the parts of the element that experience no displacement and the latter is in general form a filed of forces applied to all the point of the element. 
 Translated in the discretized form used in the Finite Element Analysis (FEA) performed during the TO, the former defined the fixed degrees of freedom and the latter defines the non-zero elements of the right-hand-side vector of loads.
+\medskip
 
 To obtain a set of TO results that could be used as training and testing samples for the Artificial Neural Network (ANN) we choose perform TO for various combination of values of the boundary conditions and load cases.
+\medskip
 
 As Boundary Condition we can chose to fix one of sides of the domain (one of four walls). 
 We can also choose to leave a ${1/3}$ of th side unfixed or fix only the extreme point of the wall. (Add picture of boundary conditions and add it as a caption)
+\medskip
 
 As a simple load case we consider only the situation where a force is applied to a single point of the element. 
 The variable parameterless are the coordinates of the force application (X, Y) and the direction of the force.
 We keep the magnitude of the force in every direction constant and choose one of the eighth possible directions: along one of the axis in one of the direction or a combination of those.
+\medskip
 
 In the end we obtain number of possible input parameter equal: $4\,\mathrm{(fixed \, side)} \; \times \; 3\,\mathrm{(type \, of \, BC)} \\ \; \times \; 8\,\mathrm{(force \, direction)} \; \times \; 32\,\mathrm{(Y \, coordinate)} \; \times \; 16\,\mathrm{(X \, coordinate)}$
 
@@ -33,10 +39,11 @@ The code uses square elements for finite element discretization and uses power-l
 ...
 The code was modified in order to have several arbitrary points where the load is applied.
 A single TO problem is called by calling ... where the function the problem parameters are passed as parameters, such problem dimension, volume fraction, power penalty, convergence criterion, coordinated of force application points and force vector. 
-The script saved the resulting material layout as a grayscale PNG image where every pixel value denotes the virtual material density of corresponding square finite element.
+The script saved the resulting material layout as a gray-scale PNG image where every pixel value denotes the virtual material density of corresponding square finite element.
 For the typical problem size of $ 32 x 32 $ single TO problem solution took on a ... CPU.
 Totally there were .. created
-\todo{fill in referecne, number, code etc.} 
+\todo{fill in reference, number, code etc.} 
+\medskip
 
 To generate results of compliance minimization for 3D models we used program IDeAs\ref{.} 
 
@@ -49,24 +56,31 @@ To generate results of compliance minimization for 3D models we used program IDe
 In our case for every fixed domain we use every TO problem is defined by by boundary conditions, filed of applied forces and volume fraction occupied by material. 
 These are three parameters that vary from case to case of TO problem and others stay the same, thus the model should be able to infer proper layout using this varying information.
 One of issues during the design of the model was how the model should account this information.
+\medskip
 
 Boundary condition is defined by a geometrical locus on the domain for which values of some function is predefined, in our case it means the displacement vector for these points is equal to zero. 
 After the discretization it is expressed in having some degrees of freedom fixed. 
 %Essentially that means that for some of the geometrical elements the component in the displacement vector should be always put to zero which is reflected in the from of the right hand side 
 Since our domain has a correspondence with a bitmap where every element of the TO problem maps to an element of an array we represent boundary conditions with an array where elements with indices equal to coordinates of fixed element has vale of {1} and {0} for everything else.
+\medskip
 
 In similar manner we represent the force field applied to the element.
 %Generally we have only a few points at which forces are applied, which after discretization will be reflected in a few elements for which there will be values filled in teh right hand side.
 We have two different bitmaps for {X} and {Y} components of the force or every point at which force is applied we fill the array element with the {+1} or {-1} value depending on the force direction, leaving everything else {0}.
+\medskip
 
 The Volume Fraction is essentially a scalar value and it is accounted in the system by introducing a new channel tiled with a single value at the layer of the representation in the lowest dimensionality as described in the ``Architecture'' section.
+\medskip
 
 The bitmap of boundaries, force in X direction and force in Y direction form the three input channels of the model over which the convolutions are applied.
+\medskip
 
 The one problem with such representation of BC and force fields that there are only a few non-zero elements in the channel that leads very little information influx in the model and makes it virtually impossible to train the model.
 \todo{explain more, demonstrate?}
+\medskip
 
 As a remedy for this problem we populate the input channels with more non-zero elements representing meaningful information by finding a Signed Distance Field (SDF) of every channel.
+\medskip
 
 For every channel we consider the non-zero element as important and put a virtual surface around it and fined signed distance to it for every element of the bitmap.
 The ambiguity for the force direction is solved by defining inner part of zero-surface as either inner or outer part while computing the SDF.
@@ -93,10 +107,12 @@ If $\Omega$ is a subset of Euclidean space and has smooth boundaries, then the g
 \]
 
 This equation describes the propagation of the wavefront started from the boundary of the $\Omega$ and its solution will describe travel time of the wavefront to every point in case of the constant speed of propagation which is equal to the signed distance function.
+\medskip
 
 There is a fast way to solve this equation for the points located on the regular grid called \textit{Fast Marching Method (FMM)}.
 It is a graph traversing algorithm based on the Dijkstra's algorithm \ref{} and it's complexity is $O(M \log M)$ where $M$ is number of grid points.
 There are plenty of FMM implementations available, and we chose to use python package \textit{ski-fmm} \ref{}, an part of SciKit framework that allows to obtain SFD as numpy array by calling only one function passing array describing zero-boundary to it.
+\medskip
 
 In this way we have a fast and easy way to describe our input images having all the pixels populated with meaningful values.
 
@@ -108,9 +124,11 @@ One of the issues is material having the volume not equal to the one stated as i
 The other issue is material forming non-contiguous shapes, which is violating one of the requirement which is automatically met while conventional TO process.
 There also might occur similar problem of the result not corresponding to some topological properties, like structural elements of the layout being not connected or not having physical meaning.
 \todo{fix it if wrong}
+\medskip
 
 In order to solve these issues we decided to perform several post-processing operations on the output of the model.
 We decided to apply for mathematical morphological operation in order to solve the over-mentioned issues.
+\medskip
 
 We use two basic operations, namely \textit{erosion} and \textit{dilation}.
 The erosion is defined as 
@@ -124,7 +142,7 @@ The dilation is defined as
 A \oplus B = \{z \in E | B^{s} \}, \quad B^{s}=\{x \in E | -x \in B \}
 \end{equation} 
 Similar to erosion, this could be interpreted as adding a layer constructed out of elements $B$ to every contiguous figure of the image. 
-
+\medskip
 
 In result, the post-processing sequence consist of the next steps:
 \begin{itemize}
