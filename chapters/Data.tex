@@ -16,10 +16,10 @@ The former has a view of Dirichlet BC and define the parts of the element that e
 Translated in the discretized form used in the Finite Element Analysis (FEA) performed during the TO, the former defined the fixed degrees of freedom and the latter defines the non-zero elements of the right-hand-side vector of loads.
 \medskip
 
-To obtain a set of TO results that could be used as training and testing samples for the Artificial Neural Network (ANN) we choose perform TO for various combination of values of the boundary conditions and load cases.
+To obtain a set of TO results that could be used as training and testing samples for the Artificial Neural Network (ANN) we choose to perform TO for various combination of values of the boundary conditions and load cases.
 \medskip
 
-As Boundary Condition we can chose to fix one of sides of the domain (one of four walls). 
+As Boundary Condition we can choose to fix one of sides of the domain (one of four walls). 
 We can also choose to leave a ${1/3}$ of th side unfixed or fix only the extreme point of the wall. (Add picture of boundary conditions and add it as a caption)
 \medskip
 
@@ -133,26 +133,28 @@ We decided to apply for mathematical morphological operation in order to solve t
 We use two basic operations, namely \textit{erosion} and \textit{dilation}.
 The erosion is defined as 
 \begin{equation}
-A \ominus B = \{z \in E | B_{z} \in A \}, \quad B_{z}=\{ b+z | b \in B \}, \quad \forall z \in E 
+A \ominus B = \{z \in E | B_{z} \subseteq A \}, \, \mathrm{where} \; B_{z}=\{ b+z | b \in B \}, \, \forall z \in E 
 \end{equation} 
 This essentially can be interpreted as cutting a layer constructed out of elements $B$ from every contiguous figure of the image.
 
 The dilation is defined as 
 \begin{equation}
-A \oplus B = \{z \in E | B^{s} \}, \quad B^{s}=\{x \in E | -x \in B \}
+A \oplus B = \{z \in E | (B^{s})_{z} \cap  A \neq \emptyset \}, \, \mathrm{where} \; B^{s}=\{x \in E | -x \in B \}
 \end{equation} 
 Similar to erosion, this could be interpreted as adding a layer constructed out of elements $B$ to every contiguous figure of the image. 
 \medskip
 
 In result, the post-processing sequence consist of the next steps:
 \begin{itemize}
-	\item \textit{Apply Morphological Opening}: Firstly we apply erosion of the image by small ball element $B$ and than we apply dilation of the image by the same element. In the result all domains of connectivity smaller than $B$ will vanish.
-	\item \textit{Apply Morphological Closing}: Firstly we apply dilation of the image by small ball element $B$ and than we apply erosion of the image by the same element. In the result all gaps smaller than $B$ will be closed.
+	\item \textit{Apply Morphological Opening}: Firstly we apply erosion of the image by small ball element $B$ and then we apply dilation of the image by the same element. In the result all domains of connectivity smaller than $B$ will vanish.
+	\item \textit{Apply Morphological Closing}: Firstly we apply dilation of the image by small ball element $B$ and then we apply erosion of the image by the same element. In the result all gaps smaller than $B$ will be closed.
 \end{itemize}
 
-\todo{explanation on operations}
+In case if the volume fraction of the result is larger that desired, which happened in practice most of the time, we try to reduce eliminate the elements that has the lowest probability to be occupied with material.
+For that, we represent the resulting image as sparse matrix in form of coordinate list\ref{}, meaning the that matrix is read as list of tuples $(\mathrm{row},\mathrm{column},\mathrm{value})$ and could be easily sorted by value and delete the lower value until we reach an volume fraction value close to the desired.
 
-\todo{add description on volume treatment}
+
+\todo{explanation on operations}
 
 \todo{image before, image after}
  

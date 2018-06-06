@@ -51,6 +51,9 @@ One of the most important question in the work is the trade-off between the size
 \todo{reduce vain stuff and increase size of the text}
 
 
+\section{Previous Work}
+
+
 
 \section{Topology Optimization}
 
@@ -118,11 +121,16 @@ The total optimization process could be visually described with \ref{fig:to_flow
 
 \section{Convolutional Neural Networks}
 
-...
+
+Machine Learning approaches goal is to find a model that would interpolate some specific dependency of a nature, that could not be modeled explicitly, between based on the inputs and outputs(labels) samples present in the training data set.
+\textit{Artificial Neural Network (ANN)} is a type of Machine Learning model for which a dependency sought is expressed as a composition of multiple operations, called \textit{layers} each having a number of parameters which values are find in the process of training.
+Domains of these operations, as well as intermediate results images and generally the data with which an ANN model operates, are mostly spaces of matrices tensors over the real numbers field, and the results of the layer operations could be presented element-wisely, as a dependency of elements of input.
+Such as element of intermediate result, together with the element-wise operation, is called a \textit{neuron}, after a biological neuron of a brain that is able to generate electrical impulse based on signals received from several other neurons, and such analogy historically inspired development of Artificial Neural Network approach by Frank Rosenblatt.\ref{}
+The output of the neuron $y_{j}$ that takes input from $n$ neurons $x_{i=1,..,n}$ with weights $w_{i=1,..,n}$ and some activation function $\mathrm{f}$ is defined as $ y_{j}=\mathrm{f}(\sum_{i=1}^{n} x_{i}w_{i})$
+\medskip
+\todo{add examples of single FCL neuron? }
 
 Convolution Neural Networks (CNN) is a type of ANN that primarily use of convolutional operations.
-\medskip
-
 CNNs are specifically designed to work with images and image-like spatial data.
 One of their unique features that distinguish them from other types of ANNs and make them suitable for these types of data is locality.
 That means that output neuron is influenced only by a vicinity of neurons in the input.
@@ -130,21 +138,33 @@ The size of such vicinity is called \textit{local receptive field} of the neuron
 In CNNs every element of the next layer is achieved by sliding the local receptive field along the previous layer and applying a convolution operation.
 \begin{figure}
 	\centering
-	\includegraphics[width=0.7\linewidth]{images/conv_demo1.pdf}
+	\includegraphics[width=0.7\linewidth]{images/cnn_dem_gen3.pdf}
 	\caption{Receptive fields of the neurons of the output}
 	\label{fig:rec_field_demo}
 \end{figure}
+\todo{add captions, maybe add example for all phenomena(padding, stride etc)}
 
 If it is important to have inputs and outputs of the layer of same size, it is possible to apply \textit{padding}.
 That means that for the output elements close to the edge we span the receptive field outside of the size of the input, using virtual input elements with value of $0$. 
+\begin{figure}
+	\centering
+	\includegraphics[width=0.7\linewidth]{images/cnn_dem_gen3.pdf}
+	\caption{Convolutions with padding saves the size of the output}
+	\label{fig:padding_demo}
+\end{figure}
 \todo{Convention: use elements of array OR neurons of the network OR pixels of image}
-\todo{show padding (and stride) with an illustration}
 \todo{for such formulation -> output element correspond to middle of reception filed, change formula further!!!}
 \medskip
 
 The distance between two receptive fields, or a size of the sliding step,  is called \textit{stride} and could vary for different layers.
 A convolution wit a stride larger that $1$ reduces the size of image and every element of its output encapsulates more unique influence of the input. 
 %The larger stride will result in a smaller output layer with every element capturing more unique influence of the input layer, allowing to obtain a representation of the input in a lower dimension.
+\begin{figure}
+	\centering
+	\includegraphics[width=0.7\linewidth]{images/cnn_dem_stride2.pdf}
+	\caption{Stride size defines distance between two nearest windows of convolution.}
+	\label{fig:stride_demo}
+	\end{figure}
 \medskip
 
 The \textit{convolution operation} could be defined by obtaining a value of every element of the output image as a weighted sum of the values of input image elements of a region in vicinity of this output element.
@@ -153,19 +173,26 @@ In general form, we say that a \textit{convolution operation} on a $\mathrm{n}$â
 where every element of a resulting array is defined as a dot product of kernel and elements in a vicinity of corresponding element of the input.
 In total, we can write down the operation as:
 \begin{gather*}
-\mathbf{C} = \mathbf{A} \odot \mathbf{B} \quad , \mathrm{where} \quad \\ \mathbf{A} = (a_{i_{1},...,i_{n}}) \in \mathbb{R}^{N_{1} \, \mathrm{x}... \mathrm{x} \, N_{n}} , \, \mathbf{B} = (b_{k_{1},...,k_{n}}) \in \mathbb{R}^{K_{1} \, \mathrm{x}... \mathrm{x} \, K_{n}},
+\mathbf{C} = \mathbf{A} \ast \mathbf{B} \quad , \mathrm{where} \quad \\ \mathbf{A} = (a_{i_{1},...,i_{n}}) \in \mathbb{R}^{N_{1} \, \mathrm{x}... \mathrm{x} \, N_{n}} , \, \mathbf{B} = (b_{k_{1},...,k_{n}}) \in \mathbb{R}^{K_{1} \, \mathrm{x}... \mathrm{x} \, K_{n}},
 \mathbf{C} = (c_{j_{1},...,j_{n}}) \in \mathbb{R}^{(N_{1}-K_{1}) \mathrm{x}... \mathrm{x} (N_{n}-K_{n})} \\ \quad \mathrm{and}
 \quad c_{j_{1},...,j_{n}} = \sum_{i_{1}=1,...,i_{n}=1}^{K_{1},...,K_{n}} a_{j_{1}+i_{1}-\lfloor \frac{K_{i}}{2}\rfloor,...,j_{n}+i_{n}-\lfloor \frac{K_{n}}{2}\rfloor} \ast b_{i_{1},...,i_{n}}
 \end{gather*}
 
 For us, the input is used as a first operand and as second operand we use the array of weights.
 The second array is called \textit{filter} or \textit{kernel} and is typically a parameter that should be trained. 
+\begin{figure}
+	\centering
+	\includegraphics[width=0.7\linewidth]{images/cnn_dem_opration.pdf}
+	\caption{Convolutions with padding saves the size of the output}
+	\label{fig:convoper_demo}
+	\end{figure}
 \medskip
 
 The other important property of CNNs is \textit{parameter sharing}. 
 It lies in the fact, that the kernel, which apply for every local receptive field to get the next element of the output, is the same for the whole layer. 
 This property correspond to the nature of most of the images, which could be described as consisting of different features combined in larger entity.
-Finding recurring 
+In the process of optimization the optimal weights found describe these features that recur within the training data set and the intermediate output of layers after find the application of convolution show the representation of previous image in terms of these features.
+\todo{add example(edge kernel))}
 Furthermore, we have to train only the elements of the kernel that will be applied to every block of the pixels with some shift and the size of the kernel is usually much smaller than the size of the image.
 That means that parameter sharing drastically reduces the number of model's parameters compared to the fully connected networks and such operations are beneficial to the performance of the model's training.
 \medskip
@@ -177,12 +204,11 @@ Typically, average or max operations are used and the windows at which operation
 %slides so that there will be no overlaps between two neighboring windows, i.e. the stride of the slide is equal to the length of the kernel.
 This could be generalized with a convolution operation with a stride equal to the size of kernel, with the difference being that the elements of such kernel should also be trained.
 Hoverer, in many cases we could reduce the number of parameters to tain by fixing the weights of strided convolution kernel, for example the average pooling will be identical to te kernel values all equal to the inverse of number of its elements, without significant loss of accuracy. /ref{}
-\todo{add images}
-
 \medskip
 
 %The filters trained in such a layer could be understood as features. 
 %During the inference, the result of applying a convolutional operation to one of the channels denote a ...
+ 
 
 
 \subsection{Optimization}

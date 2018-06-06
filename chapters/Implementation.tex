@@ -6,7 +6,7 @@ In this chapter we will describe the implementation aspects of the work.
 Here description of the ANN architecture and its reasoning, the general pipeline of computations and data manipulations applied to set up the system creating data that helps the TO performance improvement and ways for the system analysis, as well as the software used for its creation.
 Also we will talk about the aspects of choosing and preparing data for model training, as well as data pre-processing and post-processing.
 \todo{what did I just write}
-
+\medskip
 
 
 The system was designed using the Tensorflow framework. 
@@ -15,14 +15,16 @@ It is build in form Python program calling to the Tensorflow Pyhon API.
 \todo{how to put it? description and name should be consistent everywhere}
 The main reason of the choice of the Tensorflow and python was the easy and fast way of building, modifying and understanding the code together with little overhead of
 creating a program that is runable using GPU. 
+\medskip
 
-In this section we describe the important implementation aspects including the technologies and techniques used, the structure of the code and the main functions logic.
+%In this section we describe the important implementation aspects including the technologies and techniques used, the structure of the code and the main functions logic.
 
 \subsection{Tensorflow}
 
-Tensorflow is an open source library for high performance numerical computation.\ref{tensorflow_main} 
+Tensorflow is an open source library under Apache $2.0$ license for high performance numerical computation.\ref{tensorflow_main} 
 It provides API for multiple languages, including Python and is easy to deploy on multiple platforms, including Nvidia GPUs.
 I was initially developed bu Google's AI Organization and primarily supports development of Machine Learning systems.
+\medskip
 
 Tensorflow requires a definition of the pipeline of data transformations in the code.
 This definition is made in functional manner using one of the high-level languages API and include various operations on numerical and other types of data, as well as easy means to update and optimize variable parameters using back propagation. 
@@ -33,38 +35,72 @@ The Tensorflow takes care about compiling the optimized code described using the
 Then user can run the defined operations for a concrete data using the mapping of the real input values with the input placeholders, the queue runners or iterators of some user predefined data set.
 In such manner is able to define loops in which parameters of the model are trained as well as to use model to infer results for certain input.
 Tensorflow allows saving trained model parameters in an easy way, which in the end allow to deploy the working model on a different model using only the script describing the pipeline and the file with model parameters values.
-The other benefit of the Tensorflow is \textit{Tensorboard} utility with a web0based interface which allows runtime observation over the system status with which user can observe current values of any variable, like intermediate result or objective function without almost any intrusion in the code.
+The other benefit of the Tensorflow is \textit{Tensorboard} utility with a web-based interface which allows runtime observation over the system status with which user can see current values of any variable, like the value of loss function or intermediate result without almost any intrusion in the code.
+\medskip
 
 Such design of the framework with API in multiple language together with intrinsic optimization for high performance at multiple platforms, as well as convenient tools for easy deployment and control over the system makes Tensorflow extremely usable for many scientific and industrial applications.
 
 
 \section{ANN Architecture}
 
+The CNN architecture we chosen to create the model describing the dependency between boundary conditions and the resulting material layout relates to tha class of \textiti{encoder-decoder} networks.
+This network the fits for the cases when input and outputs are of the same size and consists of two groups of data transformations: encoding and decoding.
+
+The former one, encoding, goal to find a representation of the input in from of prominent features.
+It consists of sequential application of  size-preserving convolutions and pooling convolutions with increasing amount of features. 
+After application of several blocks of such operation inputs transform from a large image with few channels into many-channel image of very small size, which we call a low-dimensional representation. 
+Im our case an image of $4$ channels transforms into $128$ different representations. 
+
+The latter one, decoding, consist of several blocks of operations of normal convolutions and \textit{deconvolutions} or \textit{transposed convolution}, which are, essentially, a linear interpolation of a previous lower-dimensional layer onto a higher resolution.
+\todo{image and formula} 
+In such way, we reconstruct the result, based of low-dimensional representation of inputs, using features found in the space of results.
+We also used representation of all dimensionality found before, adding additional layer after every Convolutional of the decoder.
+
+One of the tweaks we required to build a model for our case allowed the network having a scalar input as well.
+Since we want to enforce the output having the desired non-empty volume fraction, we used its value as input as well.
+We tiled a matrix of size of lowest-dimensional representation with values of volume fraction and added one more channel at the bottleneck of the network. 
+
+
 \subsection{Loss function}
 
 The optimization performed during training goals the minimization of the loss function...
 Thus one of the most important steps during design is defining a proper loss function which will precisely encapsulate our requirements on the results inferred by the model.
+\medskip
 
 Our idea of the result produced by the model is a bitmap describing material density layout being as close to the result of conventional TO process as possible.
 In this way we have to minimize the difference between the known optimized material design for given input and the result inferred as model.
 However, the difference between two arrays of values is conventionally is not easy to describe with a single scalar and typically the influence of a single element of that is low which makes would make the optimization process extremely slow.
+\medskip
 
 In order to tackle all these issues we formulate our problem as classification problem for every single element of the output channel for given input. 
-We treat our reference, ground truth, image of layout as a bitmap for which every element can belong to one of two classes, namely occupied by material ({1})  or not ({0}) for which we should threshold our results of known TO problems.
-In such formulation the goal of our system is to classify every element of output bitmap based on the inputs and give the confidence for the inferred classes.
-Thus for single input our model performs binary classification for multiple outputs.
-In this way by discretizing the problem we reduce the information flux over the model we significantly increase the speed of the model training.
+We treat our reference, ground truth, image of layout as a bitmap for which every element can belong to one of two classes, namely occupied by material ($1$)  or not ($0$) for which we should threshold our results of known TO problems.
+In such formulation, the goal of our system is to classify every element of output bitmap based on the inputs and give the confidence for the inferred classes.
+Thus, for a single input our model performs binary classification for multiple outputs.
+This means, that by discretizing the problem we reduce the information flux over the model we significantly increase the speed of the model training.
 \todo{generally written very uncertainly... plus good to compare training time for different losses}
+\medskip
 
-In thus way we define our loss function as sum over every output pixel of logits of binary cross-entropy between the output of the model and reference image.
+In this way, we define our loss function as sum over every output pixel of logits of binary cross-entropy between the output of the model and reference image.
 \todo{write formula! description is also so-so}
+The loss function term has the next form:
+\begin{equation}
+ L_{CE}(w|x, y, \hat{y}) = -\frac{1}{N} \sum_{y_{e}}|y=(y_{e})} [ y_{e} \log \hat{y_{e}} + (1-y_{e}) \log (1-\hat{y_{e}})] , \, \mathrm{where} \, \hat{y_{e}} = \frac{1}{1+e^{-x}} 
+\end{equation}
+\medskip
 
-
-Furthermore, in order to prevent over-fitting we incorporate an regularization term in form of a $L_{2}$ norm of all trained matrix parameters multiples by a small constant $\alpha_r{reg}$
-\todo{add formula! describe regularization? how details? or leave out?}
+Furthermore, in order to prevent over-fitting we incorporate an regularization term in form of a $L_{2}$ norm of all trained matrix parameters multiples by a small constant $\alpha_{reg}$
+\todo{add formula! describe regularization? how detailed or leave out?}
+\begin{equation}
+ 	L(w) = L_{CE} + \alpha_{reg} R_{L_{2}}, \, \mathrm{where} \, R_{L_{2}}(w) = \sum{i}^{} w_{i}  
+\end{equation}
+\medskip
 
 One of the clear requirements defined by the TO problem itself is the resulting layout having a fixed volume. 
 Since the closeness to the reference data does not implicitly put any restriction on these criteria, we decided to use several ways to facilitate the inferred layout having desired volume.
-One of the ways used in the system is additional an volume fraction penalty additional term to loss function.
-For this we calculate the volume of the inferred result as count of the pixels for which the probability to be full is higher than threshold, take an absolute difference with the volume stated for the reference problem and add to the loss function with some small multiplicative constant $\beta_{Vf}$
+One of the ways used in the system is adding a volume fraction penalty term to the loss function.
+For this, we calculate the volume of the inferred result as count of the pixels for which the probability to be full is higher than threshold, take an absolute difference with the volume stated for the reference problem and add to the loss function with some small multiplicative constant $\beta_{V_{f}}$.
 \todo{formula! more detail! general formula!}
+\begin{equation}
+	L(w) = L_{CE} + \alpha_{reg} R_{L_{2}} + \beta_{V_{f}}  L_{V_{f}} , \, \mathrm{where} \, L_{V_{f}} = |V_{f}(\hat{y}) - V_{f}^{\ast}|
+\end{equation}
+
