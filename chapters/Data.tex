@@ -6,10 +6,10 @@
 
 In this section we describe what are the data used to train and evaluate the inference system.
 We discus the parameters used to define the Topology Optimization problem and their variability and properties.
-The other aspect to be covered is the ways to representation these data in a way suitable for ANN system input.
+The other aspect to be covered is the ways to represent these data in a way suitable for ANN system input.
 Lastly, we discuss the aspects of choosing the proper training dataset for the inference system.
 
-\subsection{Cases}
+\subsection{Topology Optimization Problem Cases}
 
 The physical problem for which the Topology Optimization (TO) is performed is defined by the Boundary Conditions (BC) and the force applied to the element. 
 The former has a view of Dirichlet BC and define the parts of the element that experience no displacement and the latter is in general form a filed of forces applied to all the point of the element. 
@@ -19,16 +19,22 @@ Translated in the discretized form used in the Finite Element Analysis (FEA) per
 To obtain a set of TO results that could be used as training and testing samples for the Artificial Neural Network (ANN) we choose to perform TO for various combination of values of the boundary conditions and load cases.
 \medskip
 
+\subsubsection{2D Cases of Topology Optimization}
+
 As Boundary Condition we can choose to fix one of sides of the domain (one of four walls). 
-We can also choose to leave a ${1/3}$ of th side unfixed or fix only the extreme point of the wall. (Add picture of boundary conditions and add it as a caption)
+We can also choose to leave the inner $\frac{1}{3}$ of the side unfixed or fix only the extreme points of the wall. 
+\todo{(Add picture of boundary conditions and add it as a caption)}
 \medskip
 
 As a simple load case we consider only the situation where a force is applied to a single point of the element. 
-The variable parameterless are the coordinates of the force application (X, Y) and the direction of the force.
+The variable parameters are the coordinates of the force application (X, Y) and the direction of the force.
 We keep the magnitude of the force in every direction constant and choose one of the eighth possible directions: along one of the axis in one of the direction or a combination of those.
+The last parameter that defines the result of TO is the value of volume fraction occupied by the material, for which we choose $3$ values : $0.1, 0.2, 0.4$
 \medskip
 
-In the end we obtain number of possible input parameter equal: $4\,\mathrm{(fixed \, side)} \; \times \; 3\,\mathrm{(type \, of \, BC)} \\ \; \times \; 8\,\mathrm{(force \, direction)} \; \times \; 32\,\mathrm{(Y \, coordinate)} \; \times \; 16\,\mathrm{(X \, coordinate)}$
+In the end we obtain number of possible input parameter equal: $4\,\mathrm{(fixed \, side)} \; \times \; 3\,\mathrm{(type \, of \, BC)} \\ \; \times \; 3\,\mathrm{(value of Volume fraction)} \; \times \; 8\,\mathrm{(force \, direction)} \; \times \; 32\,\mathrm{(Y \, coordinate)} \; \times \; 16\,\mathrm{(X \, coordinate)} = 147446$
+
+\subsubsection{3D Case of Topology Optimization}
 
 
 \subsection{Dataset generation}
@@ -38,20 +44,24 @@ It minimizes compliance for 2D material layout under some load.
 The code uses square elements for finite element discretization and uses power-law model to represent the compliance as the goal function, as described in the introduction section.
 ...
 The code was modified in order to have several arbitrary points where the load is applied.
-A single TO problem is called by calling ... where the function the problem parameters are passed as parameters, such problem dimension, volume fraction, power penalty, convergence criterion, coordinated of force application points and force vector. 
+A solution of single TO problem is called by calling the function  , where all are passed as parameters, such problem dimension, volume fraction, power penalty, convergence criterion, coordinated of force application points and force vector. 
 The script saved the resulting material layout as a gray-scale PNG image where every pixel value denotes the virtual material density of corresponding square finite element.
-For the typical problem size of $ 32 x 32 $ single TO problem solution took on a ... CPU.
-Totally there were .. created
+For the typical problem size of $ 32 \times 32 $ single TO problem solution took on a ... CPU.
+Totally there were $~150$ thousands  created
 \todo{fill in reference, number, code etc.} 
 \medskip
 
-To generate results of compliance minimization for 3D models we used program IDeAs\ref{.} 
+
+To generate results of compliance minimization for 3D models we used program IDeAs\ref{.}.
+The program the parameters of the TO problem are defined in a JSON file, in which one should  state STP files describing geometrical domain, fixed regions for boundary conditions, and surfaces at which force is applied.
+The boundary condition type, force vector and volume fraction value are also sated, as well as parameters of physics, discretization and analyzes. 
+ 
 
 
 %The Boundary Coditions used during Topology Optimization as an input to the Finite Element Analysis constitute of the fixed degrees of freedom
 
 
-\subsection{Inputs}
+\subsection{Inputs of the ANN Model}
 
 In our case for every fixed domain we use every TO problem is defined by by boundary conditions, filed of applied forces and volume fraction occupied by material. 
 These are three parameters that vary from case to case of TO problem and others stay the same, thus the model should be able to infer proper layout using this varying information.
@@ -116,6 +126,19 @@ There are plenty of FMM implementations available, and we chose to use python pa
 
 In this way we have a fast and easy way to describe our input images having all the pixels populated with meaningful values.
 
+\subsection{Training Data Set}
+
+One of the main goals of the work was to estimate the fin out the capabilities of such approach to produce the model having high accruracy, , trained using as possibly small train data sets.
+For 3D case preparing every data sample was taking more than a second for a relatively coarse resolution, which means that preparing data set, together with training of the network, will diminish the speed up gained by applying the inference system.  
+\todo{get real performance}
+
+To define the influence of chosen trained dataset on the resulting model and its performance, we chosen several of those with different number of samples and with diffident distributions of parameters within. 
+One of the main questions was also how to chose the samples with respect the points where loads are applied for this case, so we created data sets each having different patterns for coordinate of force application point and trained models for those to see which one gives better model performance.
+Among the patterns we chosen the next ones: a regular grid, checkered pattern, a sparse grid and force applied at the edges.
+
+\todo{Add pictures of load layout}
+
+ 
  
 \subsection{Post-processing}
 
@@ -151,7 +174,7 @@ In result, the post-processing sequence consist of the next steps:
 \end{itemize}
 
 In case if the volume fraction of the result is larger that desired, which happened in practice most of the time, we try to reduce eliminate the elements that has the lowest probability to be occupied with material.
-For that, we represent the resulting image as sparse matrix in form of coordinate list\ref{}, meaning the that matrix is read as list of tuples $(\mathrm{row},\mathrm{column},\mathrm{value})$ and could be easily sorted by value and delete the lower value until we reach an volume fraction value close to the desired.
+For that, we represent the resulting image as sparse matrix in form of coordinate list\ref{}, meaning the that matrix is read as list of tuples $(\mathrm{row},\mathrm{column},\mathrm{value})$ and could be easily sorted by value and delete the lower value until we reach a volume fraction value close to the desired.
 
 
 \todo{explanation on operations}

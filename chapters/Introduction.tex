@@ -148,7 +148,7 @@ If it is important to have inputs and outputs of the layer of same size, it is p
 That means that for the output elements close to the edge we span the receptive field outside of the size of the input, using virtual input elements with value of $0$. 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.7\linewidth]{images/cnn_dem_gen3.pdf}
+	\includegraphics[width=0.7\linewidth]{images/cnn_dem_padding1.pdf}
 	\caption{Convolutions with padding saves the size of the output}
 	\label{fig:padding_demo}
 \end{figure}
@@ -245,7 +245,7 @@ Besides being much faster, this simplification shows good convergence and is ver
 		\includegraphics[width=\linewidth]{images/parabolic_3d.pdf}\par
 		\includegraphics[width=\linewidth]{images/nonconvex_3d.pdf}\par
 	\end{multicols}
-	\caption{Loss function forms}
+	\caption{Loss function forms. Left one is a convexandhas a single extremum. Right one is non-convex is ill-posed for Gradient Descend. }
 	\label{fig:lossfunc_demo}
 \end{figure*}
 	
