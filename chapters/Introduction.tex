@@ -10,7 +10,7 @@ Finally, together with the explanation of Topology Optimization method, we give 
 
 \section{Motivation}
 
-	Topology Optimization stay an essentially computationally complex problem...
+Topology Optimization stay an essentially computationally complex problem...
 \todo{find complexity of TO}
 \todo{find real numbers on performance of TO, with hardware}
 \medskip
@@ -64,7 +64,7 @@ Various techniques allow finding optimal layouts of the element within the mater
 
 \medskip
 One of the approaches used for TO is Solid Isotropic Microstructure with Penalization (SIMP).
-This method uses the idea of "artificial density"\ref{} where for every hexahedral element of discretized model some density variable $\rho$ is assigned.
+This method uses the idea of ``artificial density''\cite{to_simp} where for every hexahedral element of discretized model some density variable $\rho$ is assigned.
 The density plays the role of design variables in the optimization process and used to present the goal function as a weighted sum of element-wise compliance.
 This approach has both well-established theoretical and empirical base and easy to implement and interpret.
 In the end, the TO problem within SIMP approach is formulated as follows:
@@ -83,7 +83,7 @@ The element stiffness matrix is denoted as $\mathbf{K}_{e}(\rho)$ and displaceme
 Apart from the constraints on the volume fraction and the range o density values, the displacement vector used to calculate the objective function has to be physically correct, which means that one every iteration of the optimization process a Finite Element Analysis (FEM) problem should be solved to find $\mathbf{u}$ and this step is the most computationally expensive in the whole TO process.
 \medskip
 
-In order to update the density values on every iteration of the optimization process, the Optimality Criteria method is used \ref{}.
+In order to update the density values on every iteration of the optimization process, the Optimality Criteria method is used \cite{to_simp, to_99line}.
 The update rule read as following:
 \todo{formulation}
 \[ \rho^{new}_{e} = 
@@ -118,14 +118,13 @@ The total optimization process could be visually described with \ref{fig:to_flow
 
 
 
-
 \section{Convolutional Neural Networks}
 
 
 Machine Learning approaches goal is to find a model that would interpolate some specific dependency of a nature, that could not be modeled explicitly, between based on the inputs and outputs(labels) samples present in the training data set.
 \textit{Artificial Neural Network (ANN)} is a type of Machine Learning model for which a dependency sought is expressed as a composition of multiple operations, called \textit{layers} each having a number of parameters which values are find in the process of training.
 Domains of these operations, as well as intermediate results images and generally the data with which an ANN model operates, are mostly spaces of matrices tensors over the real numbers field, and the results of the layer operations could be presented element-wisely, as a dependency of elements of input.
-Such as element of intermediate result, together with the element-wise operation, is called a \textit{neuron}, after a biological neuron of a brain that is able to generate electrical impulse based on signals received from several other neurons, and such analogy historically inspired development of Artificial Neural Network approach by Frank Rosenblatt.\ref{}
+Such as element of intermediate result, together with the element-wise operation, is called a \textit{neuron}, after a biological neuron of a brain that is able to generate electrical impulse based on signals received from several other neurons, and such analogy historically inspired development of Artificial Neural Network approach by Frank Rosenblatt\cite{}.
 The output of the neuron $y_{j}$ that takes input from $n$ neurons $x_{i=1,..,n}$ with weights $w_{i=1,..,n}$ and some activation function $\mathrm{f}$ is defined as $ y_{j}=\mathrm{f}(\sum_{i=1}^{n} x_{i}w_{i})$
 \medskip
 \todo{add examples of single FCL neuron? }
@@ -180,12 +179,13 @@ In total, we can write down the operation as:
 
 For us, the input is used as a first operand and as second operand we use the array of weights.
 The second array is called \textit{filter} or \textit{kernel} and is typically a parameter that should be trained. 
+\medskip
 \begin{figure}
 	\centering
-	\includegraphics[width=0.7\linewidth]{images/cnn_dem_opration.pdf}
-	\caption{Convolutions with padding saves the size of the output}
+	\includegraphics[width=0.7\linewidth]{images/cnn_dem_opration2.pdf}
+	\caption{A vizualization of a convolution operation.}
 	\label{fig:convoper_demo}
-	\end{figure}
+\end{figure}
 \medskip
 
 The other important property of CNNs is \textit{parameter sharing}. 
@@ -203,7 +203,7 @@ This reduces the size of the image at the next layer and building a representati
 Typically, average or max operations are used and the windows at which operation is applied do not overlap.
 %slides so that there will be no overlaps between two neighboring windows, i.e. the stride of the slide is equal to the length of the kernel.
 This could be generalized with a convolution operation with a stride equal to the size of kernel, with the difference being that the elements of such kernel should also be trained.
-Hoverer, in many cases we could reduce the number of parameters to tain by fixing the weights of strided convolution kernel, for example the average pooling will be identical to te kernel values all equal to the inverse of number of its elements, without significant loss of accuracy. /ref{}
+Hoverer, in many cases we could reduce the number of parameters to tain by fixing the weights of strided convolution kernel, for example the average pooling will be identical to te kernel values all equal to the inverse of number of its elements, without significant loss of accuracy\cite{}.
 \medskip
 
 %The filters trained in such a layer could be understood as features. 
@@ -238,7 +238,7 @@ The classical gradient descend assumes that we could easily estimate the gradien
 However, in case of machine learning, the gradient value would depend on multiple values for different inputs.
 Essentially, in full form, to find a single value for a fixed set of parameters, it would require calculating and averaging gradient found for every sample in data set, which is practically infeasible.
 To avoid that, the \textit{Stochastic Gradient Descent} is used, for which we use one or only a few samples, called a \textit{minibatch}, chosen randomly to calculate the gradient.
-Besides being much faster, this simplification shows good convergence and is very popular as an NN optimizer.\ref{}
+Besides being much faster, this simplification shows good convergence and is very popular as an NN optimizer\cite{}.
 
 \begin{figure*}
 	\begin{multicols}{2}
@@ -303,8 +303,7 @@ Having the total transformation and applying the chain rule, we can easily expre
 
 \medskip
 In its turn, the process of plugging the values on every iteration of optimization in order to find loss function gradient value and update the parameters is called \textit{backward propagation} o \textit{backpropagation}.
-It is an essential principle of ANNs and many modern software frameworks offer mean for automatic differentiation and back propagation allowing easy model set-up and good performance of its training. \ref{} 
-
+It is an essential principle of ANNs and many modern software frameworks offer mean for automatic differentiation and back propagation allowing easy model set-up and good performance of its training\cite{}.
 
 
 \subsection{Activation Function}
@@ -348,14 +347,24 @@ This type of activation function, shown in \ref{fig:act_func} is called parametr
 \end{cases}
 \]
 
+One of the further notifications is a \textit{Exponential Rectifier}.
+Like the ReLU family activation function it avoids gradient vanishing, is enhances normalization and shows a speed up for training\cite{bibl:elu}, however is slightly slower during propagation. 
+\[ f_{PReLU}(x) = 
+\begin{cases}
+x \, :x<0 \\
+a(e^{x}-1) \, : x \geq 0
+\end{cases}
+\]
+
 \begin{figure}[]
 	\centering
-	\includegraphics[width=0.4\linewidth]{images/activfunc.pdf}
-	\caption{Comparison of the different activation functions. Blue is $\mathrm{sigmoid}$, red is $\mathrm{tanh}$ and yellow is $\mathrm{PReLU}$.}
+	\includegraphics[width=0.7\linewidth]{images/activfunc_3.pdf}
+	\caption{Comparison of the different activation functions. Blue is $\mathrm{sigmoid}$, red is $\mathrm{tanh}$, yellow is $\mathrm{PReLU}$ and purple is $\mathrm{ELU}$.}
 	\label{fig:act_func}
 \end{figure}
 
 \todo{revisit, finish up}
+\todo{actually, a definition of channel should be given as well}
 
 \subsection{Regularization}
 

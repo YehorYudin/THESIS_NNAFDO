@@ -3,7 +3,7 @@
 \chapter{Results}
 \label{chapter:Results}
 
-In this chapter we will describe the experiments on model training, both for 2d and 3D domains, and results of their evaluation.
+In this chapter we will describe the experiments on model training, both for 2D and 3D domains, and results of their evaluation.
 We analyze the dependency of the model performance based on the data set properties, as well as ability to interpolate results for different variable parameters, and ways to prepare the model with the best performance based on several criteria. 
 The model is evaluated with respect to the accuracy of its results as well as  its ability to improve the Topology Optimization process is analyzed.
 
@@ -18,10 +18,11 @@ For a 2D case we could generate prepare large training dataset with more variabl
 The dimensionality of the data also influenced the number of model parameters, which means that training a single model took much less time and it was possible to introduce changes or fine-tune the model.
 \todo{move to approach or data?}
 
+
 \subsection{Evaluation Means}
 
 The evaluation metrics chosen was an average Mean Squared Error (MSE) between the inferred and ground/truth materials layout in form of bitmaps, take and averaged for the testing dataset. 
-As a testing dataset, apart from several separately designated cases, we chose pairs of (initial conditions - material layout) for every single possible load possible and with other parameters varying in the same way as on training data set.
+As a testing dataset, apart from several separately designated cases, we chose pairs of (initial conditions -- material layout) for every single load possible and with other parameters varying in the same way as on training data set.
 The variance of MSE was also analyzed to estimate the level of generality of the model.
 
 Separate cases were analyzed visually to define the issues of the model more precisely.
@@ -37,11 +38,21 @@ This allowed to see how material layout obtained both by TO and by inference cha
 \begin{figure}[]
 	\centering
 	\includegraphics[width=1.0\linewidth]{images/heapmaps_web_ex2.pdf}
-	\caption{A framework for result evaluation. Here accuracy heatmaps are shown for different BC (rows, BC shape indicated on the left) and forces direction (lines, directions indicated on the bottom) for a model trained fro 25k steps on a set with 3 different BC, constant volume fraction of $0.2$, and for forces applied as indicated int upper left heat map with yellow. Here we can see every case for which accuracy is unsatisfactory (light shades of heatmap). We chosen to demonstrate difference between ground-truth and infered result for a cse of BC of corne points, and a force $(1.0,0.0)$ applied at $(23.0,31.0)$ }
+	\caption{A framework for result evaluation. Here accuracy heatmaps are shown for different BC (rows, BC shape indicated on the left) and forces direction (lines, directions indicated on the bottom) for a model trained for 25k steps on a set with 3 different BC, constant volume fraction of $0.2$, and for forces applied as indicated int upper left heat map with yellow. Here we can see every case for which accuracy is unsatisfactory (light shades of heatmap). We chosen to demonstrate difference between ground-truth and infered result for a cse of BC of corne points, and a force $(1.0,0.0)$ applied at $(23.0,31.0)$ }
 	\label{fig:to_flow}
 \end{figure}
 
 We also chosen to analyze dependency of mean and variance of MSE for different training datasets as well as depending on the training steps to enhance early stopping and choose the best model.
+
+\subsection{Evaluation}
+
+The results of the model evaluation, including the hyperparameter optimization,  shows next tendencies. 
+
+Initial results
+Test on Vf intepolation...
+Test on resolution interpolation
+Dependency on the training set size 
+Best chosen model and numbers
 
 \section{Results for 3D case}
 
@@ -51,12 +62,18 @@ The MSE variance was also used to estimate generality as well as accuracy heatma
 
 However, as the main parameters we took the influence of the inferred result on the conventional Topology Optimization process, performed by IDeAs.
 The first one way is comparing total time required need to perform TO. 
-In case of vanila value it is time average time of a single IDeAs run for fixed domain size, and in case of our method it is average time for result inference by ANN system and average IDeAs time after the initialization with inferred results. For these purposes we had to introduce changes in IDeAs implementation, adding means to state initial VTK file describing material layout and to initialize the data structures describing initial material densities with value read from the VTK.
+In case of vanilla value it is time average time of a single IDeAs run for fixed domain size, and in case of our method it is average time for result inference by ANN system and average IDeAs time after the initialization with inferred results. For these purposes we had to introduce changes in IDeAs implementation, adding means to state initial VTK file describing material layout and to initialize the data structures describing initial material densities with value read from the VTK.
 \todo{numbers, numbers...}
 
 As a different estimation of improvement we measured how much the inferred result describe a bounding region of the ground-truth field after slight increase of the volume with dilation.
 This estimation was done if terms of amount of probability of voxel not to be covered by bounding region and decrease in the number of elements of problem  after we found new domain. 
 \todo{is is not done at all!!!!!!!}
+
+\subsection{Evaluation}
+
+After the process, similiar to the 2D case, the bests model of ...
+chose the MSE of ...
+Typical results ...
  
 
 

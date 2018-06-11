@@ -39,7 +39,7 @@ In the end we obtain number of possible input parameter equal: $4\,\mathrm{(fixe
 
 \subsection{Dataset generation}
 
-For the purpose of generating dataset of known solved TO problems, in this work we used the MATLAB code provided in the paper "A 99 line topology optimization code written in Matlab"\ref{}.
+For the purpose of generating dataset of known solved TO problems, in this work we used the MATLAB code provided in the paper "A 99 line topology optimization code written in Matlab"\cite{to_99line}.
 It minimizes compliance for 2D material layout under some load.
 The code uses square elements for finite element discretization and uses power-law model to represent the compliance as the goal function, as described in the introduction section.
 ...
@@ -52,7 +52,7 @@ Totally there were $~150$ thousands  created
 \medskip
 
 
-To generate results of compliance minimization for 3D models we used program IDeAs\ref{.}.
+To generate results of compliance minimization for 3D models we used program IDeAs\cite{.}.
 The program the parameters of the TO problem are defined in a JSON file, in which one should  state STP files describing geometrical domain, fixed regions for boundary conditions, and surfaces at which force is applied.
 The boundary condition type, force vector and volume fraction value are also sated, as well as parameters of physics, discretization and analyzes. 
  
