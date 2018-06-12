@@ -1,7 +1,5 @@
 % !TEX root = ../main.tex
 
-
-
 \section{Data Preparation}
 
 In this section we describe what are the data used to train and evaluate the inference system.
@@ -32,9 +30,17 @@ We keep the magnitude of the force in every direction constant and choose one of
 The last parameter that defines the result of TO is the value of volume fraction occupied by the material, for which we choose $3$ values : $0.1, 0.2, 0.4$
 \medskip
 
-In the end we obtain number of possible input parameter equal: $4\,\mathrm{(fixed \, side)} \; \times \; 3\,\mathrm{(type \, of \, BC)} \\ \; \times \; 3\,\mathrm{(value of Volume fraction)} \; \times \; 8\,\mathrm{(force \, direction)} \; \times \; 32\,\mathrm{(Y \, coordinate)} \; \times \; 16\,\mathrm{(X \, coordinate)} = 147446$
+In the end we obtain number of possible input sample equal to $4\,\mathrm{(fixed \, side)} \; \times \; 3\,\mathrm{(type \, of \, BC)} \\ \; \times \; 3\,\mathrm{(value \; of \; Volume \; fraction)} \; \times \; 8\,\mathrm{(force \, direction)} \; \times \; 32\,\mathrm{(Y \, coordinate)} \; \times \; 16\,\mathrm{(X \, coordinate)} = 147446$ bitmaps.
 
 \subsubsection{3D Case of Topology Optimization}
+
+For the second series of experiments we required 3D models of optimized elements.
+Because of the larger design space, and larger problem size, which lead to much larger time spent to obtain a single result, we decided to restrict data variability.
+For the 3D case we left only a single volume fraction value equal to $0.2$, as well as single Boundary Condition case when there are four corner elements of the $ X=0 $ edge of domain are fixed.
+The problem domain we considered has size of $32 \times 32 \times 32$ hexahidral elements, and we performed TO for cases when a force was applied for a single element. 
+We generated TO results not for every  possible point of load application, but took point with step of 4 in every dimension in the furthermost half of the domain in $Y$ direction. 
+For every point of load application we considered forces of magnitude $1$ directed to each face of the hexagedral element, as well as towards each vertex, which corresponds to $D3Q15$ model of hexahidral directions. \todo{maybe unsuitable}
+In total, for the entire dataset we generated $ 14\,\mathrm{(force \, direction)} \; \times \; 5\,\mathrm{(Y \, coordinate)} \; \times \; 9\,\mathrm{(X \, coordinate)} times \; 9\,\mathrm{(Y \, coordinate)} = 5670 $ models.
 
 
 \subsection{Dataset generation}
@@ -42,7 +48,8 @@ In the end we obtain number of possible input parameter equal: $4\,\mathrm{(fixe
 For the purpose of generating dataset of known solved TO problems, in this work we used the MATLAB code provided in the paper "A 99 line topology optimization code written in Matlab"\cite{to_99line}.
 It minimizes compliance for 2D material layout under some load.
 The code uses square elements for finite element discretization and uses power-law model to represent the compliance as the goal function, as described in the introduction section.
-...
+\medskip
+
 The code was modified in order to have several arbitrary points where the load is applied.
 A solution of single TO problem is called by calling the function  , where all are passed as parameters, such problem dimension, volume fraction, power penalty, convergence criterion, coordinated of force application points and force vector. 
 The script saved the resulting material layout as a gray-scale PNG image where every pixel value denotes the virtual material density of corresponding square finite element.
@@ -51,14 +58,14 @@ Totally there were $~150$ thousands  created
 \todo{fill in reference, number, code etc.} 
 \medskip
 
-
-To generate results of compliance minimization for 3D models we used program IDeAs\cite{.}.
+To generate results of compliance minimization for 3D models we used a program IDeAs\cite{.}, created a Siemens CT.
 The program the parameters of the TO problem are defined in a JSON file, in which one should  state STP files describing geometrical domain, fixed regions for boundary conditions, and surfaces at which force is applied.
-The boundary condition type, force vector and volume fraction value are also sated, as well as parameters of physics, discretization and analyzes. 
+The boundary condition type, force vector and volume fraction value are also stated, as well as parameters of physics, discretization and analyzes. 
+
+Run with $32$ threads on a single Nvidia GeForce 1080 GTX GPU we generated $~5$ thousands of $32 \times 32 \times 32$ voxels model of result models, witch took .. seconds.
  
 
-
-%The Boundary Coditions used during Topology Optimization as an input to the Finite Element Analysis constitute of the fixed degrees of freedom
+% The Boundary Coditions used during Topology Optimization as an input to the Finite Element Analysis constitute of the fixed degrees of freedom
 
 
 \subsection{Inputs of the ANN Model}
@@ -71,18 +78,18 @@ One of issues during the design of the model was how the model should account th
 Boundary condition is defined by a geometrical locus on the domain for which values of some function is predefined, in our case it means the displacement vector for these points is equal to zero. 
 After the discretization it is expressed in having some degrees of freedom fixed. 
 %Essentially that means that for some of the geometrical elements the component in the displacement vector should be always put to zero which is reflected in the from of the right hand side 
-Since our domain has a correspondence with a bitmap where every element of the TO problem maps to an element of an array we represent boundary conditions with an array where elements with indices equal to coordinates of fixed element has vale of {1} and {0} for everything else.
+Since our domain has a correspondence with a bitmap where every element of the TO problem maps to an element of an array we represent boundary conditions with an array where elements with indices equal to coordinates of fixed element has vale of $1$ and $0$ for everything else.
 \medskip
 
 In similar manner we represent the force field applied to the element.
 %Generally we have only a few points at which forces are applied, which after discretization will be reflected in a few elements for which there will be values filled in teh right hand side.
-We have two different bitmaps for {X} and {Y} components of the force or every point at which force is applied we fill the array element with the {+1} or {-1} value depending on the force direction, leaving everything else {0}.
+We have two different bitmaps for $X$ and $Y$ components of the force or every point at which force is applied we fill the array element with the $+1$ or $-1$ value depending on the force direction, leaving everything else $0$.
 \medskip
 
 The Volume Fraction is essentially a scalar value and it is accounted in the system by introducing a new channel tiled with a single value at the layer of the representation in the lowest dimensionality as described in the ``Architecture'' section.
 \medskip
 
-The bitmap of boundaries, force in X direction and force in Y direction form the three input channels of the model over which the convolutions are applied.
+The bitmap of boundaries, force in $X$ direction and force in $Y$ direction form the three input channels of the model over which the convolutions are applied.
 \medskip
 
 The one problem with such representation of BC and force fields that there are only a few non-zero elements in the channel that leads very little information influx in the model and makes it virtually impossible to train the model.
@@ -128,7 +135,7 @@ In this way we have a fast and easy way to describe our input images having all 
 
 \subsection{Training Data Set}
 
-One of the main goals of the work was to estimate the fin out the capabilities of such approach to produce the model having high accruracy, , trained using as possibly small train data sets.
+One of the main goals of the work was to estimate the capabilities of such approach to produce the model having high accuracy, trained using as small train data sets as possible.
 For 3D case preparing every data sample was taking more than a second for a relatively coarse resolution, which means that preparing data set, together with training of the network, will diminish the speed up gained by applying the inference system.  
 \todo{get real performance}
 
@@ -176,8 +183,10 @@ In result, the post-processing sequence consist of the next steps:
 In case if the volume fraction of the result is larger that desired, which happened in practice most of the time, we try to reduce eliminate the elements that has the lowest probability to be occupied with material.
 For that, we represent the resulting image as sparse matrix in form of coordinate list\ref{}, meaning the that matrix is read as list of tuples $(\mathrm{row},\mathrm{column},\mathrm{value})$ and could be easily sorted by value and delete the lower value until we reach a volume fraction value close to the desired.
 
+In total, using this approaches we were able to bring the resulting model to a more physically feasible shape and to ensure that its volume has desired value.
 
-\todo{explanation on operations}
+
+\todo{explanation on operations, a pseudocode}
 
 \todo{image before, image after}
  

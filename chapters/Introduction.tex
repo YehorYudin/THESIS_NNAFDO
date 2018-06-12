@@ -3,49 +3,51 @@
 \chapter{Introduction}
 \label{chapter:Introduction}
 
-In this chapter we give describe the principles and application scopes of Topology Optimization algorithm and explain the performance challenges of this method.
+In this chapter, we describe principles and the application scope of Topology Optimization algorithm and explain the performance challenges of this method.
 We present an approach to improve the performance of the method based on Artificial Neural Network, justify the applicability and novelty of such approach and show ways it may help to improve the performance of Topology Optimization. 
-Finally, together with the explanation of Topology Optimization method, we give a description of Convolutional Neural Networks, its principles and all its components.
+Finally, together with the explanation of Topology Optimization method, we give a description of Convolutional Neural Networks, their principles, and all their components.
 
 
 \section{Motivation}
 
-Topology Optimization stay an essentially computationally complex problem...
+Topology Optimization (TO) is a mathematical method to optimize material layout within a given design space for given set of constrains, including loads, boundary condition etc. in order to maximize performance of the system.
+It is used for manufacturing in areas where usage of material or weight of elements is crucial, for instance,  in aerospace engineering\cite{}.
+Topology Optimization is an essentially computationally complex problem and various approaches to improve its performance are being researched.
 \todo{find complexity of TO}
 \todo{find real numbers on performance of TO, with hardware}
 \medskip
 
-The optimization is made in iterations for each of which the Finite Element Analysis is performed in order to assure that the result is correct and corresponds the physics of the problem as well as functional gradient are possible to derive.
-This step is the most expensive step of all and can be internally optimized to increase the speed of computation but the other aspect of performance tuning is reducing the amount of optimization iterations made.
-The convergence speed of the optimization is scarcely studied and is mostly analyzed in empirical ways...
+The optimization is proceeded in iterations, for each of which the Finite Element Analysis is performed in order to assure that the result is correct and corresponds the physics of the problem, as well as it is possible to derive the functional gradient.
+This step is the most expensive step of all and can be internally optimized to increase the speed of computation but the other aspect of performance tuning is reducing the number of optimization iterations made.
+The convergence speed of the optimization is scarcely studied and is mostly analyzed in empirical ways.
 \todo{convergence of TO}
 \medskip
 
 One of the ways to speed up the optimization process reducing the number of iterations is to start optimization with a certain educated guess of the material layout instead of the typical way, which is initializing the whole domain covered with the material.
 
 \medskip
-In the ideal case the TO problem material layout could be initialized with an approximate solution which will require only a couple iterations to converge under the chosen criteria, in this way eliminating multiple initial steps of analysis.
-The first step of the optimization typically change the layout drastically and result into a very coarse solution with significant decrease of the objective function, but the value still stays much higher than for the desired outcome. 
+In the ideal case, the TO problem material layout could be initialized with an approximate solution which will require only a couple iterations to converge under the chosen criteria, in this way eliminating multiple initial steps of analysis.
+The first step of the optimization typically change the layout drastically and result into a very coarse solution with a significant decrease of the objective function, but the value still stays much higher than for the desired outcome. 
 \medskip
 
-Furthermore, such approach allows to reduce the computational domain of the problem by leaving out elements for which we know in advance that the material will not be present there. 
+Furthermore, such approach allows reducing the computational domain of the problem by leaving out elements for which we know in advance that the material will not be present there. 
 \medskip
 \todo{revise motivation}
 
-This initial steps could be made by an algorithm which much less computationally expensive than the Topology Optimization and will not reduce time spent on FEM analysis. 
-Despite TO results being possible only to heuristically predicted, there exist some tendencies in the dependence between the Boundary Conditions and the forced applied to the element. 
+These initial steps could be made by an algorithm which is much less computationally expensive than the Topology Optimization and will not reduce time spent on FEM analysis. 
+Despite TO results being possible only to predict heuristically, there exist some tendencies in the dependence between the Boundary Conditions and forces applied to the element. 
 \medskip
 
-As one of the possible solutions for finding approximations of the TO outcome we propose using Artificial Neural Network (ANN) approach.
-The idea behind it is build Machine Learning (ML) system able to infer a coarse result of a TO process based on the initial inputs for it.
+As one of the possible solutions for finding approximations of the TO outcome, we propose using Artificial Neural Network (ANN) approach.
+The idea behind it is to build Machine Learning (ML) system able to infer a coarse result of a TO process based on the initial inputs for it.
 The ML model has a form of ANN with parameters trained on a dataset which consists of the known cases of Topology Optimization problem, with inputs being pre-processed inputs of Topology Optimization and outputs being the outcome of TO, namely the final material layout design.
 \medskip
 
-In this work, we propose a design of an ANN system for fast inference of approximate optimal material layout for elements with constrained volume under stress based on initial conditions, constrains and parameters of the problem. 
-We propose the architecture of the problem, analyze the influence of dataset parameters and its' representation on the quality of the prediction on the quality of inference results as well as the general capacity of the system to improve performance of Topology Optimization process.  
+In this work, we propose a design of an ANN system for fast inference of approximate optimal material layout for elements with constrained volume under stress based on initial conditions, constraints, and parameters of the problem. 
+We present the architecture of the problem, analyze the influence of dataset parameters and its' representation on the quality of the prediction on the quality of inference results as well as the general capacity of the system to improve the performance of Topology Optimization process.  
 \medskip
 
-Unlike many of the Deep Learning applications the training dataset is principle hard to obtain, since every sample would be a pair of some initial conditional and the material layout, which is a result of an expensive TO process. 
+Unlike many of the Deep Learning applications, the training dataset is principle hard to obtain, since every sample would be a pair of some initial conditional and the material layout, which is a result of an expensive TO process. 
 One of the most important question in the work is the trade-off between the size and properties of the training dataset and the quality of the inferred result with respect to their accuracy and suitability for the initial layout for TO.
 \todo{improve texting}
 \todo{reduce vain stuff and increase size of the text}
@@ -64,9 +66,9 @@ Various techniques allow finding optimal layouts of the element within the mater
 
 \medskip
 One of the approaches used for TO is Solid Isotropic Microstructure with Penalization (SIMP).
-This method uses the idea of ``artificial density''\cite{to_simp} where for every hexahedral element of discretized model some density variable $\rho$ is assigned.
+This method uses the idea of ``artificial density''\cite{to_simp}, where for every hexahedral element of discretized model a value of density variable $\rho$ is assigned.
 The density plays the role of design variables in the optimization process and used to present the goal function as a weighted sum of element-wise compliance.
-This approach has both well-established theoretical and empirical base and easy to implement and interpret.
+This approach has both well-established theoretical and empirical base and is easy to implement and interpret.
 In the end, the TO problem within SIMP approach is formulated as follows:
 \todo{revise formulation} 
 %\begin{equation}
@@ -80,7 +82,7 @@ In the end, the TO problem within SIMP approach is formulated as follows:
 
 In other words, our goal is to minimize compliance function $c(\rho)$ subjected to the constraint of volume fraction $\alpha = \frac{V(\rho)}{V_{0}}$, where $V(\rho)$ is volume occupied by the material and $ V_{0} $ is total volume of the design domain.
 The element stiffness matrix is denoted as $\mathbf{K}_{e}(\rho)$ and displacement and force vector are respectively $\mathbf{u}$ and $\mathbf{f}$.
-Apart from the constraints on the volume fraction and the range o density values, the displacement vector used to calculate the objective function has to be physically correct, which means that one every iteration of the optimization process a Finite Element Analysis (FEM) problem should be solved to find $\mathbf{u}$ and this step is the most computationally expensive in the whole TO process.
+Apart from the constraints on the volume fraction and the range of density values, the displacement vector, used to calculate the objective function, has to be physically correct, which means that one every iteration of the optimization process a Finite Element Analysis (FEM) problem should be solved to find $\mathbf{u}$ and this step is the most computationally expensive in the whole TO process.
 \medskip
 
 In order to update the density values on every iteration of the optimization process, the Optimality Criteria method is used \cite{to_simp, to_99line}.

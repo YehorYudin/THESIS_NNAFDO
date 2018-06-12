@@ -13,6 +13,7 @@ The system was designed using the Tensorflow framework.
 \todo{should it be a library?}
 It is build in form Python program calling to the Tensorflow Pyhon API.
 \todo{how to put it? description and name should be consistent everywhere}
+We used the 1.8 API version of Tensorflow run on GPU using CUDA 9.0 and CuDNN 7.0.
 The main reason of the choice of the Tensorflow and python was the easy and fast way of building, modifying and understanding the code together with little overhead of
 creating a program that is runable using GPU. 
 \medskip
@@ -165,7 +166,7 @@ In this way, we define our loss function as a sum over every output pixel of log
 \todo{ add a cite ,description is also so-so}
 The loss function term has the next form:
 \begin{equation}
- L_{CE}(w|x, y, \hat{y}) = -\frac{1}{N} \sum_{y_{e}|y=(y_{e})}^{} [ y_{e} \log \hat{y_{e}} + (1-y_{e}) \log (1-\hat{y_{e}})] , \, \mathrm{where} \, \hat{y_{e}} = \frac{1}{1+e^{-\hat{y_{e}^{out}}}}
+ L_{CE}(w|x, y, \hat{y}) = -\frac{1}{N} \sum_{y_{e}|y=(y_{e})}^{} [ y_{e} \log \hat{y_{e}} + (1-y_{e}) \log (1-\hat{y_{e}})] , \, \mathrm{where} \, \hat{y_{e}} = \frac{1}{1+e^{-\hat{y}^{out}_{e}}}
 \end{equation}
 \medskip
 
