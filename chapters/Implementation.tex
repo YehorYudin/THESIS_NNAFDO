@@ -215,22 +215,60 @@ We chosen key values of the hyperparameters, trained model for cases when the hy
 
 \subsection{Training Script}
 
-In the end, the implementation of software system the system, that is able to take various known cases of TO problem solutions, train the best CNN inference model, and create approximate solutions for new TO problems, had the next view.
+In the end, the implementation of software system the system, that is able to take various known cases of TO problem solutions, train the best CNN inference model, and create approximate solutions for new TO problems, had the view as in \ref{alg:general_1}.
 
-Data preprocessing...
-Dataset preparation...
-Training...
-Evaluation...
-Inference...
+\begin{algorithm}
+\caption{The work flow for a single experiment on CNN performance}\label{alg:general_1}
+\begin{algorithmic}[1]
+	\State \textbf{Prepare data} 
+	\State Generate Data
+	\State Create samples and Parse case names
+	\ForAll{Sample} 
+		\State Augment Data
+		\State Create Initial Condition models for inputs
+		\State Preprocess Inputs: Create SDFs
+		\State Combine Inputs
+	\EndFor
+	\State Form Training Datasets and Evaluation Dataset
+	\State \textbf{Train Models}
+	\ForAll{Hyperparameters values (Training Data Set, Number of training steps)}
+		\State Load Inputs or Create Running Queue
+		\State Set up Architecture and Loss function 
+		\While{Current number of training iterations not exceeded}
+			\State Propagate input forward and infer a result
+			\State Find the loss function value and propagate backwards
+			\State Update parameter values
+		\EndWhile
+		\State Save the parameter value checkpoint
+	\EndFor
+	\ForAll{Every model checkpoint}
+		\State Load Evaluation Dataset
+		\State Set up the Architecture
+		\ForAll{Evaluation Samples}
+			\State Infer results and find loss function
+			\State Record data for further evaluation e.g. MSE and resulting model
+		\EndFor
+		\State Find evaluation measures value, e.g. ($\mathrm{MSE_{avg}}$) and heatmap
+	\EndFor
+	\State Choose the best performing model	
+	\State Use the model to generate results for test set
+	\ForAll{chosen test subset results}
+		\State Post-process: Smooth and reach volume
+		\State Initialize the TO model
+		\State Evaluate the problem size and time to Optimize
+	\EndFor
+	
+\end{algorithmic} 	
+\end{algorithm}
 \todo{either list or pseudo code}
 
-After we obtained differetn datasets in a proper format, we can start training ANN models.
+After we obtained different datasets in a proper format, we can start training ANN models.
 
-The process of training the model could be descibed as an algorithm in the next way.
+The process of training the model could be described as an algorithm in the next way.
 \todo{add a psedo code.}
 
 
 After that, we evaluate the created models and obtain the MSE measures.
 \todo{pseudocode}
 
-We chose the best model based on this parameter and , in our case, use it to infer results that will be used as an input for the IDeAs in order to evaluate how we can speed up th TO solution. 
+We chose the best model based on this parameter and , in our case, use it to infer results that will be used as an input for the IDeAs in order to evaluate how we can speed up the TO solution. 

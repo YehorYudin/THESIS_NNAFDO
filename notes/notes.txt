@@ -20,9 +20,11 @@ Variables:
 	Forces location: 1 point of application in right half of the domain
 
 	
-24.0.5:  --- Results Outline
+12.06: pseudocode for scripts - finish, 3d results
+13.06: previous work,  numbers on 2d
 
-all image (new colormap),
+
+all image (new colormap)
 archirtecture reasoning
 ??? identity mapping for feature understanding
 	
