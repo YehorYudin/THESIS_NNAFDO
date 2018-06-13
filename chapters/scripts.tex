@@ -37,7 +37,7 @@ Such design of the framework with API in multiple language together with intrins
 In order and to quickly infer results that could be easily used for further TO and to proceed various experiments on performance, a software framework was created. 
 The requirements of the software system were to be able to take various known cases of TO problem solutions, train the best CNN inference model, and create approximate solutions for the new TO problems.
 It was implemented in a functional way as a sequence of scripts and has the view in the form of following algorithms presented in the pseudocode. 
-
+\medskip
 
 The first part of the system is the responsible for automatic data set generation.
 The outcome of a single run describe in \ref{alg:data_gen} is a number of datasets populated by data sample that could be directly fed to the network for the further training or evaluation.
@@ -46,21 +46,20 @@ The outcome of a single run describe in \ref{alg:data_gen} is a number of datase
 \caption{The dataset generation process}\label{alg:data_gen}
 \begin{algorithmic}[0]
 	\ForAll{TO problem parameter values combination in a grid}
-	\State Generate Data Sample i.e. resulting material layout
-	\State Create sample
+		\State Generate Data Sample i.e. resulting material layout
+		\State Create sample
 	\EndFor
 	\ForAll{Sample} 
 		\State Augment Data
 		\State Parse case name
-		\State Create Initial Condition models for inputs i.e. $BC,F_x,F_y$
+		\State Create Initial Condition models for inputs i.e. $ BC,F_x,F_y $
 		\State Pre-process Inputs i.e. create SDFs
 		\State Combine Inputs and form network-fedible sample
 	\EndFor
 	\ForAll{Dataset sampling scheme}
-	\State Form Training Dataset
+		\State Form Training Dataset
 	\EndFor
 	\State Create Evaluation Dataset
-	
 \end{algorithmic} 	
 \end{algorithm}
 \medskip
@@ -70,18 +69,18 @@ After we obtained different training datasets in a proper format, we can start t
 The process of training the models is described as the following algorithm\ref{alg:network_training}. 
 \begin{algorithm}
 	\caption{Procedure of CNN models training}\label{alg:network_training}
-	\begin{algorithmic}
+	\begin{algorithmic}[0]
 		\ForAll{H-P values combination $h=(h_1,...,h_n)\in$ the H-P values grid $ H_{1} \times ... \times H_{n}$ e.g. (Training Data Set, Number of training steps)}
-		\State Create Batch Queue
-		\State Set up Architecture and Loss function 
-		\While{Current number of training iterations not exceeded}
-		\State Get batch from the Queue and read the input samples
-		\State Propagate the input forward and infer the result
-		\State Find the loss function value and propagate gradients backwards
-		\State Update parameter values
-		\State Save the state of the parameters and the loss function
-		\EndWhile
-		\State Save the parameter value checkpoint
+			\State Create Batch Queue
+			\State Set up Architecture and Loss function 
+			\While{Current number of training iterations not exceeded}
+				\State Get batch from the Queue and read the input samples
+				\State Propagate the input forward and infer the result
+				\State Find the loss function value and propagate gradients backwards
+				\State Update parameter values
+				\State Save the state of the parameters and the loss function
+			\EndWhile
+			\State Save the parameter value checkpoint
 		\EndFor
 	\end{algorithmic}
 \end{algorithm}
@@ -92,26 +91,27 @@ We chose the best model based on this parameter and, in our case, use it to infe
 The evaluation is described in the next algorithm\ref{alg:network_eval}.
 \begin{algorithm}
 	\caption{Procedure of CNN model evaluation}\label{alg:network_eval}
-	\begin{algorithmic}
+	\begin{algorithmic}[0]
 		\ForAll{Every model checkpoint}
-		\State Load Evaluation Dataset
-		\State Set up the Architecture
-		\ForAll{Evaluation Samples in Evaluation Dataset}
-		\State Infer results and find loss function
-		\State Record data for further evaluation e.g. MSE and inferred model
+			\State Load Evaluation Dataset
+			\State Set up the Architecture
+			\ForAll{Evaluation Samples in Evaluation Dataset}
+				\State Infer results and find loss function
+				\State Record data for further evaluation e.g. MSE and inferred model
+			\EndFor
+			\State Find evaluation measures value, e.g. ($\mathrm{MSE_{avg}}$) and heatmap
 		\EndFor
-		\State Find evaluation measures value, e.g. ($\mathrm{MSE_{avg}}$) and heatmap
-		\EndFor
-		\State Choose the best performing model	as $\mathring{argmin}_{model} MSE_{avg}$
+		\State Choose the best performing model	as $\mathrm{argmin}_{model} MSE_{avg}$
 		\State Use the model to generate results for the test set
 		\If{3D case}
-		\ForAll{Chosen test subset results}
-		\State Post-process i.e. smooth and reach desired volume
-		\State Initialize the TO model
-		\State Evaluate the problem size and time to Optimize
-\EndFor
+			\ForAll{Chosen test subset results}
+				\State Post-process i.e. smooth and reach desired volume
+				\State Initialize the TO model
+				\State Evaluate the problem size and time to Optimize
+			\EndFor
+		\EndIf
 	\end{algorithmic}
 \end{algorithm}
-\mesdkip
+\medskip
 
 In the result, we give an estimation of how accurate is the best model for the current experiment set-up and how does it fit to facilitate the overall TO process.  

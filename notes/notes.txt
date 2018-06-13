@@ -20,8 +20,8 @@ Variables:
 	Forces location: 1 point of application in right half of the domain
 
 	
-12.06: pseudocode for scripts - finish, 3d results
-13.06: previous work,  numbers on 2d
+13.06: previous work --> finish
+14.06: 3d results, numbers on 2d (see list), figures at data
 
 
 all image (new colormap)

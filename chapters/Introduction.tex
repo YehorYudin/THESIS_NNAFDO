@@ -55,16 +55,25 @@ One of the most important question in the work is the trade-off between the size
 
 \section{Previous Work}
 
+The goal of this section is to give an outlook of the previous research on the possibilities to imporove Toplogy Optimization performance.
+In particular with consider using data-driven approach and the Machine Learning methods.
+We also goal to overview the application of Machine Learning for the simulations in engineering, especially the cases dealing with spatial 3D data and inferring the results of some simulations.
+\medskip
 
+One of the recent work \cite{bibl:prevwork_pca} suggest applying dimensionality-reduction techniques for 2D optimization domains, in particular finding an eigen-vector representation using Principal Component Analysis\cite{} and treating the loading vectors as inputs for simple feed-froward neural network to obtain approximate result used as initial guess for the conventional TO process.
+\medskip
+
+The other work \cite{prev:prevwork_cnncfd} describes applying Convolutional Neural Network for prediction of approximate results for Computational Fluid Dynamics steady flow simulations. 
+Authors suggest treating resulting velocity fields and representation of boundary conditions in an image-like fashion and propose an Encoder-Decoder CNN architecture for the model that will predict simulation outcomes based on pictures of initial conditions.
+\todo{add on these works}
+\todo{couple of article more}
 
 \section{Topology Optimization}
 
 Restrictions on the weight and amount of material used for a certain mechanical element is not uncommon in the engineering.
 Various techniques allow finding optimal layouts of the element within the material that assures meeting of the requirement put on the physics of the element. 
-
-...
-
 \medskip
+
 One of the approaches used for TO is Solid Isotropic Microstructure with Penalization (SIMP).
 This method uses the idea of ``artificial density''\cite{to_simp}, where for every hexahedral element of discretized model a value of density variable $\rho$ is assigned.
 The density plays the role of design variables in the optimization process and used to present the goal function as a weighted sum of element-wise compliance.
