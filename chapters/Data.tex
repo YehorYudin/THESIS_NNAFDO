@@ -40,7 +40,7 @@ For the 3D case we left only a single volume fraction value equal to $0.2$, as w
 The problem domain we considered has size of $32 \times 32 \times 32$ hexahidral elements, and we performed TO for cases when a force was applied for a single element. 
 We generated TO results not for every  possible point of load application, but took point with step of 4 in every dimension in the furthermost half of the domain in $Y$ direction. 
 For every point of load application we considered forces of magnitude $1$ directed to each face of the hexagedral element, as well as towards each vertex, which corresponds to $D3Q15$ model of hexahidral directions. \todo{maybe unsuitable}
-In total, for the entire dataset we generated $ 14\,\mathrm{(force \, direction)} \; \times \; 5\,\mathrm{(Y \, coordinate)} \; \times \; 9\,\mathrm{(X \, coordinate)} times \; 9\,\mathrm{(Y \, coordinate)} = 5670 $ models.
+In total, for the entire dataset we generated $ 14\,\mathrm{(force \, direction)} \; \times \; 5\,\mathrm{(Y \, coordinate)} \; \times \; 9\,\mathrm{(X \, coordinate)} \times \; 9\,\mathrm{(Y \, coordinate)} = 5670 $ models.
 
 
 \subsection{Dataset generation}
@@ -53,7 +53,7 @@ The code uses square elements for finite element discretization and uses power-l
 The code was modified in order to have several arbitrary points where the load is applied.
 A solution of single TO problem is called by calling the function  , where all are passed as parameters, such problem dimension, volume fraction, power penalty, convergence criterion, coordinated of force application points and force vector. 
 The script saved the resulting material layout as a gray-scale PNG image where every pixel value denotes the virtual material density of corresponding square finite element.
-For the typical problem size of $ 32 \times 32 $ single TO problem solution took on a ... CPU.
+For the typical problem size of $ 32 \times 32 $ single TO problem solution took avaragly $1 \mathrm{s}$ using a single CPU.
 Totally there were $~150$ thousands  created
 \todo{fill in reference, number, code etc.} 
 \medskip
@@ -62,7 +62,7 @@ To generate results of compliance minimization for 3D models we used a program I
 The program the parameters of the TO problem are defined in a JSON file, in which one should  state STP files describing geometrical domain, fixed regions for boundary conditions, and surfaces at which force is applied.
 The boundary condition type, force vector and volume fraction value are also stated, as well as parameters of physics, discretization and analyzes. 
 
-Run with $32$ threads on a single Nvidia GeForce 1080 GTX GPU we generated $~5$ thousands of $32 \times 32 \times 32$ voxels model of result models, witch took .. seconds.
+Run with $32$ threads on a single Nvidia GeForce 1080 GTX GPU we generated $~5$ thousands of $32 \times 32 \times 32$ voxels model of result models, witch took $10$ seconds.
  
 
 % The Boundary Coditions used during Topology Optimization as an input to the Finite Element Analysis constitute of the fixed degrees of freedom
