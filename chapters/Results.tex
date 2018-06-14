@@ -22,11 +22,11 @@ The dimensionality of the data also influenced the number of model parameters, w
 \subsection{Evaluation Means}
 
 The evaluation metrics chosen was an average Mean Squared Error (MSE) between the inferred and ground/truth materials layout in form of bitmaps, take and averaged for the testing dataset. 
-As a testing dataset, apart from several separately designated cases, we chose pairs of (initial conditions -- material layout) for every single load possible and with other parameters varying in the same way as on training data set.
+As a testing dataset, apart from several separately designated cases, we chose pairs of (initial conditions --- material layout) for every single load possible and with other parameters varying in the same way as on training data set.
 The variance of MSE was also analyzed to estimate the level of generality of the model.
 
 Separate cases were analyzed visually to define the issues of the model more precisely.
-For this for every test cases a pixel-wise difference of the ground-truth and inferred images was created.
+For this, for  every test cases a pixel-wise difference of the ground-truth and inferred images was created.
 
 Was the purpose of visual analyzes of dependency of accuracy on the location of force application, in comparison to known cases, an \textit{accuracy heatmap} of same size as TO problem domain was created, where every pixel shows an accuracy of inference for a test case for which force is applied at this coordinate of the domain. 
 Such heatmaps were created for every force direction as well as for average accuracy for very type of force.
