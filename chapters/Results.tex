@@ -46,13 +46,53 @@ We also chosen to analyze dependency of mean and variance of MSE for different t
 
 \subsection{Evaluation}
 
-The results of the model evaluation, including the hyperparameter optimization,  shows next tendencies. 
+%The results of the model evaluation, including the hyperparameter optimization, shows next tendencies. 
 
-Initial results
-Test on Vf intepolation...
-Test on resolution interpolation
-Dependency on the training set size 
-Best chosen model and numbers
+Initial results...
+\medskip
+
+One of the main tests set up by us was to find the dependency of the model performance based on the size of the dataset as well as to find the best training dataset sampling pattern.
+After some preliminary research, we decided to take three different sampling schemes and three with thee different steps for each. 
+The most accurate model were produced by the training dataset with domination of problems where load was applied on the edge of th domain.
+The dependency on the size of the training set shows ...  dependency for each sampling.
+\medskip
+
+The next test was performed in order to find out the capabilities of the approach to restore proper volume fraction of the material. 
+For this, we trained model with different loss function: with and without volume fraction penalty term, and for different multiplicative constant for the term.
+We took training dataset with models of variable volume with three different volume fraction values.
+For the evaluation we used datasets composed of both models with known volumes and with models of volume fraction not used during the training.
+We evaluted both accuracy of the model and the accuracy of volume value as a separate parameter.
+The results show that considering volume fraction at loss function improves the accuracy of the model. \todo{actually check it}
+Testing model for new, intermediate, values of the input volume fraction help producing accurate results.
+Results extrapolation for input volume fraction larger than ones used fo training, however, caused much worse results for models. 
+This could be explained by convolutional nature of the model, with the fact that features found by the model are too subtle.  
+The application of the post-procssinf allowed bringing the performance to a higher performance and to better volume reconstruction. 
+\todo{add table and example picture}
+\medskip 
+
+The next test had a goal of evaluation the capability of the network to scale the results for different resolutions.
+For this, we prepared training dataset with two different resolutions and evaluational datasets with same resolutions, and with resolutions of previously unknown sizes.
+For an intermediate size of the domain the model show good accuracy of the interpolation.
+For the larger resolutions, however, the ability to extrapolate was bad.
+This could be also explained with the fact that features of the model have only  parts of smaller models.
+For the case, when we increased the size of the domain, without changing the physics of the model, the result was also inaccurate with empty domain populating with unphysical pixels.
+This phenomenon was partially eliminated with post-processing
+\medskip
+
+One of the tests was goaling comparing performance of different network architectures.
+We compared our encoder-decoder residual network with similar architectures, used for medical image segmentation.
+We considered \emph{V-Net}\cite{} and \emph{U-Net}\cite{} architectures with similar encoder-decoder structure.
+The former in our case and $...$ number of parameters and the latter has $...$.
+The U-Net network show significantly worse results.
+The V-Net, having more parameters, in the end was able to achieve comparable results, however, after much longer time spent training.
+\medskip
+
+The other test was done to evaluate influence o using SDF of inputs and justify such approach.
+For that we prepared two training datasets, one with initial bitmaps of the boundary conditions and load application points as inputs, and the second one with inputs after applying the pre-processing.
+The results show that with the pre-processing both time of training and final accuracy are much higher.
+\medskip
+
+Best chosen model and numbers...
 
 \section{Results for 3D case}
 
@@ -67,13 +107,20 @@ In case of vanilla value it is time average time of a single IDeAs run for fixed
 
 As a different estimation of improvement we measured how much the inferred result describe a bounding region of the ground-truth field after slight increase of the volume with dilation.
 This estimation was done if terms of amount of probability of voxel not to be covered by bounding region and decrease in the number of elements of problem  after we found new domain. 
-\todo{is is not done at all!!!!!!!}
+\todo{is is not done at all!!!}
 
 \subsection{Evaluation}
 
-After the process, similiar to the 2D case, the bests model of ...
-chose the MSE of ...
-Typical results ...
+The first experiment ws to find a best model after hyperparamter optimization.
+We used the dataset as in .. composed of pre-processed samples for our architecute with loss function considering volume fraction.
+After the process, similiar to the 2D case, the bests model was produced by datasample with forces at the edge and show accracy of ... on the evaluation dataset. 
+
+Typical results looks folowing.
+
+After applying the elements layout produced by the following model as the input for teh IDeAs, we achieved the following average duration of optimization with the number of iterations...
+
+However, we with probability of ... we manage to predict the new domain of the problem, close to the shape of the resulting model. 
+The volume of the  new domain ws averagely ... pro-cent smaller thats the whole box and contained on only ... pro-cent of empty voxels in the result.
  
 
 

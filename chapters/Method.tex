@@ -51,7 +51,7 @@ Here we also apply average pooling and pad empty channels at the residual channe
 In total, the residual block of the encoder is represented visually with \ref{fig:res_block}.
 \begin{figure}
 	\centering
-	\includegraphics[width=0.5\linewidth]{images/Residual_Block2.pdf}
+	\includegraphics[width=0.4\linewidth]{images/Residual_Block2.pdf}
 	\label{fig:res_block}
 	\caption{A flowchart for residual block used for the encoder part of the network. Dashed denotes dropout applied only during the training phase. Purple denotes down-sampling operations applied every second block. Blue denotes convolution layers with weights to be trained.}
 \end{figure}
@@ -89,7 +89,7 @@ The encoder residual block could be easier understood using\ref{fig:res_block_up
 \medskip
 \begin{figure}
 	\centering
-	\includegraphics[width=0.5\linewidth]{images/Residual_Upconv0.pdf}
+	\includegraphics[width=0.4\linewidth]{images/Residual_Upconv0.pdf}
 	\label{fig:res_block_upc}
 	\caption{A flowchart of the residual block used in the decoder part of the network.}
 \end{figure}
@@ -158,6 +158,12 @@ For this, we calculate the volume of the inferred result as a count of the pixel
 
 \subsection{Hyperparameters}
 
+The hyperparameters are the parameters of the model that cannot be optimized during the conventional training process.
+They differ from the weights of the layers of the model, because of their special nature, and because it is not possible to find a gradient of the loss function with respect to them.
+However, chosing them is important to find the best model, and in order to find them \textit{hyperparameter optimization} is used.
+\todo{explain hp-pam optimization?}
+\medskip
+
 The model had a number of hyperparameters, including:
 \begin{itemize}
 	\item batch size
@@ -172,26 +178,22 @@ This also relates to the data set chosen to train the model, especially its size
 \todo{fix description and list}
 \medskip
 
-These hyperparameters differ from the weights of the layer of the model, because of their special nature ad because it is not possible to find a gradient of the loss function with respect to them.
-However, chosen them is important to find the best model, and in order to find them \textit{hyperparameter optimization} is used.
-\todo{explain hz-pam optimization?}
-\medskip
-
-We decided to apply \emph{grid search} approach for hyperparamter optimization, which means.
-We chosen key values of the hyperparameters, trained model for cases when the hyperparameters are equal to combinations of those values and checked the evaluation parameter to find the best model.\todo{???}
+We decided to apply \emph{grid search} approach for hyperparamter optimization\cite{}.
+For that, we chose key values for every hyperparameters and trained model for every combination of those values and checked the evaluation parameter to find the best model.\todo{???}
 \medskip
 
 We were choosing batch size values of $1,4,8$.
-For the dropout probability we tried $0.5,0.7,0.9$.
-Learning rate was taken with value $0.001$ and was not changed because of the nature of optimizer.
-For the $L_2$ regularization used by us, for the multiplicative constant we tried several values but stopped at using single value of $10^{-8}$ because for other values the results were significantly worse. 
-Also we have tried loss function with and without volume fraction component, but we put this variation as a separate experiment. 
-For this we checked several values of multiplicative constant and stopped at $0.01$.s
+For the dropout probability we tried $0.5,0.7,0.9$.\todo{may be add dependency on that}
+Learning rate was taken with value $10^{-4}$, since changing value did no significantly change the outcome because of the adaptive nature of optimizer.
+For the $L_2$ regularization used by us, for the multiplicative constant we tried several values but stopped at using single value of $10^{-6}$ because for other values the results were significantly worse. 
+
+We have also tried two variation of the loss function, with and without volume fraction component, but we put this variation as a separate experiment. 
+For this we checked several values of multiplicative constant and stopped at $0.2$.\todo{change that}
 \medskip
 
 After some preliminary research, we have chosen training dataset based on three patters described before (sparse coordinates, edges, cross) and for each of them taken three level of density.
 For the most of the experiments, we have models trained for various number of optimization steps. We chosen the range of $(10, 25, 50, 75, 100)$ thousand of steps.
+For some cases we took second round of optimization with respect to early stopping, taking number of iterations with steps of $5$ or $10$ thousand steps.
 
 
 \todo{check everything!!!}
-
