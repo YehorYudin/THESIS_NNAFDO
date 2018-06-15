@@ -20,8 +20,11 @@ Variables:
 	Forces location: 1 point of application in right half of the domain
 
 	
-13.06: previous work --> finish
+
+
+previous work --> finish, figures at data --> check
 14.06: 3d results, numbers on 2d (see list), figures at data
+
 
 
 all image (new colormap)

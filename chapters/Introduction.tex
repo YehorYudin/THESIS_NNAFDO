@@ -148,7 +148,7 @@ The size of such vicinity is called \textit{local receptive field} of the neuron
 In CNNs every element of the next layer is achieved by sliding the local receptive field along the previous layer and applying a convolution operation.
 \begin{figure}
 	\centering
-	\includegraphics[width=0.7\linewidth]{images/cnn_dem_gen4.pdf}
+	\includegraphics[width=0.75\linewidth]{images/cnn_dem_gen4.pdf}
 	\caption{Receptive fields of the neurons of the output}
 	\label{fig:rec_field_demo}
 \end{figure}
@@ -158,7 +158,7 @@ If it is important to have inputs and outputs of the layer of same size, it is p
 That means that for the output elements close to the edge we span the receptive field outside of the size of the input, using virtual input elements with value of $0$. 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.8\linewidth]{images/cnn_dem_padding2.pdf}
+	\includegraphics[width=0.75\linewidth]{images/cnn_dem_padding2.pdf}
 	\caption{Convolutions with padding saves the size of the output}
 	\label{fig:padding_demo}
 \end{figure}
@@ -171,7 +171,7 @@ A convolution wit a stride larger that $1$ reduces the size of image and every e
 %The larger stride will result in a smaller output layer with every element capturing more unique influence of the input layer, allowing to obtain a representation of the input in a lower dimension.
 \begin{figure}
 	\centering
-	\includegraphics[width=0.8\linewidth]{images/cnn_dem_stride4.pdf}
+	\includegraphics[width=0.75\linewidth]{images/cnn_dem_stride4.pdf}
 	\caption{Stride size defines distance between two nearest windows of convolution.}
 	\label{fig:stride_demo}
 	\end{figure}
@@ -193,7 +193,7 @@ The second array is called \textit{filter} or \textit{kernel} and is typically a
 \medskip
 \begin{figure}
 	\centering
-	\includegraphics[width=0.8\linewidth]{images/cnn_dem_opration2.pdf}
+	\includegraphics[width=0.75\linewidth]{images/cnn_dem_opration2.pdf}
 	\caption{A vizualization of a convolution operation.}
 	\label{fig:convoper_demo}
 \end{figure}
@@ -219,7 +219,6 @@ Hoverer, in many cases we could reduce the number of parameters to tain by fixin
 
 %The filters trained in such a layer could be understood as features. 
 %During the inference, the result of applying a convolutional operation to one of the channels denote a ...
- 
 
 
 \subsection{Optimization}
@@ -369,7 +368,7 @@ a(e^{x}-1) \, : x \geq 0
 
 \begin{figure}[]
 	\centering
-	\includegraphics[width=0.7\linewidth]{images/activfunc_3.pdf}
+	\includegraphics[width=0.7\linewidth]{images/activfunc_4.pdf}
 	\caption{Comparison of the different activation functions. Blue is $\mathrm{sigmoid}$, red is $\mathrm{tanh}$, yellow is $\mathrm{PReLU}$ and purple is $\mathrm{ELU}$.}
 	\label{fig:act_func}
 \end{figure}

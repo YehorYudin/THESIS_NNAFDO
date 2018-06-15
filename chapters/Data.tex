@@ -96,7 +96,7 @@ The one problem with such representation of BC and force fields that there are o
 \todo{explain more, demonstrate?}
 \medskip
 
-As a remedy for this problem we populate the input channels with more non-zero elements representing meaningful information by finding a \emph{Signed Distance Field (SDF)} of every input channel.
+As a remedy for this problem we populate the input channels with more non-zero elements representing meaningful information by finding a \emph{Signed Distance Field (SDF)} of every input channel\cite{}.
 \medskip
 
 For every channel, we consider the non-zero element as important and put a virtual surface around it and fined signed distance to it for every element of the bitmap.
@@ -133,7 +133,7 @@ This equation describes the propagation of the wavefront started from the bounda
 
 There is a fast way to solve this equation for the points located on the regular grid called \emph{Fast Marching Method (FMM)}.
 It is a graph traversing algorithm based on the Dijkstra's algorithm \cite{} and it's complexity is $O(M \log M)$ where $M$ is the number of grid points.
-There are plenty of FMM implementations available, and we chose to use python package \emph{ski-fmm} \cite{scikit-fmm}, a part of SciKit framework that allows obtaining SFD as Numpy array by calling only one function passing array describing zero-boundary to it.
+There are plenty of FMM implementations available, and we chose to use python package \emph{ski-fmm} \cite{scikit-fmm}, a part of SciKit framework that allows obtaining SFD as Numpy array\cite{}s by calling only one function passing array describing zero-boundary to it.
 \medskip
 
 In this way, we have a fast and easy way to describe our input images having all the pixels populated with meaningful values.
@@ -173,7 +173,7 @@ In order to solve these issues we decided to perform several post-processing ope
 We decided to apply for mathematical morphological operation in order to solve the over-mentioned issues.
 \medskip
 
-We use two basic operations, namely \emph{erosion} and \emph{dilation}.
+We use two basic operations, namely \emph{erosion} and \emph{dilation}\cite{}.
 The erosion is defined as 
 \begin{equation}
 A \ominus B = \{z \in E | B_{z} \subseteq A \}, \, \mathrm{where} \; B_{z}=\{ b+z | b \in B \}, \, \forall z \in E 
