@@ -2,9 +2,9 @@
 
 \chapter{Method and Implementation}
 
-In this chapter we will describe the implementation aspects of the work.
-Here description of the ANN architecture and its reasoning, the general pipeline of computations and data manipulations applied to set up the system creating data that helps the TO performance improvement and ways for the system analysis, as well as the software used for its creation.
-Also we will talk about the aspects of choosing and preparing data for model training, as well as data pre-processing and post-processing.
+In this chapter, we will describe the implementation aspects of the work.
+Here the description of the ANN architecture and its reasoning, the general pipeline of computations and data manipulations applied to set up the system creating data that helps the TO performance improvement and ways for the system analysis, as well as the software used for its creation.
+Also, we will talk about the aspects of choosing and preparing data for model training, as well as data pre-processing and post-processing.
 \todo{what did I just write}
 \medskip
 
@@ -18,32 +18,32 @@ This network the fits for the cases when input and outputs are of the same size 
 \medskip
 
 The former one, encoding, goals to find a representation of the input in form of prominent features.
-It consists of sequential application of size-preserving convolutions and pooling convolutions with increasing amount of features. 
-After application of several blocks of such operations, inputs transform from a large image with few channels into many-channel image of very small size, which we call the low-dimensional representation. 
+It consists of the sequential application of size-preserving convolutions and pooling convolutions with increasing amount of features. 
+After application of several blocks of such operations, inputs transform from a large image with few channels into a many-channel image of very small size, which we call the low-dimensional representation. 
 In our case, an image of $4$ channels transforms into $128$ different representations. 
 \medskip
 
-In our architecture, the encoder consist of nine blocks of convolutions, 
+In our architecture, the encoder consists of nine blocks of convolutions, 
 each training in a residual form.
-A \textit{Residual Network} is a type of network, where an atomic part of transformation is defined in form $F(x) = H(x) + x $, which means the gradient would describe the change of the residual between the original and transformed data\cite{bibl:resnet}.
+A \textit{Residual Network} is a type of network, where an atomic part of the transformation is defined in form $F(x) = H(x) + x $, which means the gradient would describe the change of the residual between the original and transformed data\cite{bibl:resnet}.
 This allows to increase accuracy having smaller amount of layers and to speed up the training process.
 \medskip
 
-At every channel we apply two convolutions.
+At every channel, we apply two convolutions.
 After the first one we apply the activation function and dropout on the phase of training for the sake of regularization, but not in the final model.
 \medskip
 
 At this point we also apply an activation function of \textit{Concatenated Exponential LU (cELU)}
 Here we apply one of the techniques, that is often used together with activation function, namely \textit{concatenated} activation.
 It is inspired by the idea that the negative values propagated through network could be as important as positive ones, and, because they are treated by activation asymmetrically, they should be considered separately as well\cite{bibl:concat_rectif}.
-That means that at the activation step we should map every channel into two channels, the identical one and the negated one, and apply the activation function to them separately, thus considering more general picture.
+That means that at the activation step we should map every channel into two channels, the identical one and the negated one, and apply the activation function to them separately, thus considering the more general picture.
 \medskip
 
 After the second convolution, we apply \textit{gating}, a different form of activation.
 That means we double the number of channels at the convolution and then treat the groups of channels separately.
-We apply a sigmoid function only for one half of channels and then multiple the results element-wisely with the leftover channels.
-In this way, the convolution have two times more parameters comparing with a regular convolution leading to the same size of output tensors.
-Doubling number of channels prevents gradient vanishing, since during the back-propagation the gradient will have both direct and sigmoid components\cite{bibl:conv_gating}.
+We apply a sigmoid function only for a half of channels and then multiple the results element-wisely with the leftover channels.
+In this way, the convolution has two times more parameters comparing with a regular convolution leading to the same size of output tensors.
+Doubling number of channels prevents gradient vanishing since during the back-propagation the gradient will have both direct and sigmoid components\cite{bibl:conv_gating}.
 \medskip
 
 Every second block has stride for its second convolution equal to 2, which increase the size of the output in two times in every direction.
@@ -67,22 +67,22 @@ Every element of the input is element-wisely multiplied by the kernel and projec
 \end{figure}
 For this formula the dependency of input on the output with given weights will have a form of standard convolution.\todo{should it be a ref?}
 Combining with different length of the window stride it is possible to interpolate a previous layer to a layer of an arbitrary larger size. 
-In our case we apply transposed convolution with a stride of size $2$.
-In such way, we reconstruct the result based on low-dimensional representation of inputs using features found in the space of results.
-%We also used representation of all dimensionalities found before, adding additional layer after every residual block of the decoder.
+In our case, we apply transposed convolution with a stride of size $2$.
+In such way, we reconstruct the result based on the low-dimensional representation of inputs using features found in the space of results.
+%We also used a representation of all dimensionalities found before, adding additional layer after every residual block of the decoder.
 \medskip
 
 One of the issues of the transposed convolution is occurring checkered error pattern in the output.\todo{should it ba ref or a picture with previous results?}
-This is caused by the fact that for kernel size being non-multiple of stride, different output elements have different number of input elements influencing them, which results give different magnitudes for some output coordinates of certain multiplicity.
+This is caused by the fact that for kernel size being non-multiple of stride, different output elements have a different number of input elements influencing them, which results give different magnitudes for some output coordinates of certain multiplicity.
 To mitigate this effect we applied kernels of size $4 \times 4$, since the stride we used during up-sampling is $2$ in order to increase the size of channel two times in each dimension.
 \medskip
 
-After every transposed convolution, that up-samples the data propagating through network, increasing the size of the channels and decreasing the number of channels, we add a residual block of convolutions which correspond to the reconstruction of the image using features in the space of outputs.
+After every transposed convolution, that up-samples the data propagating through the network, increasing the size of the channels and decreasing the number of channels, we add a residual block of convolutions which correspond to the reconstruction of the image using features in the space of outputs.
 Every such block is similar to the one used for the encoder, apart from using \textit{shortcut connections} from the previous layers.
 That means that every block has an additional input, namely the result of the encoder layer that has same output size as current decoder layer, and after bringing layers to similar dimensionality we sum them.
-This enhance the preservation of general geometrical properties of the input and facilitates the training process \cite{bibl:shortcuts}.
+This enhances the preservation of general geometrical properties of the input and facilitates the training process \cite{bibl:shortcuts}.
 The shortcut image have multiple channels, and to reduce them we apply \textit{$1\times 1$ convolutions}.
-They are, essentially, a weighted sum of input elements along channels only, and without spatial kernels, thus they change number of channels but keep their size. 
+They are, essentially, a weighted sum of input elements along channels only, and without spatial kernels, thus they change the number of channels but keep their size. 
 Also, we need to restore the size of the image after the up-sampling, because the striding technique will lead only to sizes multiple of lower layers, and we use the size of the shortcut image for that.
 The encoder residual block could be easier understood using\ref{fig:res_block_upc}.
 
@@ -96,13 +96,13 @@ The encoder residual block could be easier understood using\ref{fig:res_block_up
 
 One of the tweaks we required to build a model for our case allowed the network having a scalar input as well.
 Since we want to enforce the output having the desired non-empty volume fraction, we used its value as input as well.
-We tiled a matrix of size of the lowest-dimensional representation with values of volume fraction and added one more channel at the bottleneck of the network. 
+We tiled a matrix of the size of the lowest-dimensional representation with values of volume fraction and added one more channel at the bottleneck of the network. 
 \medskip
 
 After the sequence of four transposed convolutions, each followed by a residual block with a shortcut, we apply a single convolution layer that with one kernel to decrease the final channels dimensionality. 
-In the end, based on the $128$ channels of low-dimensional representation, we obtain a final of single channel of size equal to the TO problem domain.
+In the end, based on the $128$ channels of low-dimensional representation, we obtain a final image of a single channel of size equal to the TO problem domain.
 The total architectural of our model could be visually with\ref{fig:arch_1}.
-The architecture for 3D case is very similar to the 2D one, with every convolution replaced with a corresponding \textit{3D convolution}, where channels and kernels are cubes and summation happens across $3$ dimensions.
+The architecture for the 3D case is very similar to the 2D one, with every convolution replaced with a corresponding \textit{3D convolution}, where channels and kernels are cubes and summation happens across $3$ dimensions.
 
 \begin{figure}
 	\centering
@@ -119,14 +119,14 @@ Thus, one of the most important steps during the design is defining a proper los
 \medskip
 
 Our idea of the result produced by the model is a bitmap describing material density layout being as close to the result of conventional TO process as possible.
-In this way, we have to minimize the difference between the known optimized material design for given input and the result inferred as model.
+In this way, we have to minimize the difference between the known optimized material design for given input and the result inferred as a model.
 However, the difference between two arrays of values is conventionally is not easy to describe with a single scalar and typically the influence of a single element of output is low, which would make the optimization process extremely slow.
 \medskip
 
 In order to tackle all these issues, we formulate our problem as a classification problem for every single element of the output channel for given input. 
-We treat our reference, ground truth, image of layout as a bitmap for which every element can belong to one of two classes, namely occupied by material ($1$)  or not ($0$), for which we should threshold our results of known TO problems.
+We treat our reference, ground truth, the image of the layout as a bitmap for which every element can belong to one of two classes, namely occupied by material ($1$)  or not ($0$), for which we should threshold our results of known TO problems.
 In such formulation, the goal of our system is to classify every element of output bitmap based on the inputs and give the confidence for the inferred classes.
-Thus, for a single input our model performs binary classification for multiple outputs.
+Thus, for a single input, our model performs binary classification for multiple outputs.
 This means, that by discretizing the problem we reduce the information flux over the model we significantly increase the speed of the model training.
 \todo{generally written very uncertainly... plus good to compare training time for different losses}
 \medskip
@@ -139,7 +139,7 @@ The loss function term has the next form:
 \end{equation}
 \medskip
 
-Furthermore, in order to prevent over-fitting we incorporate a regularization term in form of a $L_{2}$ norm of all trained matrix parameters, multipled by a small constant $\alpha_{reg}$
+Furthermore, in order to prevent over-fitting, we incorporate a regularization term in form of a $L_{2}$ norm of all trained matrix parameters, multiplied by a small constant $\alpha_{reg}$
 \todo{describe regularization? how detailed or leave out?}
 \begin{equation}
  	L(w) = L_{CE} + \alpha_{reg} R_{L_{2}}, \, \mathrm{where} \, R_{L_{2}}(w) = ( \sum_{i}^{} |w_{i}|^{2} )^{\frac{1}{2}} 
@@ -147,7 +147,7 @@ Furthermore, in order to prevent over-fitting we incorporate a regularization te
 \medskip
 
 One of the clear requirements defined by the TO problem itself is the resulting layout having a fixed volume. 
-Since the closeness to the reference data does not implicitly put any restriction on this criterion, we decided to use several ways to facilitate the inferred layout having desired volume.
+Since the closeness to the reference data does not implicitly put any restriction on this criterion, we decided to use several ways to facilitate the inferred layout having the desired volume.
 One of the ways used in the system is adding a volume fraction penalty term to the loss function.
 For this, we calculate the volume of the inferred result as a count of the pixels for which the probability to be occupied is higher than threshold, took the ratio with the volume stated for the reference problem and add the absolute difference with the desired volume fraction to the loss function with some small multiplicative constant $\beta_{V_{f}}$.
 \todo{ more detail! general formula!}
@@ -160,7 +160,7 @@ For this, we calculate the volume of the inferred result as a count of the pixel
 
 The hyperparameters are the parameters of the model that cannot be optimized during the conventional training process.
 They differ from the weights of the layers of the model, because of their special nature, and because it is not possible to find a gradient of the loss function with respect to them.
-However, chosing them is important to find the best model, and in order to find them \textit{hyperparameter optimization} is used.
+However, choosing them is important to find the best model, and in order to find them \textit{hyperparameter optimization} is used.
 \todo{explain hp-pam optimization?}
 \medskip
 
@@ -179,21 +179,21 @@ This also relates to the data set chosen to train the model, especially its size
 \medskip
 
 We decided to apply \emph{grid search} approach for hyperparamter optimization\cite{}.
-For that, we chose key values for every hyperparameters and trained model for every combination of those values and checked the evaluation parameter to find the best model.\todo{???}
+For that, we chose key values for every hyperparameter and trained model for every combination of those values and checked the evaluation parameter to find the best model.\todo{???}
 \medskip
 
 We were choosing batch size values of $1,4,8$.
 For the dropout probability we tried $0.5,0.7,0.9$.\todo{may be add dependency on that}
-Learning rate was taken with value $10^{-4}$, since changing value did no significantly change the outcome because of the adaptive nature of optimizer.
-For the $L_2$ regularization used by us, for the multiplicative constant we tried several values but stopped at using single value of $10^{-6}$ because for other values the results were significantly worse. 
+Learning rate was taken with value $10^{-4}$, since changing value did not significantly change the outcome because of the adaptive nature of optimizer.
+For the $L_2$ regularization used by us, for the multiplicative constant we tried several values but stopped at using single a value of $10^{-6}$ because for other values the results were significantly worse. 
 
-We have also tried two variation of the loss function, with and without volume fraction component, but we put this variation as a separate experiment. 
+We have also tried two variations of the loss function, with and without volume fraction component, but we put this variation as a separate experiment. 
 For this we checked several values of multiplicative constant and stopped at $0.2$.\todo{change that}
 \medskip
 
 After some preliminary research, we have chosen training dataset based on three patters described before (sparse coordinates, edges, cross) and for each of them taken three level of density.
-For the most of the experiments, we have models trained for various number of optimization steps. We chosen the range of $(10, 25, 50, 75, 100)$ thousand of steps.
-For some cases we took second round of optimization with respect to early stopping, taking number of iterations with steps of $5$ or $10$ thousand steps.
+For the most of the experiments, we have models trained for a various number of optimization steps. We have chosen the range of $(10, 25, 50, 75, 100)$ thousand of steps.
+For some cases we took the second round of optimization with respect to early stopping, taking the number of iterations with steps of $5$ or $10$ thousand steps.
 
 
 \todo{check everything!!!}
