@@ -31,10 +31,10 @@ We keep the magnitude of the force in every direction constant and choose one of
 The last parameter that defines the result of TO is the value of volume fraction occupied by the material, for which we choose $3$ values: $0.1, 0.2, 0.4$
 \medskip
 
-In the end, we obtain the number of possible input sample equal to $4\,\mathrm{(fixed \, side)} \; \times \; 3\,\mathrm{(type \, of \, BC)} \\ \; \times \; 3\,\mathrm{(value \; of \; Volume \; fraction)} \; \times \; 8\,\mathrm{(force \, direction)} \; \times \; 32\,\mathrm{(Y \, coordinate)} \; \times \; 16\,\mathrm{(X \, coordinate)} = 147446$ bitmaps.
+In the end, we obtain the number of possible input sample equal to $ 4\,\mathrm{(fixed \, side)} \; \times \; 3\,\mathrm{(type \, of \, BC)} \\ \; \times \; 3\,\mathrm{(value \; of \; Volume \; fraction)} \; \times \; 8\,\mathrm{(force \, direction)} \; \times \; 32\,\mathrm{(Y \, coordinate)} \; \times \; 16\,\mathrm{(X \, coordinate)} = 147446 $ bitmaps.
 \medskip
 
-Because of the symmetry of the square problem domain, or every case for a single wall fixed as a boundary condition, there are cases equivalent up to a rotation on $30^\circ,180^\circ,270^\circ$ angles.
+Because of the symmetry of the square problem domain, or every case for a single wall fixed as a boundary condition, there are cases equivalent up to a rotation on $ 30^\circ, 180^\circ, 270^\circ $ angles.
 That means it sufficient to generate layout only for a single type edge of domain fixed and then apply \emph{data augmentation} to obtain all the other results.
 It is a simple transformation applied to every sample of the training dataset, a rotation in our case, that allows having a richer set with easier means.
 In our case, we reduced time of dataset generation by almost $4$ time since we had 4 possible edges to fix.
@@ -66,12 +66,12 @@ Totally there were $~150$ thousand created.
 \todo{fill in reference, number, code etc.} 
 \medskip
 
-To generate results of compliance minimization for 3D models we used a program IDeAs\cite{.}, created a Siemens CT.
-The program the parameters of the TO problem are defined in a JSON file, in which one should state STP files describing the geometrical domain, fixed regions for boundary conditions, and surfaces at which force is applied.
+To generate results of compliance minimization for 3D models we used a program IDeAs\cite{}, created a Siemens CT.
+The program the parameters of the TO problem are defined in a JSON\cite{bibl:json} file, in which one should state STEP\cite{bibl:step} files describing the geometrical domain, fixed regions for boundary conditions, and surfaces at which force is applied.
 The boundary condition type, force vector, and volume fraction value are also stated, as well as parameters of physics, discretization, and analyzes. 
 \medskip
 
-Run with $32$ threads on a single Nvidia GeForce 1080 GTX GPU we generated $~5$ thousands of $32 \times 32 \times 32$ voxels model of result models, which took $10$ seconds.
+Run with $32$ threads on a single Nvidia GeForce 1080 GTX GPU we generated $~5$ thousands of $ 32 \times 32 \times 32$ voxels model of result models, which took $10$ seconds.
 \medskip 
 
 % The Boundary Coditions used during Topology Optimization as an input to the Finite Element Analysis constitute of the fixed degrees of freedom
@@ -79,15 +79,15 @@ Run with $32$ threads on a single Nvidia GeForce 1080 GTX GPU we generated $~5$ 
 
 \subsection{Inputs of the ANN Model}
 
-In our case for every fixed domain we use every TO problem, is defined by boundary conditions, filed of applied forces and volume fraction occupied by material. 
+In our case for every fixed domain, we use every TO problem, is defined by boundary conditions, filed of applied forces and volume fraction occupied by material. 
 These are three parameters that vary from case to case of TO problem and others stay the same, thus the model should be able to infer proper layout using this varying information.
 One of the issues during the design of the model was how the model should account for this information.
 \medskip
 
-The boundary condition is defined by a geometrical locus on the domain for which values of some function is predefined, in our case it means the displacement vector for these points is equal to zero. 
+The boundary condition is defined by a geometrical locus on the domain for which values of some function is predefined, in our case it is the displacement vector for these points is equal to zero. 
 After the discretization, it is expressed in having some degrees of freedom fixed. 
 %Essentially that means that for some of the geometrical elements the component in the displacement vector should be always put to zero which is reflected in the form of the right-hand side 
-Since our domain has a correspondence with a bitmap where every element of the TO problem maps to an element of an array we represent boundary conditions with an array where elements with indices equal to coordinates of the fixed element have a value of $1$ and $0$ for everything else.
+Since our domain has a correspondence with a bitmap where every element of the TO problem maps to an element of an array, we represent the boundary conditions with an array where elements with indices corresponding to coordinates of the fixed element have a value of $1$ and $0$ for everything else.
 \medskip
 
 In a similar manner, we represent the force field applied to the element.
@@ -95,33 +95,33 @@ In a similar manner, we represent the force field applied to the element.
 We have two different bitmaps for $X$ and $Y$ components of the force or every point at which force is applied we fill the array element with the $+1$ or $-1$ value depending on the force direction, leaving everything else $0$.
 \medskip
 
-The Volume Fraction is essentially a scalar value and it is accounted in the system by introducing a new channel tiled with a single value at the layer of the representation in the lowest dimensionality as described in the ``Architecture'' section.
+The Volume Fraction is essentially a scalar value and it is accounted in the system by introducing a new channel tiled with a single value at the layer of the representation in the lowest dimensionality as described in the ``Architecture'' section\ref{sec:arch}.
 \medskip
 
-The bitmap of boundaries, force in $X$ direction and force in $Y$ direction form the three input channels of the model over which the convolutions are applied.
+The bitmap of boundaries, force in $X$ direction and force in $Y$ direction form the three input channels of the model on which the convolutions are applied.
 \medskip
 
-The one problem with such representation of BC and force fields that there are only a few non-zero elements in the channel that leads very little information influx in the model and makes it virtually impossible to train the model.
+The one problem with such representation of BC and force fields is that there are only a few non-zero elements in the channel, that leads very little information influx in the model and makes it virtually impossible to train the model.
 \todo{explain more, demonstrate?}
 \medskip
 
-As a remedy for this problem we populate the input channels with more non-zero elements representing meaningful information by finding a \emph{Signed Distance Field (SDF)} of every input channel\cite{}.
+As a remedy for this problem we populate the input channels with more non-zero elements representing meaningful information by finding a \emph{Signed Distance Field (SDF)} of every input channel\cite{bibl:sdf}.
 \medskip
 
-For every channel, we consider the non-zero element as important and put a virtual surface around it and fined signed distance to it for every element of the bitmap.
-The ambiguity for the force direction is solved by defining inner part of zero-surface as either inner or outer part while computing the SDF.
+For every channel, we consider the non-zero elements as important and put a virtual surface around them in order to find signed distance to them for every element of the bitmap.
+The ambiguity for the force direction is solved by defining inner part of zero-surface as either inner or outer part, depending on the direction of the force, while computing the SDF.
 \medskip
 
 \subsection{Signed Distance Field}
 
 One of the ways to describe a set of geometrical points $\Omega$ within the domain is defining the distance to the boundary of $\Omega$ for every point of the domain. 
 The values of such function are typically negative if the point is located within $\Omega$ and positive is outside.
-In the end we define the Signed Distance Field as a metric space $X$ with metrics $f$, or \emph{signed distance function} :    
+In the end, we define the Signed Distance Field as a metric space $X$ with metrics $f$, or \emph{signed distance function} :    
 \[ 
 f(x) = 
 	\begin{cases}
 			d(x, \partial \Omega) & \mbox{ if } x\in\Omega  \\
-			-d(x, \partial \Omega) & \mbox{ if } x\in\Omega 
+			-d(x, \partial \Omega) & \mbox{ if } x\in\Omega^c 
 	\end{cases} 
 	, \quad \mathrm{where} \; d(x, \partial \Omega) := \inf_{y \in \partial \Omega}d(x, y)
 \]
@@ -134,32 +134,31 @@ If $\Omega$ is a subset of Euclidean space and has smooth boundaries, then the g
 \]
 
 This equation describes the propagation of the wavefront started from the boundary of the $\Omega$ and its solution will describe travel time of the wavefront to every point in case of the constant speed of propagation which is equal to the signed distance function.
-\medskip
 \begin{figure}
 	\centering
 	\includegraphics[width=0.5\linewidth]{images/sdf_dem1.png}
 	\label{fig:sdf_ex}
-	\caption{The example of an SDF. The boundary of the region (curve) is represented by distance to the curve at every point (heatmap).  }
+	\caption{The example of an SDF. The boundary of the region (curve) is represented by distance to the curve at every point (heatmap).\todo{reference?}
 \end{figure}
 \medskip
 
 There is a fast way to solve this equation for the points located on the regular grid called \emph{Fast Marching Method (FMM)}.
-It is a graph traversing algorithm based on the Dijkstra's algorithm \cite{} and it's complexity is $O(M \log M)$ where $M$ is the number of grid points.
-There are plenty of FMM implementations available, and we chose to use python package \emph{ski-fmm} \cite{scikit-fmm}, a part of SciKit framework that allows obtaining SFD as Numpy array\cite{}s by calling only one function passing array describing zero-boundary to it.
+It is a graph traversing algorithm based on the Dijkstra's algorithm \cite{bibl:fmm} and it's complexity is $ O(M \log M) $ where $M$ is the number of grid points.
+There are plenty of FMM implementations available, and we chose to use python package \emph{ski-fmm} \cite{scikit-fmm}, a part of SciKit framework that allows obtaining SFD as Numpy arrays\cite{bibl:numpy} by calling only one function passing array describing zero-boundary to it.
 \medskip
 
 In this way, we have a fast and easy way to describe our input images having all the pixels populated with meaningful values.
 \medskip
-\medskip
+
 \subsection{Training Data Set}
 
 One of the main goals of the work was to estimate the capabilities of such approach to producing the model having high accuracy, trained using as small train dataset as possible.
-For 3D case preparing every data sample was taking more than a second for a relatively coarse resolution, which means that preparing dataset, together with training of the network, will diminish the speedup gained by applying the inference system.  
+For 3D case preparing every data sample was taking more than a second for a relatively coarse resolution, which means that preparing large dataset, together with training of the network, will diminish the speedup gained by applying the inference system.  
 \todo{get real performance}
 \medskip
 
 To define the influence of chosen trained dataset on the resulting model and its performance, we chose several of those with a different number of samples and with diffident distributions of parameters within. 
-One of the main questions was also how to chose the samples with respect the points where loads are applied for this case, so we created data sets each having different patterns for the coordinate of force application point and trained models for those to see which one gives a better model performance.
+One of the main questions was also how to chose the samples with respect to the points where loads are applied for the case, so we created data sets each having different patterns for the coordinate of force application point and trained models for those to see which one gives a better model performance.
 Among the patterns, we have chosen the next ones: a regular grid, checkered pattern, a sparse grid and force applied at the edges.
 
 \begin{figure*}
@@ -169,7 +168,7 @@ Among the patterns, we have chosen the next ones: a regular grid, checkered patt
 	\includegraphics[width=0.8\linewidth]{images/loads_layout_cross.png}\par
 \end{multicols}
 \label{fig:sampling_layout}
-\caption{Comparison for different sampling patterns for training dataset. Every pixel denotes a sample, coordinates of pixel groups denote a coordinate of force application point, every pixel around denotes a direction of the force. Figures show the images used to diagnose the real data sets used. On the left, the dataset with the domination of forces applied to the edge of the problem domain. The middle one demonstrates the sparse coordinates chosen for the force application. right one demonstrates coordinates taken among main lines.   
+\caption{Comparison of different sampling patterns for training dataset. Every pixel denotes a sample, coordinates of pixel groups denote a coordinate of force application point, every pixel around denotes a direction of the force. Figures show the images used to diagnose the real data sets used. On the left, the dataset with the domination of forces applied to the edge of the problem domain. The middle one demonstrates the sparse coordinates chosen for the force application. right one demonstrates coordinates taken among main lines.   
 }
 \end{figure*}
 \medskip
@@ -178,16 +177,16 @@ Among the patterns, we have chosen the next ones: a regular grid, checkered patt
 
 The inferred outputs of the model demonstrate several recurring issues related to the material layout having incorrect physical properties.
 One of the issues is material having the volume not equal to the one stated as input.
-The other issue is material forming non-contiguous shapes, which is violating one of the requirement which is automatically met while conventional TO process.
-There also might occur similar problem of the result not corresponding to some topological properties, like structural elements of the layout being not connected or not having physical meaning.
+The other issue is material forming non-contiguous shapes, which is violating one of the requirements which are automatically met while conventional TO process.
+There also might occur the similar problem of the result not corresponding to some topological properties, like structural elements of the layout being not connected or not having physical meaning.
 \todo{fix it if wrong}
 \medskip
 
-In order to solve these issues we decided to perform several post-processing operations on the output of the model.
+In order to solve these issues, we decided to perform several post-processing operations on the output of the model.
 We decided to apply for mathematical morphological operation in order to solve the over-mentioned issues.
 \medskip
 
-We use two basic operations, namely \emph{erosion} and \emph{dilation}\cite{}.
+We use two basic operations, namely \emph{erosion} and \emph{dilation}\cite{bibl:er-dil}.
 The erosion is defined as 
 \begin{equation}
 A \ominus B = \{z \in E | B_{z} \subseteq A \}, \, \mathrm{where} \; B_{z}=\{ b+z | b \in B \}, \, \forall z \in E 
@@ -205,19 +204,19 @@ Similar to erosion, this could be interpreted as adding a layer constructed out 
 	\centering
 	\includegraphics[width=0.5\linewidth]{images/Dilation-and-erosion.png}
 	\label{fig:dil-eros}
-	\caption{The results of morphological dilation and erosion. The former one increases the volume and may connect regions. The latter one decreases volume and may eliminate small regions. }
+	\caption{The results of morphological dilation and erosion. The former one increases the volume and may connect regions. The latter one decreases volume and may eliminate small regions.\todo{reference?}}
 \end{figure}
 \medskip
 
-In result, the post-processing sequence consist of the next steps:
+In the result, the post-processing sequence consists of the next steps:
 \begin{itemize}
-	\item \emph{Apply Morphological Opening}: Firstly we apply erosion of the image by small ball element $B$ and then we apply dilation of the image by the same element. In the result all domains of connectivity smaller than $B$ will vanish.
-	\item \emph{Apply Morphological Closing}: Firstly we apply dilation of the image by small ball element $B$ and then we apply erosion of the image by the same element. In the result all gaps smaller than $B$ will be closed.
+	\item \emph{Apply Morphological Opening}: Firstly we apply erosion of the image by small ball element $B$ and then we apply dilation of the image by the same element. In the result, all domains of connectivity smaller than $B$ will vanish.
+	\item \emph{Apply Morphological Closing}: Firstly we apply dilation of the image by small ball element $B$ and then we apply erosion of the image by the same element. In the result, all gaps smaller than $B$ will be closed.
 \end{itemize}
 \medskip
 
-In case if the volume fraction of the result is larger that desired, which happened in practice most of the time, we try to reduce eliminate the elements that has the lowest probability to be occupied with material.
-For that, we represent the resulting image as sparse matrix in form of coordinate list\ref{}, meaning the that matrix is read as list of tuples $(\mathrm{row},\mathrm{column},\mathrm{value})$ and could be easily sorted by value and delete the lower value until we reach a volume fraction value close to the desired.
+In case if the volume fraction of the result is larger than desired, which happened in practice most of the time, we try to eliminate the elements that have the lowest probability to be occupied with the material.
+For that, we represent the resulting image as a sparse matrix in form of coordinate list, meaning that matrix is read as a list of tuples $(\mathrm{row},\mathrm{column},\mathrm{value})$ and could be easily sorted by value and delete the lower value until we reach a volume fraction value close to the desired.
 \medskip
 
 In total, using this approaches we were able to bring the resulting model to a more physically feasible shape and to ensure that its volume has desired value.
