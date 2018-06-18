@@ -220,6 +220,22 @@ However, in many cases we could reduce the number of parameters to tain by fixin
 %The filters trained in such a layer could be understood as features. 
 %During the inference, the result of applying a convolutional operation to one of the channels denote a ...
 
+On the other side, there are operation that allow increaing the size of the next layer, called \emph{deconvolutions} or \textit{transposed convolution}, which are, essentially, an interpolation of a previous lower-dimensional layer onto a higher resolution.
+Every element of the input is element-wisely multiplied by the kernel and projected to the output, thus every element of the output is equal to sum of the elements of input multiplied by kernel of size $n$ in form $b_{ij} = \sum_{k=i-n+1,l=j-n+1}^{i,j} a_{kl}w_{i-k+1,j-l+1}$, which could be visually represented with \ref{fig:deconv_op}.
+\begin{figure}
+	\centering
+	\includegraphics[width=0.75\linewidth]{images/cnn_dem_deconvop.pdf}
+	\label{fig:deconv_op}
+	\caption{Visualization of the transposed convolution operation.}
+\end{figure}
+For this formula the dependency of input on the output with given weights will have a form of standard convolution.\todo{should it be a ref?}
+Combining with different length of the window stride it is possible to interpolate a previous layer to a layer of an arbitrary larger size. 
+In our case, we apply transposed convolution with a stride of size $2$.
+In such way, we reconstruct the result based on the low-dimensional representation of inputs using features found in the space of results.
+
+%We also used a representation of all dimensionalities found before, adding additional layer after every residual block of the decoder.
+\medskip
+
 
 \subsection{Optimization}
 
@@ -375,6 +391,17 @@ a(e^{x}-1) \, : x \geq 0
 
 \todo{revisit, finish up}
 \todo{actually, a definition of channel should be given as well}
+
+In our work, we apply another two advanced techniques used with activation functions.
+The first one is called \emph{concatenated activation} wich we used together with ELU.
+It is inspired by the idea that the negative values propagated through network could be as important as positive ones, and, because they are treated by activation asymmetrically, they should be considered separately as well\cite{bibl:concat_rectif}.
+That means that at the activation step we should map every channel into two channels, the identical one and the negated one, and apply the activation function to them separately, thus considering the more general picture.
+\medskip
+
+The other one is \emph{gating} and is based on doubling the number of channels at the convolution and then treating the groups of channels separately.
+We apply a sigmoid function only for a half of channels and then multiple the results element-wisely with the leftover channels.
+In this way, the convolution has two times more parameters comparing with a regular convolution leading to the same size of output tensors.
+Doubling number of channels prevents gradient vanishing since during the back-propagation the gradient will have both direct and sigmoid components\cite{bibl:conv_gating}. 
 
 \subsection{Regularization}
 

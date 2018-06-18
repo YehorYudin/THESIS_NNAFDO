@@ -35,16 +35,8 @@ After the first one we apply the activation function and dropout on the phase of
 \medskip
 
 At this point we also apply an activation function of \emph{Concatenated Exponential LU (cELU)}
-Here we apply one of the techniques, that is often used together with activation function, namely \emph{concatenated} activation.
-It is inspired by the idea that the negative values propagated through network could be as important as positive ones, and, because they are treated by activation asymmetrically, they should be considered separately as well\cite{bibl:concat_rectif}.
-That means that at the activation step we should map every channel into two channels, the identical one and the negated one, and apply the activation function to them separately, thus considering the more general picture.
-\medskip
-
+%Here we apply one of the techniques, that is often used together with activation function, namely \emph{concatenated} activation.
 After the second convolution, we apply \emph{gating}, a different form of activation.
-That means we double the number of channels at the convolution and then treat the groups of channels separately.
-We apply a sigmoid function only for a half of channels and then multiple the results element-wisely with the leftover channels.
-In this way, the convolution has two times more parameters comparing with a regular convolution leading to the same size of output tensors.
-Doubling number of channels prevents gradient vanishing since during the back-propagation the gradient will have both direct and sigmoid components\cite{bibl:conv_gating}.
 \medskip
 
 Every second block has stride for its second convolution equal to 2, which increase the size of the output in two times in every direction.
@@ -58,21 +50,7 @@ In total, the residual block of the encoder is represented visually with \ref{fi
 \end{figure}
 \medskip
 
-The latter part of the network, decoding, consist of several blocks of operations of normal convolutions and \emph{deconvolutions} or \textit{transposed convolution}, which are, essentially, an interpolation of a previous lower-dimensional layer onto a higher resolution.
-Every element of the input is element-wisely multiplied by the kernel and projected to the output, thus every element of the output is equal to sum of the elements of input multiplied by kernel of size $n$ in form $b_{ij} = \sum_{k=i-n+1,l=j-n+1}^{i,j} a_{kl}w_{i-k+1,j-l+1}$, which could be visually represented with \ref{fig:deconv_op}.
-\begin{figure}
-	\centering
-	\includegraphics[width=0.75\linewidth]{images/cnn_dem_deconvop.pdf}
-	\label{fig:deconv_op}
-	\caption{Visualization of the transposed convolution operation.}
-\end{figure}
-For this formula the dependency of input on the output with given weights will have a form of standard convolution.\todo{should it be a ref?}
-Combining with different length of the window stride it is possible to interpolate a previous layer to a layer of an arbitrary larger size. 
-In our case, we apply transposed convolution with a stride of size $2$.
-In such way, we reconstruct the result based on the low-dimensional representation of inputs using features found in the space of results.
-%We also used a representation of all dimensionalities found before, adding additional layer after every residual block of the decoder.
-\medskip
-
+The latter part of the network, decoding, consist of several blocks of operations of normal convolutions \textit{transposed convolutions}.
 One of the issues of the transposed convolution is occurring checkered error pattern in the output.\todo{should it ba ref or a picture with previous results?}
 This is caused by the fact that for kernel size being non-multiple of stride, different output elements have a different number of input elements influencing them, which results give different magnitudes for some output coordinates of certain multiplicity.
 To mitigate this effect we applied kernels of size $4 \times 4$, since the stride we used during up-sampling is $2$ in order to increase the size of channel two times in each dimension.
