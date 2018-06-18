@@ -55,7 +55,7 @@ One of the most important question in the work is the trade-off between the size
 
 \section{Previous Work}
 
-The goal of this section is to give an outlook of the previous research on the possibilities to imporove Toplogy Optimization performance.
+The goal of this section is to give an outlook of the previous research on the possibilities to improve Topology Optimization performance.
 In particular with consider using data-driven approach and the Machine Learning methods.
 We also goal to overview the application of Machine Learning for the simulations in engineering, especially the cases dealing with spatial 3D data and inferring the results of some simulations.
 \medskip
@@ -214,7 +214,7 @@ This reduces the size of the image at the next layer and building a representati
 Typically, average or max operations are used and the windows at which operation is applied do not overlap.
 %slides so that there will be no overlaps between two neighboring windows, i.e. the stride of the slide is equal to the length of the kernel.
 This could be generalized with a convolution operation with a stride equal to the size of kernel, with the difference being that the elements of such kernel should also be trained.
-Hoverer, in many cases we could reduce the number of parameters to tain by fixing the weights of strided convolution kernel, for example the average pooling will be identical to te kernel values all equal to the inverse of number of its elements, without significant loss of accuracy\cite{}.
+However, in many cases we could reduce the number of parameters to tain by fixing the weights of strided convolution kernel, for example the average pooling will be identical to te kernel values all equal to the inverse of number of its elements, without significant loss of accuracy\cite{}.
 \medskip
 
 %The filters trained in such a layer could be understood as features. 
@@ -255,7 +255,7 @@ Besides being much faster, this simplification shows good convergence and is ver
 		\includegraphics[width=\linewidth]{images/parabolic_3d.pdf}\par
 		\includegraphics[width=\linewidth]{images/nonconvex_3d.pdf}\par
 	\end{multicols}
-	\caption{Loss function forms. Left one is a convexandhas a single extremum. Right one is non-convex is ill-posed for Gradient Descend. }
+	\caption{Loss function forms. Left one is convex and has a single extremum. Right one is non-convex is ill-posed for Gradient Descend. }
 	\label{fig:lossfunc_demo}
 \end{figure*}
 	
@@ -409,9 +409,9 @@ Finally, one of the most common approach to avoid over-fitting is \textit{early 
 The optimization process happens in iterations and usually end when the maximum number of iterations is reached.
 However, it is possible to choose a different convergence criterion, for example reaching the optimum of validation error.
 During the optimization the model tries to fit the training data samples as close as possible and can end up showing bad results for new data.
-To avoid getting over-fitted model one can  validate model during the process of training, inferring results on a data-sample that were not used for training and analyzing the validation error.
+To avoid getting over-fitted model one can validate model during the process of training, inferring results on a data-sample that were not used for training and analyzing the validation error.
 It could be performed once in several iterations of optimization and the start of validation error growth usually indicates over-fitting.
-An similar approach would be to achieve several models  whir underwent different number of imitation of iterations and choose one with teh lowest validation error.
+An similar approach would be to achieve several models  whir underwent different number of imitation of iterations and choose one with the lowest validation error.
 
 
 
