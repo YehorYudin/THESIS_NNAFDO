@@ -19,17 +19,18 @@ Variables:
 			
 	Forces location: 1 point of application in right half of the domain
 
+
 ??? identity mapping for feature understanding
 	
 ---------------------------------------------
 
 
-previous work --> finish; figures at data; check 3d results;numbers on 2d (see list) ; 
-all image (new colormap)
+previous work --> finish; figures at data; check 3d results; numbers on 2d (see list) ; all image (new colormap)
 
 
-18.06: evaluate L_vf on 32_0.3 (generate and deploy!); train U_net on full set ; evaluate Unet, Vnet; 
-full read data section, fix, restructure, mind figures, fix notation ,formulas
+18.06: evaluate L_vf on 32_0.3 (generate and deploy!); data section: restructure, fix notation
+
+19.06: put theory from arch to intro
 
 
 	

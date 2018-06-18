@@ -4,10 +4,10 @@
 
  ---- Architectures:
 	model Vnet (2res,3Vf, 3Bc for 1, all sdf) params 9007601
+		eval on 28_0.3 : MSE 0.18(0.003) Vfe 0.085(0.0005)
 		eval on 32_0.2 : MSE 0.056(0.0008) Vfe 0.013(0.0001)
-		eval on 28_0.3 : MSE () Vfe ()
 	model Unet (2res,3Vf, 3Bc for 1, all sdf) params
-		eval on 32_0.2 : MSE () Vfe ()
+		eval on 32_0.2 : MSE 0.81(0.00004) Vfe 0.41(0.0003)
 		eval on 28_0.3 : MSE () Vfe ()
 	model ref 
 		eval on 28_0.3 : MSE 0.162(0.005) Vfe 0.046(0.001)
