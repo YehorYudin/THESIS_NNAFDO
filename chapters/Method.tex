@@ -13,7 +13,7 @@ Also, we will talk about the aspects of choosing and preparing data for model tr
 
 \section{ANN Architecture}
 
-The model used by us to describe the dependency between boundary conditions and the resulting material layout is a CNN which structure relates to the class of \textit{encoder-decoder} architectures.
+The model used by us to describe the dependency between boundary conditions and the resulting material layout is a CNN which structure relates to the class of \emph{encoder-decoder} architectures.
 This network the fits for the cases when input and outputs are of the same size and consists of two groups of data transformations: encoding and decoding.
 \medskip
 
@@ -33,13 +33,13 @@ At every channel, we apply two convolutions.
 After the first one we apply the activation function and dropout on the phase of training for the sake of regularization, but not in the final model.
 \medskip
 
-At this point we also apply an activation function of \textit{Concatenated Exponential LU (cELU)}
-Here we apply one of the techniques, that is often used together with activation function, namely \textit{concatenated} activation.
+At this point we also apply an activation function of \emph{Concatenated Exponential LU (cELU)}
+Here we apply one of the techniques, that is often used together with activation function, namely \emph{concatenated} activation.
 It is inspired by the idea that the negative values propagated through network could be as important as positive ones, and, because they are treated by activation asymmetrically, they should be considered separately as well\cite{bibl:concat_rectif}.
 That means that at the activation step we should map every channel into two channels, the identical one and the negated one, and apply the activation function to them separately, thus considering the more general picture.
 \medskip
 
-After the second convolution, we apply \textit{gating}, a different form of activation.
+After the second convolution, we apply \emph{gating}, a different form of activation.
 That means we double the number of channels at the convolution and then treat the groups of channels separately.
 We apply a sigmoid function only for a half of channels and then multiple the results element-wisely with the leftover channels.
 In this way, the convolution has two times more parameters comparing with a regular convolution leading to the same size of output tensors.
@@ -57,7 +57,7 @@ In total, the residual block of the encoder is represented visually with \ref{fi
 \end{figure}
 \medskip
 
-The latter part of the network, decoding, consist of several blocks of operations of normal convolutions and \textit{deconvolutions} or \textit{transposed convolution}, which are, essentially, an interpolation of a previous lower-dimensional layer onto a higher resolution.
+The latter part of the network, decoding, consist of several blocks of operations of normal convolutions and \emph{deconvolutions} or \textit{transposed convolution}, which are, essentially, an interpolation of a previous lower-dimensional layer onto a higher resolution.
 Every element of the input is element-wisely multiplied by the kernel and projected to the output, thus every element of the output is equal to sum of the elements of input multiplied by kernel of size $n$ in form $b_{ij} = \sum_{k=i-n+1,l=j-n+1}^{i,j} a_{kl}w_{i-k+1,j-l+1}$, which could be visually represented with \ref{fig:deconv_op}.
 \begin{figure}
 	\centering
@@ -102,7 +102,7 @@ We tiled a matrix of the size of the lowest-dimensional representation with valu
 After the sequence of four transposed convolutions, each followed by a residual block with a shortcut, we apply a single convolution layer that with one kernel to decrease the final channels dimensionality. 
 In the end, based on the $128$ channels of low-dimensional representation, we obtain a final image of a single channel of size equal to the TO problem domain.
 The total architectural of our model could be visually with\ref{fig:arch_1}.
-The architecture for the 3D case is very similar to the 2D one, with every convolution replaced with a corresponding \textit{3D convolution}, where channels and kernels are cubes and summation happens across $3$ dimensions.
+The architecture for the 3D case is very similar to the 2D one, with every convolution replaced with a corresponding \emph{3D convolution}, where channels and kernels are cubes and summation happens across $3$ dimensions.
 
 \begin{figure}
 	\centering
@@ -160,7 +160,7 @@ For this, we calculate the volume of the inferred result as a count of the pixel
 
 The hyperparameters are the parameters of the model that cannot be optimized during the conventional training process.
 They differ from the weights of the layers of the model, because of their special nature, and because it is not possible to find a gradient of the loss function with respect to them.
-However, choosing them is important to find the best model, and in order to find them \textit{hyperparameter optimization} is used.
+However, choosing them is important to find the best model, and in order to find them \emph{hyperparameter optimization} is used.
 \todo{explain hp-pam optimization?}
 \medskip
 
@@ -183,7 +183,7 @@ For that, we chose key values for every hyperparameter and trained model for eve
 \medskip
 
 We were choosing batch size values of $1,4,8$.
-For the dropout probability we tried $0.5,0.7,0.9$.\todo{may be add dependency on that}
+For the dropout probability we tried $0.5,0.7,0.9$.\todo{may be add a dependency on that}
 Learning rate was taken with value $10^{-4}$, since changing value did not significantly change the outcome because of the adaptive nature of optimizer.
 For the $L_2$ regularization used by us, for the multiplicative constant we tried several values but stopped at using single a value of $10^{-6}$ because for other values the results were significantly worse. 
 

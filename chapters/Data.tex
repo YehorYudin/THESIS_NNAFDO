@@ -2,15 +2,16 @@
 
 \section{Data Preparation}
 
-In this section, we describe what are the data used to train and evaluate the inference system.
+In this section, we describe what data was used to train and evaluate the inference system.
 We discuss the parameters used to define the Topology Optimization problem and their variability and properties.
 The other aspect to be covered is the ways to represent these data in a way suitable for ANN system input.
 Lastly, we discuss the aspects of choosing the proper training dataset for the inference system.
+\medskip
 
 \subsection{Topology Optimization Problem Cases}
 
 The physical problem, for which the Topology Optimization (TO) is performed, is defined by the Boundary Conditions (BC) and the force applied to the element. 
-The former has a view of Dirichlet BC and define the parts of the element that experience no displacement and the latter is in general form a filed of forces applied to all the point of the element. 
+The former has a view of Dirichlet BC and defines the parts of the element that experience no displacement and the latter is in general form a filed of forces applied to all the point of the element. 
 Translated in the discretized form used in the Finite Element Analysis (FEA) performed during the TO, the former defined the fixed degrees of freedom and the latter defines the non-zero elements of the right-hand-side vector of loads.
 \medskip
 
@@ -25,23 +26,30 @@ We can also choose to leave the inner $\frac{1}{3}$ of the side unfixed or fix o
 \medskip
 
 As a simple load case, we consider only the situation where a force is applied to a single point of the element. 
-The variable parameters are the coordinates of the force application (X, Y) and the direction of the force.
+The variable parameters are the coordinates of the force application $(X, Y)$ and the direction of the force.
 We keep the magnitude of the force in every direction constant and choose one of the eight possible directions: along one of the axes in one of the direction or a combination of those.
 The last parameter that defines the result of TO is the value of volume fraction occupied by the material, for which we choose $3$ values: $0.1, 0.2, 0.4$
 \medskip
 
 In the end, we obtain the number of possible input sample equal to $4\,\mathrm{(fixed \, side)} \; \times \; 3\,\mathrm{(type \, of \, BC)} \\ \; \times \; 3\,\mathrm{(value \; of \; Volume \; fraction)} \; \times \; 8\,\mathrm{(force \, direction)} \; \times \; 32\,\mathrm{(Y \, coordinate)} \; \times \; 16\,\mathrm{(X \, coordinate)} = 147446$ bitmaps.
+\medskip
 
-\subsubsection{3D Case of Topology Optimization}
+Because of the symmetry of the square problem domain, or every case for a single wall fixed as a boundary condition, there are cases equivalent up to a rotation on $30^\circ,180^\circ,270^\circ$ angles.
+That means it sufficient to generate layout only for a single type edge of domain fixed and then apply \emph{data augmentation} to obtain all the other results.
+It is a simple transformation applied to every sample of the training dataset, a rotation in our case, that allows having a richer set with easier means.
+In our case, we reduced time of dataset generation by almost $4$ time since we had 4 possible edges to fix.
+\medskip
+
+\subsubsection{3D Cases of Topology Optimization}
 
 For the second series of experiments, we required 3D models of optimized elements.
 Because of the larger design space, and larger problem size, which lead to much larger time spent to obtain a single result, we decided to restrict data variability.
 For the 3D case, we left only a single volume fraction value equal to $0.2$, as well as single Boundary Condition case when there are four corner elements of the $ X=0 $ edge of the domain are fixed.
 The problem domain we considered has the size of $32 \times 32 \times 32$ hexahedral elements, and we performed TO for cases when a force was applied to a single element. 
-We generated TO results not for every possible point of load application, but took point with the step of 4 in every dimension in the furthermost half of the domain in $Y$ direction. 
-For every point of load application we considered forces of magnitude $1$ directed to each face of the hexahedral element, as well as towards each vertex, which corresponds to $D3Q15$ model of hexahidral directions. \todo{maybe unsuitable}
-In total, for the entire dataset we generated $ 14\,\mathrm{(force \, direction)} \; \times \; 5\,\mathrm{(Y \, coordinate)} \; \times \; 9\,\mathrm{(X \, coordinate)} \times \; 9\,\mathrm{(Y \, coordinate)} = 5670 $ models.
-
+We generated TO results not for every possible point of load application but took point with the step of 4 in every dimension in the furthermost half of the domain in $Y$ direction. 
+For every point of load application, we considered forces of magnitude $1$ directed to each face of the hexahedral element, as well as towards each vertex, which corresponds to $D3Q15$ model of hexahedral directions. \todo{maybe unsuitable}
+In total, for the entire dataset, we generated $ 14\,\mathrm{(force \, direction)} \; \times \; 5\,\mathrm{(Y \, coordinate)} \; \times \; 9\,\mathrm{(X \, coordinate)} \times \; 9\,\mathrm{(Y \, coordinate)} = 5670 $ models.
+\medskip
 
 \subsection{Dataset generation}
 
@@ -61,9 +69,10 @@ Totally there were $~150$ thousand created.
 To generate results of compliance minimization for 3D models we used a program IDeAs\cite{.}, created a Siemens CT.
 The program the parameters of the TO problem are defined in a JSON file, in which one should state STP files describing the geometrical domain, fixed regions for boundary conditions, and surfaces at which force is applied.
 The boundary condition type, force vector, and volume fraction value are also stated, as well as parameters of physics, discretization, and analyzes. 
+\medskip
 
 Run with $32$ threads on a single Nvidia GeForce 1080 GTX GPU we generated $~5$ thousands of $32 \times 32 \times 32$ voxels model of result models, which took $10$ seconds.
- 
+\medskip 
 
 % The Boundary Coditions used during Topology Optimization as an input to the Finite Element Analysis constitute of the fixed degrees of freedom
 
@@ -101,6 +110,7 @@ As a remedy for this problem we populate the input channels with more non-zero e
 
 For every channel, we consider the non-zero element as important and put a virtual surface around it and fined signed distance to it for every element of the bitmap.
 The ambiguity for the force direction is solved by defining inner part of zero-surface as either inner or outer part while computing the SDF.
+\medskip
 
 \subsection{Signed Distance Field}
 
@@ -117,6 +127,7 @@ f(x) =
 \]
 
 If $\Omega$ is a subset of Euclidean space and has smooth boundaries, then the gradient of the metrics is constant at every point and satisfies the \emph{Eikonal equation}.
+\medskip
 
 \[
  |\nabla f(x)| = \mathbf{1}, \quad \forall x \in X
@@ -130,6 +141,7 @@ This equation describes the propagation of the wavefront started from the bounda
 	\label{fig:sdf_ex}
 	\caption{The example of an SDF. The boundary of the region (curve) is represented by distance to the curve at every point (heatmap).  }
 \end{figure}
+\medskip
 
 There is a fast way to solve this equation for the points located on the regular grid called \emph{Fast Marching Method (FMM)}.
 It is a graph traversing algorithm based on the Dijkstra's algorithm \cite{} and it's complexity is $O(M \log M)$ where $M$ is the number of grid points.
@@ -137,12 +149,14 @@ There are plenty of FMM implementations available, and we chose to use python pa
 \medskip
 
 In this way, we have a fast and easy way to describe our input images having all the pixels populated with meaningful values.
-
+\medskip
+\medskip
 \subsection{Training Data Set}
 
 One of the main goals of the work was to estimate the capabilities of such approach to producing the model having high accuracy, trained using as small train dataset as possible.
 For 3D case preparing every data sample was taking more than a second for a relatively coarse resolution, which means that preparing dataset, together with training of the network, will diminish the speedup gained by applying the inference system.  
 \todo{get real performance}
+\medskip
 
 To define the influence of chosen trained dataset on the resulting model and its performance, we chose several of those with a different number of samples and with diffident distributions of parameters within. 
 One of the main questions was also how to chose the samples with respect the points where loads are applied for this case, so we created data sets each having different patterns for the coordinate of force application point and trained models for those to see which one gives a better model performance.
@@ -158,7 +172,7 @@ Among the patterns, we have chosen the next ones: a regular grid, checkered patt
 \caption{Comparison for different sampling patterns for training dataset. Every pixel denotes a sample, coordinates of pixel groups denote a coordinate of force application point, every pixel around denotes a direction of the force. Figures show the images used to diagnose the real data sets used. On the left, the dataset with the domination of forces applied to the edge of the problem domain. The middle one demonstrates the sparse coordinates chosen for the force application. right one demonstrates coordinates taken among main lines.   
 }
 \end{figure*}
-
+\medskip
  
 \subsection{Post-processing}
 
@@ -179,6 +193,7 @@ The erosion is defined as
 A \ominus B = \{z \in E | B_{z} \subseteq A \}, \, \mathrm{where} \; B_{z}=\{ b+z | b \in B \}, \, \forall z \in E 
 \end{equation} 
 This essentially can be interpreted as cutting a layer constructed out of elements $B$ from every contiguous figure of the image.
+\medskip
 
 The dilation is defined as 
 \begin{equation}
@@ -192,19 +207,21 @@ Similar to erosion, this could be interpreted as adding a layer constructed out 
 	\label{fig:dil-eros}
 	\caption{The results of morphological dilation and erosion. The former one increases the volume and may connect regions. The latter one decreases volume and may eliminate small regions. }
 \end{figure}
+\medskip
 
 In result, the post-processing sequence consist of the next steps:
 \begin{itemize}
 	\item \emph{Apply Morphological Opening}: Firstly we apply erosion of the image by small ball element $B$ and then we apply dilation of the image by the same element. In the result all domains of connectivity smaller than $B$ will vanish.
 	\item \emph{Apply Morphological Closing}: Firstly we apply dilation of the image by small ball element $B$ and then we apply erosion of the image by the same element. In the result all gaps smaller than $B$ will be closed.
 \end{itemize}
+\medskip
 
 In case if the volume fraction of the result is larger that desired, which happened in practice most of the time, we try to reduce eliminate the elements that has the lowest probability to be occupied with material.
 For that, we represent the resulting image as sparse matrix in form of coordinate list\ref{}, meaning the that matrix is read as list of tuples $(\mathrm{row},\mathrm{column},\mathrm{value})$ and could be easily sorted by value and delete the lower value until we reach a volume fraction value close to the desired.
+\medskip
 
 In total, using this approaches we were able to bring the resulting model to a more physically feasible shape and to ensure that its volume has desired value.
-
-
+\medskip
 \todo{explanation on operations, a pseudocode}
 
  

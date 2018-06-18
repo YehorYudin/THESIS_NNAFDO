@@ -1,0 +1,31 @@
+#params 4011585
+
+
+
+ ---- Architectures:
+	model Vnet (2res,3Vf, 3Bc for 1, all sdf) params 9007601
+		eval on 32_0.2 : MSE 0.056(0.0008) Vfe 0.013(0.0001)
+		eval on 28_0.3 : MSE () Vfe ()
+	model Unet (2res,3Vf, 3Bc for 1, all sdf) params
+		eval on 32_0.2 : MSE () Vfe ()
+		eval on 28_0.3 : MSE () Vfe ()
+	model ref 
+		eval on 28_0.3 : MSE 0.162(0.005) Vfe 0.046(0.001)
+		eval on 32_0.2 : MSE 0.058(0.0008) Vfe 0.012(0.0001)
+
+
+
+ ---- Vf loss function: 
+
+	model CE_L2 (2res,3Vf, 3Bc for 1, all sdf)
+		eval on 28_0.3 : MSE 0.168(0.006) Vfe 0.054(0.001)
+		eval on 32_0.2 : MSE 0.063(0.0001) Vfe 0.015(0.0001)
+	model CE_Vf_L2 0.2 (2res,3Vf, 3Bc for 1, all sdf)
+		eval on 28_0.3 : MSE 0.162(0.005) Vfe 0.046(0.001)
+		eval on 32_0.2 : MSE 0.058(0.0008) Vfe 0.012(0.0001)  -->**
+	model CE_Vf_L2 0.01 (2res,3Vf, 3Bc for 1, all sdf)
+		eval on 28_0.3 : MSE 0.156(0.006) Vfe 0.044(0.001)  -->*
+		eval on 32_0.2: MSE 0.060(0.008) Vfe 0.0017(0.0002)
+	model CE_Vf_L2 1.0 (2res,3Vf, 3Bc for 1, all sdf)
+		eval on 28_0.3 : MSE 0.177(0.005) Vfe 0.07(0.002)
+		eval on 32_0.2 : MSE 0.063(0.001) Vfe 0.011(0.001)
