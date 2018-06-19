@@ -3,9 +3,9 @@
 \chapter{Introduction}
 \label{chapter:Introduction}
 
-In this chapter, we describe principles and the application scope of Topology Optimization algorithm and explain the performance challenges of this method.
+In this chapter, we describe principles and the application scope of Topology Optimization algorithms and explain the performance challenges of this method.
 We present an approach to improve the performance of the method based on an Artificial Neural Network, justify the applicability and novelty of such approach and show ways it help to improve the performance of Topology Optimization. 
-Finally, together with the explanation of Topology Optimization method, we give a description of Convolutional Neural Networks, their principles, and all their components.
+Finally, alongside with the explanation of Topology Optimization method, we give a description of Convolutional Neural Networks, their principles, and all their components.
 
 
 \section{Motivation}
@@ -17,38 +17,39 @@ Topology Optimization is an essentially computationally complex problem and vari
 \todo{find real numbers on performance of TO, with hardware}
 \medskip
 
-The optimization is proceeded in iterations, for each of which the Finite Element Analysis is performed in order to assure that the result is correct and corresponds the physics of the problem, as well as it is possible to derive the functional gradient.
-This step is the most expensive step of all and can be internally optimized to increase the speed of computation, however, the other aspect of performance tuning is reducing the number of optimization iterations made.
-The convergence speed of the optimization is scarcely studied and is mostly analyzed in empirical ways.
-\todo{convergence of TO}
+The optimization is an iterative process, during which for every iteration the Finite Element Analysis (FEM) is performed in order to assure that the result is correct and corresponds the physics of the problem, as well as it is possible to derive the functional gradient.
+This step is the most expensive step of all and can be internally optimized to increase the speed of computation.
+However, the other aspect of performance tuning is reducing the number of optimization iterations made.
+%The convergence speed of the optimization is scarcely studied and is mostly analyzed in empirical ways.
+\todo{convergence of TO, motivation!}
 \medskip
 
-One of the ways to speed up the optimization process reducing the number of iterations is to start optimization with a certain educated guess of the material layout instead of the typical way, which is initializing the whole domain covered with the material.
-
-\medskip
+One of the ways to speed up the optimization process by reducing the number of iterations is to start optimization with a certain educated guess of the material layout instead of the typical way, which is initializing the whole domain covered with the material.
 In the ideal case, the TO problem material layout could be initialized with an approximate solution which will require only a couple iterations to converge under the chosen criteria, in this way eliminating multiple initial steps of analysis.
-The first step of the optimization typically change the layout drastically and result into a very coarse solution with a significant decrease of the objective function, but the value still stays much higher than for the desired outcome. 
-\medskip
-
-Furthermore, such approach allows reducing the computational domain of the problem by leaving out elements for which we know in advance that the material will not be present there. 
+The first step of the optimization usually changes the layout of the material drastically and results in a very coarse solution with a significant decrease of the objective function, but the value still stays much higher than for the desired outcome. 
+Furthermore, such approach allows reducing the computational domain of the problem by leaving out elements which will certainly be free of material.
+%for which we know in advance that the material will not be present there. 
 \medskip
 \todo{revise motivation}
 
 These initial steps could be made by an algorithm that is much less computationally expensive than the Topology Optimization, which will reduce time spent on FEM analysis. 
-Despite TO results being possible only to predict heuristically, there exist some tendencies in the dependence between the Boundary Conditions and forces applied to the element. 
+Despite TO results being possible only to predict heuristically, there exist some tendencies in the dependence between the Boundary Conditions (BC) and forces applied to the element. 
 \medskip
 
-As one of the possible solutions to find approximations of the TO outcome, we propose using Artificial Neural Network (ANN) approach.
-The idea behind it is to build Machine Learning (ML) system able to infer a coarse result of a TO process based on the initial inputs for it.
-The ML model has a form of ANN with parameters trained on a dataset which consists of the known cases of Topology Optimization problem, with inputs being pre-processed initial conditions of Topology Optimization and outputs being the outcome of TO, namely the final material layout design.
+As one of the possible approaches to finding suitable initial guess for TO, we propose using predictive model based on Artificial Neural Network (ANN).
+%approximations of the TO outcome
+The idea behind it is to build a Machine Learning (ML) system able to infer an approximate result of a TO process based on the inputs for it.
+%The ML model has a form of ANN with parameters trained on a dataset which consists of the known cases of Topology Optimization problem, with inputs being pre-processed initial conditions of Topology Optimization and outputs being the outcome of TO, namely the final material layout design.
+Here the inputs of the model are initial conditions, constraints, and parameters of the problem and the outputs are approximate optimal material layouts for minimal compliance for elements with constrained volume under stress.
 \medskip
 
-In this work, we propose a design of an ANN system for fast inference of approximate optimal material layout for minimal compliance for elements with constrained volume under stress based on initial conditions, constraints, and parameters of the problem. 
-We present the architecture of the problem, analyze the influence of dataset parameters and its representation on the quality of inference results as well as the general capacity of the system to improve the performance of Topology Optimization process.  
+%In this work, we propose a design of an ANN system for fast inference of approximate optimal material layout for minimal compliance for elements with constrained volume under stress based on initial conditions, constraints, and parameters of the problem.
+In this work, we design such ANN system and train the model on a dataset which consists of the known cases of Topology Optimization problems. 
+We present the architecture of the model, analyze the influence of dataset parameters and its representation on the quality of inference results as well as the general capacity of the system to improve the performance of Topology Optimization process.  
 \medskip
 
-Unlike many of the Deep Learning applications, the training dataset is principally hard to obtain, since every sample would be a pair of some initial conditional and the material layout, which is a result of an expensive TO process. 
-One of the most important question in the work is the trade-off between the size and properties of the training dataset and the quality of the inferred result with respect to their accuracy and suitability for the initial layout for the TO process.
+Unlike many of the Deep Learning applications, the training dataset is principally hard to obtain, since every sample would be a pair of some initial conditions and the material layout, which is a result of an expensive TO process. 
+One of the most important questions in the work is the trade-off between the size and properties of the training dataset and the quality of the inferred result with respect to their accuracy and suitability for the initial layout for the TO process.
 \todo{improve texting}
 \todo{reduce vain stuff and increase size of the text}
 
