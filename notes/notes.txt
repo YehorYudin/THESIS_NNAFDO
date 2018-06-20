@@ -25,12 +25,13 @@ Variables:
 ---------------------------------------------
 
 
-previous work --> finish; figures at data; check 3d results; numbers on 2d (see list) ; all image (new colormap)
+figures at data; check 3d results; numbers on 2d (see list) ; all image (new colormap)
 
 
-18.06: evaluate L_vf on 32_0.3 (generate and deploy!, stops at 1000-22-30); data section: restructure, fix notation
+18.06: evaluate L_vf on 32_0.3 (generate and deploy!, stops at 1000-22-30), evaluate L_vf 32_0.5(generate and deploy); data section: restructure, fix notation
 
-19.06: put theory from arch to intro
+19.06: arch to intro(resnet) ; 32_0.3 tests ; data without sdf at all ;
+	use To consistently ; in cnn intro make an ouline an then details ; previous work: another speedup arpoaches + novelty
 
 
 	
