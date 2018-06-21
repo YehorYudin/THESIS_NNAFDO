@@ -1,11 +1,10 @@
 % !TEX root = ../main.tex
 
-\chapter{Method and Implementation}
+\chapter{Method and Model}
 
 In this chapter, we will describe the implementation aspects of the work.
 Here the description of the ANN architecture and its reasoning, the general pipeline of computations and data manipulations applied to set up the system creating data that helps the TO performance improvement and ways for the system analysis, as well as the software used for its creation.
-Also, we will talk about the aspects of choosing and preparing data for model training, as well as data pre-processing and post-processing.
-\todo{what did I just write}
+%Also, we will talk about the aspects of choosing and preparing data for model training, as well as data pre-processing and post-processing.
 \medskip
 
 %In this section we describe the important implementation aspects including the technologies and techniques used, the structure of the code and the main functions logic.
@@ -42,7 +41,7 @@ After the second convolution, we apply \emph{gating}, a different form of activa
 Every second block has stride for its second convolution equal to 2, which increase the size of the output in two times in every direction.
 Here we also apply average pooling and pad empty channels at the residual channel to fit the new size of the image.
 In total, the residual block of the encoder is represented visually with \ref{fig:res_block}.
-\begin{figure}
+\begin{figure}[ht]
 	\centering
 	\includegraphics[width=0.4\linewidth]{images/Residual_Block2.pdf}
 	\label{fig:res_block}
@@ -50,7 +49,7 @@ In total, the residual block of the encoder is represented visually with \ref{fi
 \end{figure}
 \medskip
 
-The latter part of the network, decoding, consist of several blocks of operations of normal convolutions \textit{transposed convolutions}.
+The latter part of the network, decoding, consist of several blocks of operations of normal convolutions \emph{transposed convolutions}.
 One of the issues of the transposed convolution is occurring checkered error pattern in the output.\todo{should it ba ref or a picture with previous results?}
 This is caused by the fact that for kernel size being non-multiple of stride, different output elements have a different number of input elements influencing them, which results give different magnitudes for some output coordinates of certain multiplicity.
 To mitigate this effect we applied kernels of size $4 \times 4$, since the stride we used during up-sampling is $2$ in order to increase the size of channel two times in each dimension.
@@ -66,7 +65,7 @@ Also, we need to restore the size of the image after the up-sampling, because th
 The encoder residual block could be easier understood using\ref{fig:res_block_upc}.
 
 \medskip
-\begin{figure}
+\begin{figure}[ht]
 	\centering
 	\includegraphics[width=0.4\linewidth]{images/Residual_Upconv0.pdf}
 	\label{fig:res_block_upc}
@@ -83,7 +82,7 @@ In the end, based on the $128$ channels of low-dimensional representation, we ob
 The total architectural of our model could be visually with\ref{fig:arch_1}.
 The architecture for the 3D case is very similar to the 2D one, with every convolution replaced with a corresponding \emph{3D convolution}, where channels and kernels are cubes and summation happens across $3$ dimensions.
 
-\begin{figure}
+\begin{figure}[ht]
 	\centering
 	\includegraphics[width=0.8\linewidth]{images/Architectue_resnet_cone.pdf}
 	\label{fig:arch_1}
@@ -135,7 +134,7 @@ For this, we calculate the volume of the inferred result as a count of the pixel
 \end{equation}
 
 
-\subsection{Hyperparameters}
+\section{Hyperparameters}
 
 The hyperparameters are the parameters of the model that cannot be optimized during the conventional training process.
 They differ from the weights of the layers of the model, because of their special nature, and because it is not possible to find a gradient of the loss function with respect to them.
@@ -167,7 +166,7 @@ Learning rate was taken with value $10^{-4}$, since changing value did not signi
 For the $L_2$ regularization used by us, for the multiplicative constant we tried several values but stopped at using single a value of $10^{-6}$ because for other values the results were significantly worse. 
 
 We have also tried two variations of the loss function, with and without volume fraction component, but we put this variation as a separate experiment. 
-For this we checked several values of multiplicative constant and stopped at $0.2$.\todo{change that}
+For this we checked several values of multiplicative constant.\todo{change that}
 \medskip
 
 After some preliminary research, we have chosen training dataset based on three patters described before (sparse coordinates, edges, cross) and for each of them taken three level of density.

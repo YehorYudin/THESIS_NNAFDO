@@ -1,14 +1,14 @@
 % !TEX root = ../main.tex
 
-\section{Data Preparation}
+\chapter{Data Preparation}
 
-In this section, we describe what data was used to train and evaluate the inference system.
+In this chapter, we describe what data was used to train and evaluate the inference system.
 We discuss the parameters used to define the Topology Optimization problem and their variability and properties.
 The other aspect to be covered is the ways to represent these data in a way suitable for ANN system input.
 Lastly, we discuss the aspects of choosing the proper training dataset for the inference system.
 \medskip
 
-\subsection{Topology Optimization Problem Cases}
+\section{Topology Optimization Problem Cases}
 
 The physical problem, for which the Topology Optimization (TO) is performed, is defined by the Boundary Conditions (BC) and the force applied to the element. 
 The former has a view of Dirichlet BC and defines the parts of the element that experience no displacement and the latter is in general form a filed of forces applied to all the point of the element. 
@@ -18,7 +18,7 @@ Translated in the discretized form used in the Finite Element Analysis (FEA) per
 To obtain a set of TO results that could be used as the training and testing samples for the Artificial Neural Network (ANN) we choose to perform TO for various combination of values of the boundary conditions and load cases.
 \medskip
 
-\subsubsection{2D Cases of Topology Optimization}
+\subsection{2D Cases of Topology Optimization}
 
 As Boundary Condition we can choose to fix one of the sides of the domain (one of four walls). 
 We can also choose to leave the inner $\frac{1}{3}$ of the side unfixed or fix only the extreme points of the wall. 
@@ -40,7 +40,7 @@ It is a simple transformation applied to every sample of the training dataset, a
 In our case, we reduced time of dataset generation by almost $4$ time since we had 4 possible edges to fix.
 \medskip
 
-\subsubsection{3D Cases of Topology Optimization}
+\subsection{3D Cases of Topology Optimization}
 
 For the second series of experiments, we required 3D models of optimized elements.
 Because of the larger design space, and larger problem size, which lead to much larger time spent to obtain a single result, we decided to restrict data variability.
@@ -51,7 +51,7 @@ For every point of load application, we considered forces of magnitude $1$ direc
 In total, for the entire dataset, we generated $ 14\,\mathrm{(force \, direction)} \; \times \; 5\,\mathrm{(Y \, coordinate)} \; \times \; 9\,\mathrm{(X \, coordinate)} \times \; 9\,\mathrm{(Y \, coordinate)} = 5670 $ models.
 \medskip
 
-\subsection{Dataset generation}
+\section{Dataset generation}
 
 For the purpose of generating the dataset of known solved TO problems, in this work we used the MATLAB code provided in the paper "A 99 line topology optimization code written in Matlab"\cite{to_99line}.
 It minimizes compliance for 2D material layout under some load.
@@ -77,7 +77,7 @@ Run with $32$ threads on a single Nvidia GeForce 1080 GTX GPU we generated $~5$ 
 % The Boundary Coditions used during Topology Optimization as an input to the Finite Element Analysis constitute of the fixed degrees of freedom
 
 
-\subsection{Inputs of the ANN Model}
+\section{Inputs of the ANN Model}
 
 In our case for every fixed domain, we use every TO problem, is defined by boundary conditions, filed of applied forces and volume fraction occupied by material. 
 These are three parameters that vary from case to case of TO problem and others stay the same, thus the model should be able to infer proper layout using this varying information.
@@ -134,7 +134,7 @@ If $\Omega$ is a subset of Euclidean space and has smooth boundaries, then the g
 \]
 
 This equation describes the propagation of the wavefront started from the boundary of the $\Omega$ and its solution will describe travel time of the wavefront to every point in case of the constant speed of propagation which is equal to the signed distance function.
-\begin{figure}
+\begin{figure}[ht]
 	\centering
 	\includegraphics[width=0.5\linewidth]{images/sdf_dem1.png}
 	\label{fig:sdf_ex}
@@ -161,7 +161,8 @@ To define the influence of chosen trained dataset on the resulting model and its
 One of the main questions was also how to chose the samples with respect to the points where loads are applied for the case, so we created data sets each having different patterns for the coordinate of force application point and trained models for those to see which one gives a better model performance.
 Among the patterns, we have chosen the next ones: a regular grid, checkered pattern, a sparse grid and force applied at the edges.
 
-\begin{figure*}
+\begin{figure*}[ht]
+	\centering
 \begin{multicols}{3}
 	\includegraphics[width=0.8\linewidth]{images/loads_layout_edges.png}\par
 	\includegraphics[width=0.8\linewidth]{images/loads_layout_sparse.png}\par
@@ -173,54 +174,5 @@ Among the patterns, we have chosen the next ones: a regular grid, checkered patt
 \end{figure*}
 \medskip
  
-\subsection{Post-processing}
-
-The inferred outputs of the model demonstrate several recurring issues related to the material layout having incorrect physical properties.
-One of the issues is material having the volume not equal to the one stated as input.
-The other issue is material forming non-contiguous shapes, which is violating one of the requirements which are automatically met while conventional TO process.
-There also might occur the similar problem of the result not corresponding to some topological properties, like structural elements of the layout being not connected or not having physical meaning.
-\todo{fix it if wrong}
-\medskip
-
-In order to solve these issues, we decided to perform several post-processing operations on the output of the model.
-We decided to apply for mathematical morphological operation in order to solve the over-mentioned issues.
-\medskip
-
-We use two basic operations, namely \emph{erosion} and \emph{dilation}\cite{bibl:er-dil}.
-The erosion is defined as 
-\begin{equation}
-A \ominus B = \{z \in E | B_{z} \subseteq A \}, \, \mathrm{where} \; B_{z}=\{ b+z | b \in B \}, \, \forall z \in E 
-\end{equation} 
-This essentially can be interpreted as cutting a layer constructed out of elements $B$ from every contiguous figure of the image.
-\medskip
-
-The dilation is defined as 
-\begin{equation}
-A \oplus B = \{z \in E | (B^{s})_{z} \cap  A \neq \emptyset \}, \, \mathrm{where} \; B^{s}=\{x \in E | -x \in B \}
-\end{equation} 
-Similar to erosion, this could be interpreted as adding a layer constructed out of elements $B$ to every contiguous figure of the image. 
-\medskip
-\begin{figure}
-	\centering
-	\includegraphics[width=0.5\linewidth]{images/Dilation-and-erosion.png}
-	\label{fig:dil-eros}
-	\caption{The results of morphological dilation and erosion. The former one increases the volume and may connect regions. The latter one decreases volume and may eliminate small regions.}
-\end{figure}
-\medskip
-
-In the result, the post-processing sequence consists of the next steps:
-\begin{itemize}
-	\item \emph{Apply Morphological Opening}: Firstly we apply erosion of the image by small ball element $B$ and then we apply dilation of the image by the same element. In the result, all domains of connectivity smaller than $B$ will vanish.
-	\item \emph{Apply Morphological Closing}: Firstly we apply dilation of the image by small ball element $B$ and then we apply erosion of the image by the same element. In the result, all gaps smaller than $B$ will be closed.
-\end{itemize}
-\medskip
-
-In case if the volume fraction of the result is larger than desired, which happened in practice most of the time, we try to eliminate the elements that have the lowest probability to be occupied with the material.
-For that, we represent the resulting image as a sparse matrix in form of coordinate list, meaning that matrix is read as a list of tuples $(\mathrm{row},\mathrm{column},\mathrm{value})$ and could be easily sorted by value and delete the lower value until we reach a volume fraction value close to the desired.
-\medskip
-
-In total, using this approaches we were able to bring the resulting model to a more physically feasible shape and to ensure that its volume has desired value.
-\medskip
-\todo{explanation on operations, a pseudocode}
 
  

@@ -19,19 +19,15 @@ Variables:
 			
 	Forces location: 1 point of application in right half of the domain
 
-
-??? identity mapping for feature understanding
 	
 ---------------------------------------------
 
 
 figures at data; check 3d results; numbers on 2d (see list) ; all image (new colormap)
 
-
-18.06: evaluate L_vf on 32_0.3 (generate and deploy!, stops at 1000-22-30), evaluate L_vf 32_0.5(generate and deploy); data section: restructure, fix notation
-
-19.06: arch to intro(resnet) ; 32_0.3 tests ; data without sdf at all ;
-	use To consistently ; in cnn intro make an ouline an then details ; previous work: another speedup arpoaches + novelty
+19.06: arch to intro(resnet) ;
+	use TO consistently ; in cnn intro make an ouline an then details ; previous work: another speedup arpoaches + novelty
+	restrucure methodology ; add about other architecures ; add about typical problems at outputs
 
 
 	

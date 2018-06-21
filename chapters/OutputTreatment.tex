@@ -1,0 +1,83 @@
+% !TEX root = ../main.tex
+
+\chapter{Output Treatment}
+
+This chapter describes the ways to evaluate the quality of the model.
+It also discusses typical problems revealed by the first evaluations, and the ways to analyze and mitigate flows of the model.
+In particular, it proposes a post-processing method, that brings outputs to physically feasible shapes and facilitates presevance of desired volume.
+
+\subsection{Post-processing}
+
+The inferred outputs of the model demonstrate several recurring issues related to the material layout having incorrect physical properties.
+One of the issues is material having the volume not equal to the one stated as input.
+The other issue is material forming non-contiguous shapes, which is violating one of the requirements which are automatically met while conventional TO process.
+There also might occur the similar problem of the result not corresponding to some topological properties, like structural elements of the layout being not connected or not having physical meaning.
+\todo{fix it if wrong}
+\medskip
+
+In order to solve these issues, we decided to perform several post-processing operations on the output of the model.
+We decided to apply for mathematical morphological operation in order to solve the over-mentioned issues.
+\medskip
+
+We use two basic operations, namely \emph{erosion} and \emph{dilation}\cite{bibl:er-dil}.
+The erosion is defined as 
+\begin{equation}
+A \ominus B = \{z \in E | B_{z} \subseteq A \}, \, \mathrm{where} \; B_{z}=\{ b+z | b \in B \}, \, \forall z \in E 
+\end{equation} 
+This essentially can be interpreted as cutting a layer constructed out of elements $B$ from every contiguous figure of the image.
+\medskip
+
+The dilation is defined as 
+\begin{equation}
+A \oplus B = \{z \in E | (B^{s})_{z} \cap  A \neq \emptyset \}, \, \mathrm{where} \; B^{s}=\{x \in E | -x \in B \}
+\end{equation} 
+Similar to erosion, this could be interpreted as adding a layer constructed out of elements $B$ to every contiguous figure of the image. 
+\medskip
+\begin{figure}
+	\centering
+	\includegraphics[width=0.5\linewidth]{images/Dilation-and-erosion.png}
+	\label{fig:dil-eros}
+	\caption{The results of morphological dilation and erosion. The former one increases the volume and may connect regions. The latter one decreases volume and may eliminate small regions.}
+\end{figure}
+\medskip
+
+In the result, the post-processing sequence consists of the next steps:
+\begin{itemize}
+	\item \emph{Apply Morphological Opening}: Firstly we apply erosion of the image by small ball element $B$ and then we apply dilation of the image by the same element. In the result, all domains of connectivity smaller than $B$ will vanish.
+	\item \emph{Apply Morphological Closing}: Firstly we apply dilation of the image by small ball element $B$ and then we apply erosion of the image by the same element. In the result, all gaps smaller than $B$ will be closed.
+\end{itemize}
+\medskip
+
+In case if the volume fraction of the result is larger than desired, which happened in practice most of the time, we try to eliminate the elements that have the lowest probability to be occupied with the material.
+For that, we represent the resulting image as a sparse matrix in form of coordinate list, meaning that matrix is read as a list of tuples $(\mathrm{row},\mathrm{column},\mathrm{value})$ and could be easily sorted by value and delete the lower value until we reach a volume fraction value close to the desired.
+\medskip
+
+In total, using this approaches we were able to bring the resulting model to a more physically feasible shape and to ensure that its volume has desired value.
+\medskip
+\todo{explanation on operations, a pseudocode}
+
+
+\subsection{Evaluation Means}
+
+The evaluation metrics chosen was an average Mean Squared Error (MSE) between the inferred and ground/truth materials layout in form of bitmaps, take and averaged for the testing dataset. 
+As a testing dataset, apart from several separately designated cases, we chose pairs of (initial conditions --- material layout) for every single load possible and with other parameters varying in the same way as on training data set.
+The variance of MSE was also analyzed to estimate the level of generality of the model.
+
+Separate cases were analyzed visually to define the issues of the model more precisely.
+For this, for  every test cases a pixel-wise difference of the ground-truth and inferred images was created.
+
+Was the purpose of visual analyzes of dependency of accuracy on the location of force application, in comparison to known cases, an \textit{accuracy heatmap} of same size as TO problem domain was created, where every pixel shows an accuracy of inference for a test case for which force is applied at this coordinate of the domain. 
+Such heatmaps were created for every force direction as well as for average accuracy for very type of force.
+
+For a total precise evaluation of model performance for 2D case, a small framework in form of an HTML file, using CSS and JavaScript, was created.
+This program, for a single evaluated model, shows heatmaps for every force direction and boundary conditions as well as the concrete ground-truth, inferred image, and their difference, based on the mouse position.
+This allowed to see how material layout obtained both by TO and by inference change with smooth movement of the force application, and define what are the principle groups of TO results for similar set up.
+\todo{motivation right?}
+\begin{figure}[]
+	\centering
+	\includegraphics[width=1.0\linewidth]{images/heapmaps_web_ex2.pdf}
+	\caption{A framework for result evaluation. Here accuracy heatmaps are shown for different BC (rows, BC shape indicated on the left) and forces direction (lines, directions indicated on the bottom) for a model trained for 25k steps on a set with 3 different BC, constant volume fraction of $0.2$, and for forces applied as indicated int upper left heat map with yellow. Here we can see every case for which accuracy is unsatisfactory (light shades of heatmap). We chosen to demonstrate difference between ground-truth and infered result for a cse of BC of corne points, and a force $(1.0,0.0)$ applied at $(23.0,31.0)$ }
+	\label{fig:to_flow}
+\end{figure}
+
+We also chosen to analyze dependency of mean and variance of MSE for different training datasets as well as depending on the training steps to enhance early stopping and choose the best model.

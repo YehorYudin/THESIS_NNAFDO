@@ -1,6 +1,6 @@
 % !TEX root = ../main.tex
 
-\chapter{Theory}
+%\chapter{Theory}
 \label{chapter:Introduction}
 
 This chapter describes the principles of the Topology Optimization and give an overview of a typical work flow of the algorithm. 
@@ -8,7 +8,8 @@ This chapter describes the principles of the Topology Optimization and give an o
 In the second part, we give a description of Convolutional Neural Networks, their principles, and all their components.
 
 
-\section{Topology Optimization}
+%\section{Topology Optimization}
+\chapter{Topology Optimization}
 
 Restrictions on the weight and amount of material used for a certain mechanical element is not uncommon in the engineering.
 Various techniques allow finding optimal layouts of the element within the material that assures meeting of the requirement put on the physics of the element. 
@@ -41,11 +42,9 @@ The update rule read as following:
 \begin{equation}
 \rho^{new}_{e} = 
 \begin{cases}
-	\begin{align}
- &\max(\rho_{min},\rho_{e}-\delta_{\rho}) , \; &&\mathrm{if} \; \rho_{e}B^{\eta}_{e} \leq \max(\rho_{min},\rho_{e}-\delta_{\rho}) \\
- &\min(1,\rho_{e}+\delta_{\rho}), \; &&\mathrm{if} \; \min(1,\rho_{e}+\delta_{\rho}) \leq \rho_{e}B^{\eta}_{e}\\
- &\rho_{e}B^{\eta}_{e}, \; &&\mathrm{if} \; \max(\rho_{min},\rho_{e}-\delta_{\rho}) < \rho_{e}B^{\eta}_{e} < \min(1,\rho_{e}+\delta_{\rho}) 
-	\end{align}
+ \max(\rho_{min},\rho_{e}-\delta_{\rho}) , & \mathrm{if} \; \rho_{e}B^{\eta}_{e} \leq \max(\rho_{min},\rho_{e}-\delta_{\rho}) \\
+ \min(1,\rho_{e}+\delta_{\rho}), & \mathrm{if} \; \min(1,\rho_{e}+\delta_{\rho}) \leq \rho_{e}B^{\eta}_{e}\\
+ \rho_{e}B^{\eta}_{e},  & \mathrm{if} \; \max(\rho_{min},\rho_{e}-\delta_{\rho}) < \rho_{e}B^{\eta}_{e} < \min(1,\rho_{e}+\delta_{\rho}) 
 \end{cases}
 \end{equation}
 
@@ -62,10 +61,10 @@ Finally, the sensitivity of the object is computed as
 \end{align*}
 
 and used in the following update step.
-Graphical overview of the algorithm is given in Fig.\ref{fig:to_flow}.
+Graphical overview of the algorithm is given in Figure \ref{fig:to_flow}.
 \todo{revisit}
 
-\begin{figure}[]
+\begin{figure}[ht]
 	\centering
 	\includegraphics[width=0.6\linewidth]{images/TO_flowchart.pdf}
 	\caption{Flowchart of the Topology Optimization process.}
@@ -74,24 +73,80 @@ Graphical overview of the algorithm is given in Fig.\ref{fig:to_flow}.
 
 
 
-\section{Convolutional Neural Networks}
+%\section{Convolutional Neural Networks}
+\chapter{Artificial Neural Networks}
 
 
-The goal of any Machine Learning approach is to find a model that would interpolate some specific dependency of a nature, that could not be modeled explicitly, between based on the inputs and outputs(labels) samples present in the training data set.
-\emph{Artificial Neural Network (ANN)} is a type of Machine Learning model for which a sought dependency is expressed as a composition of multiple operations, called \emph{layers} each having a number of parameters which values are find in the process of \emph{training}.
+%The goal of any ML approach is to find a model that would interpolate some specific dependency or pattern with a nature, that could not be modeled explicitly, between based on the inputs and outputs(labels) samples present in the training data set.
+
+A ML model shall be able to accept some inputs and for each input it shall return some insight about the 
+Every model has several structural and numerical parameters which value has to be defined during the process of \emph{training} that uses some known data produced by the sought problem.
+The ML algorithms could be categorized into several groups based on the data they use to train and how they treat them.
+
+For the problem with which the work deals, we may consider a case of the \emph{supervised learning}.
+The algorithms of this type use a set of known pairs of inputs and the outputs of the model.
+
+
+\emph{Artificial Neural Network (ANN)} is a type of Machine Learning model for which a sought dependency is expressed as a composition of multiple operations, called \emph{layers}.
+%each having a number of parameters which values are find in the process of \emph{training}.
+Every layer could be considered as an independent transformation, and can accept output of previous layer as input for itself.
 Domains of these operations, as well as intermediate results images and generally the data with which an ANN model operates, are mostly spaces of matrices or tensors over the real numbers field, and the results of the layer operations could be presented element-wisely, as a dependency of elements of input.
 Such as element of intermediate result, together with the element-wise operation, is called a \emph{neuron}, after a biological neuron of a brain that is able to generate electrical impulse based on signals received from several other neurons, and such analogy historically inspired development of Artificial Neural Network approach by Frank Rosenblatt\cite{}.
 The output of the neuron $y_{j}$ that takes input from $n$ neurons $x_{i=1,..,n}$ with weights $w_{i=1,..,n}$ and some activation function $\mathrm{f}$ is defined as $ y_{j}=\mathrm{f}(\sum_{i=1}^{n} x_{i}w_{i})$
 \medskip
-\todo{add examples of single FCL neuron? }
+\begin{figure}[ht]
+\begin{subfigure}[b]{0.6\linewidth}
+	\includegraphics[width=230pt]{images/neuron_model.jpeg}
+	\caption{A model of neuron describing data transformation.}
+	\label{fig:neuron1}
+\end{subfigure}
+\begin{subfigure}[b]{0.4\linewidth}
+	\includegraphics[width=225pt]{images/neural_net2.jpeg}
+	\caption{A model of ANN with four layers. }
+	\label{fig:neuron2}
+\end{subfigure}
+\caption{A structure of ANN. The layers which are not input or output ones are called \emph{hidden}.}
+\label{fig:nngen}
+\end{figure}
 
-Convolution Neural Networks (CNN) is a type of ANN that primarily use of convolutional operations.
-CNNs are specifically designed to work with images and image-like spatial data.
+
+\section{Convolutional Neural Networks}
+
+Convolution Neural Networks (CNN) is a type of ANN is specifically designed to work with images and image-like spatial data.
+It primarily use of convolutional operations and are based on certain assumptions about images.
+The most important ones are \emph{locality} and \emph{transitional equivarence}.
+The first one means that only elements in the vicinity could influence each other.
+The second one --- that local feature do not depend on the position on the image.
+
+
+
+The \textit{convolution operation} could be defined by obtaining a value of every element of the output image as a weighted sum of the values of input image elements of a region in vicinity of this output element.
+In general form, we say that a \emph{convolution operation} on a $\mathrm{n}$--dimensional array of size $N_{1} \, \times... \times \, N_{n}$ with another array of same dimensionality and size $K_{1} \, \times... \times \, K_{n} $ gives result of an array of same dimensionality with size $ (N_{1}-K_{1}) \times... \times \, (N_{n}-K_{n}) $, 
+% could be described as a mapping $\mathrm{f} : \mathbb{R}^{N_{1} \mathrm{x}... \mathrm{x} N_{n}} \rightarrow \mathbb{R}^({N_{1}-k_{1}) \mathrm{x}... \mathrm{x} (N_{n}-k_{n})} $ 
+where every element of a resulting array is defined as a dot product of kernel and elements in a vicinity of corresponding element of the input.
+In total, we can write down the operation as:
+\begin{gather*}
+\mathbf{C} = \mathbf{A} \ast \mathbf{B} \quad , \mathrm{where} \quad \\ \mathbf{A} = (a_{i_{1},...,i_{n}}) \in \mathbb{R}^{N_{1} \, \times... \times \, N_{n}} , \, \mathbf{B} = (b_{k_{1},...,k_{n}}) \in \mathbb{R}^{K_{1} \, \times... \times \, K_{n}},
+\mathbf{C} = (c_{j_{1},...,j_{n}}) \in \mathbb{R}^{(N_{1}-K_{1}) \times... \times (N_{n}-K_{n})} \\ \quad \mathrm{and}
+\quad c_{j_{1},...,j_{n}} = \sum_{i_{1}=1,...,i_{n}=1}^{K_{1},...,K_{n}} a_{j_{1}+i_{1}-\lfloor \frac{K_{i}}{2}\rfloor,...,j_{n}+i_{n}-\lfloor \frac{K_{n}}{2}\rfloor} \ast b_{i_{1},...,i_{n}}
+\end{gather*}
+
+For us, the input is used as a first operand and as second operand we use the array of weights.
+The second array is called \emph{filter} or \emph{kernel} and is typically a parameter that should be trained. 
+\medskip
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=0.75\linewidth]{images/cnn_dem_opration2.pdf}
+	\caption{A vizualization of a convolution operation.}
+	\label{fig:convoper_demo}
+\end{figure}
+\medskip
+
 One of their unique features that distinguish them from other types of ANNs and make them suitable for these types of data is locality.
 That means that output neuron is influenced only by a vicinity of neurons in the input.
 The size of such vicinity is called \emph{local receptive field} of the neuron.
 In CNNs every element of the next layer is achieved by sliding the local receptive field along the previous layer and applying a convolution operation as shown in \ref{fig:rec_field_demo}.
-\begin{figure}
+\begin{figure}[ht]
 	\centering
 	\includegraphics[width=0.5\linewidth]{images/cnn_dem_gen4.pdf}
 	\caption{Receptive fields of the neurons of the output}
@@ -101,7 +156,7 @@ In CNNs every element of the next layer is achieved by sliding the local recepti
 
 If it is important to have inputs and outputs of the layer of same size, it is possible to apply \emph{padding}.
 That means that for the output elements close to the edge we span the receptive field outside of the size of the input, using virtual input elements with value of $0$. 
-\begin{figure}
+\begin{figure}[ht]
 	\centering
 	\includegraphics[width=0.5\linewidth]{images/cnn_dem_padding2.pdf}
 	\caption{Convolutions with padding saves the size of the output}
@@ -114,7 +169,7 @@ That means that for the output elements close to the edge we span the receptive 
 The distance between two receptive fields, or a size of the sliding step,  is called \textit{stride} and could vary for different layers.
 A convolution with a stride larger that $1$ reduces the size of image and every element of its output encapsulates more unique influence of the input. 
 %The larger stride will result in a smaller output layer with every element capturing more unique influence of the input layer, allowing to obtain a representation of the input in a lower dimension.
-\begin{figure}
+\begin{figure}[ht]
 	\centering
 	\includegraphics[width=0.5\linewidth]{images/cnn_dem_stride4.pdf}
 	\caption{Stride size defines distance between two nearest windows of convolution.}
@@ -122,27 +177,6 @@ A convolution with a stride larger that $1$ reduces the size of image and every 
 \end{figure}
 \medskip
 
-The \textit{convolution operation} could be defined by obtaining a value of every element of the output image as a weighted sum of the values of input image elements of a region in vicinity of this output element.
-In general form, we say that a \emph{convolution operation} on a $\mathrm{n}$--dimensional array of size $N_{1} \, \times... \times \, N_{n}$ with another array of same dimensionality and size $K_{1} \, \times... \times \, K_{n} $ gives result of an array of same dimensionality with size $ (N_{1}-K_{1}) \times... \times \, (N_{n}-K_{n}) $, 
-% could be described as a mapping $\mathrm{f} : \mathbb{R}^{N_{1} \mathrm{x}... \mathrm{x} N_{n}} \rightarrow \mathbb{R}^({N_{1}-k_{1}) \mathrm{x}... \mathrm{x} (N_{n}-k_{n})} $ 
-where every element of a resulting array is defined as a dot product of kernel and elements in a vicinity of corresponding element of the input.
-In total, we can write down the operation as:
-\begin{gather*}
-	\mathbf{C} = \mathbf{A} \ast \mathbf{B} \quad , \mathrm{where} \quad \\ \mathbf{A} = (a_{i_{1},...,i_{n}}) \in \mathbb{R}^{N_{1} \, \times... \times \, N_{n}} , \, \mathbf{B} = (b_{k_{1},...,k_{n}}) \in \mathbb{R}^{K_{1} \, \times... \times \, K_{n}},
-	\mathbf{C} = (c_{j_{1},...,j_{n}}) \in \mathbb{R}^{(N_{1}-K_{1}) \times... \times (N_{n}-K_{n})} \\ \quad \mathrm{and}
-	\quad c_{j_{1},...,j_{n}} = \sum_{i_{1}=1,...,i_{n}=1}^{K_{1},...,K_{n}} a_{j_{1}+i_{1}-\lfloor \frac{K_{i}}{2}\rfloor,...,j_{n}+i_{n}-\lfloor \frac{K_{n}}{2}\rfloor} \ast b_{i_{1},...,i_{n}}
-\end{gather*}
-
-For us, the input is used as a first operand and as second operand we use the array of weights.
-The second array is called \emph{filter} or \emph{kernel} and is typically a parameter that should be trained. 
-\medskip
-\begin{figure}
-	\centering
-	\includegraphics[width=0.75\linewidth]{images/cnn_dem_opration2.pdf}
-	\caption{A vizualization of a convolution operation.}
-	\label{fig:convoper_demo}
-\end{figure}
-\medskip
 
 The other important property of CNNs is \emph{parameter sharing}. 
 It means that the kernel, which apply for every local receptive field to get the next element of the output, is the same for the whole layer. 
@@ -167,7 +201,7 @@ However, in many cases we could reduce the number of parameters to tain by fixin
 
 On the other side, there are operation that allow increaing the size of the next layer, called \emph{deconvolutions} or \textit{transposed convolution}, which are, essentially, an interpolation of a previous lower-dimensional layer onto a higher resolution.
 Every element of the input is element-wisely multiplied by the kernel and projected to the output, thus every element of the output is equal to sum of the elements of input multiplied by kernel of size $n$ in form $b_{ij} = \sum_{k=i-n+1,l=j-n+1}^{i,j} a_{kl}w_{i-k+1,j-l+1}$, which could be visually represented with \ref{fig:deconv_op}.
-\begin{figure}
+\begin{figure}[ht]
 	\centering
 	\includegraphics[width=0.75\linewidth]{images/cnn_dem_deconvop.pdf}
 	\label{fig:deconv_op}
@@ -211,7 +245,7 @@ Essentially, in full form, to find a single value for a fixed set of parameters,
 To avoid that, the \emph{Stochastic Gradient Descent} is used, for which we use one or only a few samples, called a \emph{minibatch}, chosen randomly to calculate the gradient.
 Besides being much faster, this simplification shows good convergence and is very popular as an NN optimizer\cite{}.
 
-\begin{figure*}
+\begin{figure*}[ht]
 	\begin{multicols}{2}
 		\includegraphics[width=\linewidth]{images/parabolic_3d.pdf}\par
 		\includegraphics[width=\linewidth]{images/nonconvex_3d.pdf}\par
@@ -327,9 +361,9 @@ a(e^{x}-1) \, : x \geq 0
 \end{cases}
 \]
 
-\begin{figure}[]
+\begin{figure}[ht]
 	\centering
-	\includegraphics[width=0.7\linewidth]{images/activfunc_4.pdf}
+	\includegraphics[width=0.4\linewidth]{images/activfunc_4.pdf}
 	\caption{Comparison of the different activation functions. Blue is $\mathrm{sigmoid}$, red is $\mathrm{tanh}$, yellow is $\mathrm{PReLU}$ and purple is $\mathrm{ELU}$.}
 	\label{fig:act_func}
 \end{figure}

@@ -2,6 +2,7 @@
 
 \section{Implementation}
 
+
 The system was designed using the Tensorflow framework. 
 \todo{should it be a library?}
 It is built in form Python program calling to the Tensorflow Pyhon API.
@@ -32,7 +33,7 @@ The other benefit of the Tensorflow is \emph{Tensorboard} utility with a web-bas
 
 Such design of the framework with API in multiple languages together with intrinsic optimization for high performance at multiple platforms, as well as convenient tools for easy deployment and control over the system makes Tensorflow extremely useful for many scientific and industrial applications.
 
-\subsection{Training Script}
+\section{Training Script}
 
 In order and to quickly infer results that could be easily used for further TO and to proceed various experiments on performance, a software framework was created. 
 The requirements of the software system were to be able to take various known cases of TO problem solutions, train the best CNN inference model, and create approximate solutions for the new TO problems.
@@ -63,7 +64,6 @@ The outcome of a single run describe in \ref{alg:data_gen} is a number of datase
 \end{algorithmic} 	
 \end{algorithm}
 \medskip
-\todo{nothing on augmentation yet}
 
 After we obtained different training datasets in a proper format, we can start training ANN models.
 The process of training the models is described as the following algorithm\ref{alg:network_training}. 
