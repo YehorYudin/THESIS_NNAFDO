@@ -36,9 +36,11 @@ For this, we trained model with different loss function: with and without volume
 We took training dataset with models of variable volume with three different volume fraction values.
 For the evaluation, we used datasets composed of both models with known volumes and with models of volume fraction not used during the training.
 We evaluated both accuracy of the model and the accuracy of volume value as a separate parameter.
-The results show that considering volume fraction at loss function improves the accuracy of the model. \todo{actually check it}
+The results show that considering volume fraction at loss function improves the accuracy of the model. 
+For the training set with intermediate volume fraction value, the model with volume fraction penalty and multiplicative constant of $0.2$ had an average MSE of $0.068$ and average volume error of $0.017$, comparing with $0.072$ and $0.02$ for a model without respectively.
 Testing model for new, intermediate, values of the input volume fraction help producing accurate results.
 Results extrapolation for input volume fraction larger than ones used for training, however, caused much worse results for models. 
+For the best model the average MSE in this case was $0.092$ and the average volume error was $0.64$.
 This could be explained by convolutional nature of the model, with the fact that features found by the model are too subtle.  
 The application of the post-processing allowed bringing the performance to a higher performance and to better volume reconstruction. 
 \todo{add table and example picture}
@@ -64,6 +66,7 @@ The V-Net, having more parameters, in the end, was able to achieve comparable re
 The other test was done to evaluate influence of using SDF of inputs and justify such approach.
 For that, we prepared two training datasets, one with initial bitmaps of the boundary conditions and load application points as inputs, and the second one with inputs after applying the pre-processing.
 The results show that with the pre-processing both time of training and final accuracy are much higher.
+%The optimal model for the 
 \medskip
 
 Best chosen model and numbers...
