@@ -5,7 +5,7 @@
 
 In this chapter we will describe the experiments on model training, both for 2D and 3D domains, and results of their evaluation.
 We analyze the dependency of the model performance based on the data set properties, as well as ability to interpolate results for different variable parameters, and ways to prepare the model with the best performance based on several criteria. 
-The model is evaluated with respect to the accuracy of its results as well as  its ability to improve the Topology Optimization process is analyzed.
+The model is evaluated with respect to the accuracy of its results as well as  its ability to improve the TO process is analyzed.
 
 The models for all cases are trained using GPU, which is also used to generate samples and evaluate TO speed-up and for 3D cases.
 The graphics card used is a single Nvidia GeForce GTX 1080, with 2560 CUDA cores. 
@@ -13,8 +13,8 @@ The graphics card used is a single Nvidia GeForce GTX 1080, with 2560 CUDA cores
 
 \section{Evaluation}
 
-Initially, it was decided to create an architecture and system to treat 2D cases of Topology Optimization.
-Such decision was dictated by availability and speed of data set preparation, as 2D Topology Optimization solutions takes significantly less time than 3D. 
+Initially, it was decided to create an architecture and system to treat 2D cases of TO problems.
+Such decision was dictated by availability and speed of data set preparation, as 2D TO solutions takes significantly less time than 3D. 
 For a 2D case we could generate prepare large training dataset with more variable parameters and experiment with different representations.
 The dimensionality of the data also influenced the number of model parameters, which means that training a single model took much less time and it was possible to introduce changes or fine-tune the model.
 \todo{move to approach or data?}

@@ -23,11 +23,15 @@ Variables:
 ---------------------------------------------
 
 
-figures at data; check 3d results; numbers on 2d (see list) ; all image (new colormap)
+figures at data; check 3d results; numbers on 2d (see list) ;
 
-19.06: arch to intro(resnet) ;
-	use TO consistently ; in cnn intro make an ouline an then details ; previous work: another speedup arpoaches + novelty
-	restrucure methodology ; add about other architecures ; add about typical problems at outputs
+22.06:  on more testy on no SDF ; test on 28_0.2, test fro 3x3 datset (32_0.2 allsdf)
+	maybe		 restrucure methodology ;arch to intro(resnet) ;
 
+25.06:	use TO consistently ;previous work: another speedup arpoaches + novelty
+	add about other architecures ; add about typical problems at outputs
+
+images: new for convoutions(x4),  optimization(gradient descent), activation(smaller) , regularization(x2), post processing(before and after),
+	plot( on size, on number of steps), 3d results compare
 
 	

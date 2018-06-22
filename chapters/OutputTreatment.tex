@@ -73,9 +73,9 @@ For a total precise evaluation of model performance for 2D case, a small framewo
 This program, for a single evaluated model, shows heatmaps for every force direction and boundary conditions as well as the concrete ground-truth, inferred image, and their difference, based on the mouse position.
 This allowed to see how material layout obtained both by TO and by inference change with smooth movement of the force application, and define what are the principle groups of TO results for similar set up.
 \todo{motivation right?}
-\begin{figure}[]
+\begin{figure}[h]
 	\centering
-	\includegraphics[width=1.0\linewidth]{images/heapmaps_web_ex2.pdf}
+	\includegraphics[width=1.15\linewidth]{images/heapmaps_web_ex2.pdf}
 	\caption{A framework for result evaluation. Here accuracy heatmaps are shown for different BC (rows, BC shape indicated on the left) and forces direction (lines, directions indicated on the bottom) for a model trained for 25k steps on a set with 3 different BC, constant volume fraction of $0.2$, and for forces applied as indicated int upper left heat map with yellow. Here we can see every case for which accuracy is unsatisfactory (light shades of heatmap). We chosen to demonstrate difference between ground-truth and infered result for a cse of BC of corne points, and a force $(1.0,0.0)$ applied at $(23.0,31.0)$ }
 	\label{fig:to_flow}
 \end{figure}
