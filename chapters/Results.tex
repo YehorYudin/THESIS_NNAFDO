@@ -3,49 +3,65 @@
 \chapter{Results}
 \label{chapter:Results}
 
-In this chapter we will describe the experiments on model training, both for 2D and 3D domains, and results of their evaluation.
+In this chapter, we will describe the tests on model training, both for 2D and 3D domains, and results of their evaluation.
 We analyze the dependency of the model performance based on the data set properties, as well as ability to interpolate results for different variable parameters, and ways to prepare the model with the best performance based on several criteria. 
-The model is evaluated with respect to the accuracy of its results as well as  its ability to improve the TO process is analyzed.
+The model is evaluated with respect to the accuracy of its results as well as its ability to improve the TO process is analyzed.
 
 The models for all cases are trained using GPU, which is also used to generate samples and evaluate TO speed-up and for 3D cases.
-The graphics card used is a single Nvidia GeForce GTX 1080, with 2560 CUDA cores. 
+The graphics card used is a single Nvidia GeForce GTX 1080 Ti, with 3584 CUDA cores. 
 
 
-\section{Evaluation}
+\section{Results for 2D case}
 
-Initially, it was decided to create an architecture and system to treat 2D cases of TO problems.
-Such decision was dictated by availability and speed of data set preparation, as 2D TO solutions takes significantly less time than 3D. 
-For a 2D case we could generate prepare large training dataset with more variable parameters and experiment with different representations.
+%Initially, it was decided to create an architecture and system to treat 2D cases of TO problems.
+During the first practical part of work, only the 2D cases of TO was considered.
+Creation of architecture for 2D domains and analysis of its performance was an important step that proved a concept of such ANN approach for TO field.
+The decision was also dictated by availability and speed of dataset preparation, as 2D TO solutions takes significantly less time than 3D. 
+For a 2D case, we could generate prepare large training dataset with more variable parameters and experiment with different representations.
 The dimensionality of the data also influenced the number of model parameters, which means that training a single model took much less time and it was possible to introduce changes or fine-tune the model.
 \todo{move to approach or data?}
 
-
 %The results of the model evaluation, including the hyperparameter optimization, shows next tendencies. 
-
-Initial results...
 \medskip
 
+\subsubsection{Test I: Influence of training dataset size and sampling}
 One of the main tests set up by us was to find the dependency of the model performance based on the size of the dataset as well as to find the best training dataset sampling pattern.
 After some preliminary research, we decided to take three different sampling schemes and three with three different steps for each. 
 The most accurate model was produced by the training dataset with the domination of problems where loads were applied on the edge of the domain.
 The dependency on the size of the training set shows ...  dependency for each sampling.
 \medskip
 
+\subsubsection{Test II: Loss function form and volume recovery}
 The next test was performed in order to find out the capabilities of the approach to restoring proper volume fraction of the material. 
-For this, we trained model with different loss function: with and without volume fraction penalty term, and for different multiplicative constant for the term.
+For this, we trained model with different loss function: with and without volume fraction penalty term, and for a different multiplicative constant for the term.
 We took training dataset with models of variable volume with three different volume fraction values.
 For the evaluation, we used datasets composed of both models with known volumes and with models of volume fraction not used during the training.
 We evaluated both accuracy of the model and the accuracy of volume value as a separate parameter.
-The results show that considering volume fraction at loss function improves the accuracy of the model. 
+The results show that considering volume fraction at loss function improves the accuracy of the model, as one can see from the table\ref{tab:vf_full}. 
+\begin{table}[h]
+\begin{tabular}{ |c|c|c|c|c| }\\
+	\hline
+	Model loss function vs. MSE(Var) Test Dataset & $V_f=0.2$ & $V_f=0.3$& $V_f=0.5$ &  $V_f=0.3$, resolution $28\times 28$\\ 
+	\hline
+	$L=CE+R$ & 0.063(0.0001) & 0.072(0.0012) & 0.097(0.0013) & 0.168(0.006)  \\
+	$L=CE+R+\alpha L_{v_f}, \alpha=0.01$ & 0.060(0.008) & 0.070(0.0013) & 0.10(0.001) & 0.156(0.006)\\
+	$L=CE+R+\alpha L_{v_f}, \alpha=0.2$ & 0.058(0.0007)  & 0.068(0.0009)  & 0.092(0.001) & 0.162(0.005) \\
+	$L=CE+R+\alpha L_{v_f}, \alpha=1.0$ & 0.063(0.001) & 0.073(0.0009) & 0.094(0.0008) & 0.177(0.005) \\
+	\hline
+\end{tabular}
+	\label{tab:vf_full}
+\caption{A table for test results evaluating influence of the volume fraction penalty term. Every model was trained on the same training dataset. For every model average MSE and its variance is calculated for the test datasets with same, intermediate and larger desired resulting volume }
+\end{table}
 For the training set with intermediate volume fraction value, the model with volume fraction penalty and multiplicative constant of $0.2$ had an average MSE of $0.068$ and average volume error of $0.017$, comparing with $0.072$ and $0.02$ for a model without respectively.
 Testing model for new, intermediate, values of the input volume fraction help producing accurate results.
 Results extrapolation for input volume fraction larger than ones used for training, however, caused much worse results for models. 
-For the best model the average MSE in this case was $0.092$ and the average volume error was $0.64$.
+For the best model, the average MSE in this case was $0.092$ and the average volume error was $0.64$.
 This could be explained by convolutional nature of the model, with the fact that features found by the model are too subtle.  
-The application of the post-processing allowed bringing the performance to a higher performance and to better volume reconstruction. 
+The application of the post-processing allowed bringing the higher accuracy and better volume reconstruction. 
 \todo{add table and example picture}
 \medskip 
 
+\subsubsection{Test III: Scaling problem resolution}
 The next test had a goal of evaluation of the capability of the network to scale the results for different resolutions.
 For this, we prepared training dataset with two different resolutions and evaluation datasets with same resolutions, and with resolutions of previously unknown sizes.
 For an intermediate size of the domain, the model shows a good accuracy of the interpolation.
@@ -55,7 +71,8 @@ For the case, when we increased the size of the domain, without changing the phy
 This phenomenon was partially eliminated with post-processing
 \medskip
 
-One of the tests was goaling comparing the performance of different network architectures.
+\subsubsection{Test IV: Comparison with other architectures}
+One of the tests goal was to compare the performance of different network architectures.
 We compared our encoder-decoder residual network with similar architectures, used for medical image segmentation.
 We considered \emph{V-Net}\cite{} and \emph{U-Net}\cite{} architectures with similar encoder-decoder structure.
 The former in our case and $...$ number of parameters and the latter has $...$.
@@ -63,41 +80,43 @@ The U-Net network shows significantly worse results.
 The V-Net, having more parameters, in the end, was able to achieve comparable results, however, after much longer time spent training.
 \medskip
 
-The other test was done to evaluate influence of using SDF of inputs and justify such approach.
+\subsubsection{Test V: Influence of pre-processing}
+The other test was done to evaluate the influence of using SDF of inputs and justify such approach.
 For that, we prepared two training datasets, one with initial bitmaps of the boundary conditions and load application points as inputs, and the second one with inputs after applying the pre-processing.
 The results show that with the pre-processing both time of training and final accuracy are much higher.
 %The optimal model for the 
 \medskip
 
-Best chosen model and numbers...
-
 \section{Results for 3D case}
 
-In case of 3D domains due to both smaller sample and more difficult perception of 3D data, we applied different visualization and evaluation methods.
+In case of 3D domains, due to both smaller sample and more difficult perception of 3D data, we applied different visualization and evaluation methods.
 In order to choose the best model average MSE across the test set was used.
 The MSE variance was also used to estimate generality as well as accuracy heatmap.
 
-However, as the main parameters we took the influence of the inferred result on the conventional Topology Optimization process, performed by IDeAs.
-The first one way is comparing total time required need to perform TO. 
-In case of vanilla value it is time average time of a single IDeAs run for fixed domain size, and in case of our method it is average time for result inference by ANN system and average IDeAs time after the initialization with inferred results. For these purposes we had to introduce changes in IDeAs implementation, adding means to state initial VTK file describing material layout and to initialize the data structures describing initial material densities with value read from the VTK.
+However, as the main parameters, we took the influence of the inferred result on the conventional Topology Optimization process, performed by IDeAs.
+The first way is comparing the total time required need to perform TO. 
+In case of reference value it is average time of a single IDeAs run for fixed domain size, and in case of our method, it is the average time for result inference by ANN system and average IDeAs time after the initialization with inferred results. For these purposes we had to introduce changes in IDeAs implementation, adding means to state initial VTK file describing the material layout and to initialize the data structures describing initial material densities with the value read from the VTK.
 \todo{numbers, numbers...}
 
-As a different estimation of improvement we measured how much the inferred result describe a bounding region of the ground-truth field after slight increase of the volume with dilation.
-This estimation was done if terms of amount of probability of voxel not to be covered by bounding region and decrease in the number of elements of problem  after we found new domain. 
+As a different estimation of improvement, we measured how much the inferred result describe a bounding region of the ground-truth field after a slight increase of the volume with dilation.
+This estimation was done in terms of the size of the probability of voxel not to be covered by bounding region and the decrease in the number of elements of the problem after we found the new domain. 
 \todo{is is not done at all!!!}
 
-\subsection{Evaluation}
+\subsubsection{Test I: Fining most accurate model for 3D data}
 
-The first experiment ws to find a best model after hyperparamter optimization.
-We used the dataset as in .. composed of pre-processed samples for our architecute with loss function considering volume fraction.
-After the process, similiar to the 2D case, the bests model was produced by datasample with forces at the edge and show accracy of ... on the evaluation dataset. 
+The first experiment was to find the best model after hyperparameter optimization.
+We used the training dataset with sampling modes similar to the 2D case.
+We pre-processed samples and the model had the loss function that included volume fraction penalty term.
+After the process, similar to the 2D case, the best model was produced by the training dataset with forces at the edge and show accuracy of ... on the evaluation dataset. 
 
-Typical results looks folowing.
+Typical results look as follows\ref{}.
 
-After applying the elements layout produced by the following model as the input for teh IDeAs, we achieved the following average duration of optimization with the number of iterations...
+\subsubsection{Test II: TO acceleration with IDeAs}
 
-However, we with probability of ... we manage to predict the new domain of the problem, close to the shape of the resulting model. 
-The volume of the  new domain ws averagely ... pro-cent smaller thats the whole box and contained on only ... pro-cent of empty voxels in the result.
+After applying the elements layout produced by the following model as the input for the IDeAs, we achieved the following average duration of optimization with the number of iterations...
+
+However, we with a probability of ... we manage to predict the new domain of the problem, close to the shape of the resulting model. 
+The volume of the new domain was averagely ... percent smaller than the whole box and contained on only ... percent of empty voxels in the result.
  
 
 

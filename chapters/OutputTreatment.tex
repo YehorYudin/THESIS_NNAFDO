@@ -5,17 +5,66 @@
 This chapter describes the ways to evaluate the quality of the model.
 It also discusses typical problems revealed by the first evaluations, and the ways to analyze and mitigate flows of the model.
 In particular, it proposes a post-processing method, that brings outputs to physically feasible shapes and facilitates presevance of desired volume.
+\medskip
+
+\section{Evaluation Means}
+
+The evaluation metrics chosen was an average Mean Squared Error (MSE) between the inferred and ground/truth materials layout in form of bitmaps, take and averaged for the testing dataset. 
+As a testing dataset, apart from several separately designated cases, we chose pairs of (initial conditions --- material layout) for every single load possible and with other parameters varying in the same way as on training data set.
+The variance of MSE was also analyzed to estimate the level of generality of the model.
+\medskip
+
+Separate cases were analyzed visually to define the issues of the model more precisely.
+For this, for  every test cases a pixel-wise difference of the ground-truth and inferred images was created, as shonw in Figure \ref{fig:diff_example}.
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.1\linewidth]{images/diff1_3_1200_28_1.png}
+	\label{fig:diff_example}
+	\caption{A comparison of ground truth and inferred image. The upper third of the image shows the reference output, the middle one shows the image produced by the model and the lower third shows the difference between them}
+\end{figure}
+\medskip
+
+For the purpose of visual analyzes of dependency of accuracy on the location of force application, in comparison to known cases, an \textit{accuracy heatmap} of same size as TO problem domain was created, where every pixel shows an accuracy of inference for a test case for which force is applied at this coordinate of the domain. 
+Such heatmaps were created for every force direction as well as for average accuracy for every force direction.
+\medskip
+
+For a total precise evaluation of model performance for 2D case, a small framework in form of an HTML file, using CSS and JavaScript, was created.
+This program, for a single evaluated model, shows heatmaps for every force direction and boundary conditions as well as the concrete ground-truth, inferred image, and their difference, based on the mouse position.
+This allowed to see how material layout obtained both by TO and by inference change with smooth movement of the force application, and define what are the principle groups of TO results for similar set up.
+\todo{motivation right?}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.90\linewidth]{images/heapmaps_web_ex21.pdf}
+	\caption{A framework for result evaluation. Here accuracy heatmaps are shown for different BC (rows, BC shape indicated on the left) and forces direction (lines, directions indicated on the bottom) for a model trained for 25k steps on a set with 3 different BC, constant volume fraction of $0.2$, and for forces applied as indicated int upper left heat map with yellow. Here we can see every case for which accuracy is unsatisfactory (light shades of heatmap). We chosen to demonstrate difference between ground-truth and infered result for a cse of BC of corne points, and a force $(1.0,0.0)$ applied at $(23.0,31.0)$ }
+	\label{fig:to_flow}
+\end{figure}
+\medskip
+
+We also chosen to analyze dependency of mean and variance of MSE for different training datasets as well as depending on the training steps to enhance early stopping and choose the best model.
+\medskip
+
+\section{Visual Evaluation and Observations}
+
+The inferred outputs of the model demonstrate several recurring issues related to the material layout having incorrect physical properties.
+\medskip
+
+The other issue is material forming non-contiguous shapes, which is violating one of the requirements which are automatically met while conventional TO process.
+There also might occur the similar problem of the result not corresponding to some topological properties, like structural elements of the layout being not connected or not having physical meaning. 
+\medskip
+
+The other issues is material having the volume not equal to the one stated as input.
+Even having physically meaningful shape, this requirement will not be automatically met and required the additional handling.
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.1\linewidth]{images/diff1_1_1100_22_12.png}
+	\label{fig:element_cloudy_example}
+	\caption{An example of the case when the result given by the model have wrong volume fraction and physically incorrect parts.}
+\end{figure}
+\medskip
 
 \subsection{Post-processing}
 
-The inferred outputs of the model demonstrate several recurring issues related to the material layout having incorrect physical properties.
-One of the issues is material having the volume not equal to the one stated as input.
-The other issue is material forming non-contiguous shapes, which is violating one of the requirements which are automatically met while conventional TO process.
-There also might occur the similar problem of the result not corresponding to some topological properties, like structural elements of the layout being not connected or not having physical meaning.
-\todo{fix it if wrong}
-\medskip
-
-In order to solve these issues, we decided to perform several post-processing operations on the output of the model.
+In order to solve the issues described above, we decided to perform several post-processing operations on the output of the model.
 We decided to apply for mathematical morphological operation in order to solve the over-mentioned issues.
 \medskip
 
@@ -33,7 +82,7 @@ A \oplus B = \{z \in E | (B^{s})_{z} \cap  A \neq \emptyset \}, \, \mathrm{where
 \end{equation} 
 Similar to erosion, this could be interpreted as adding a layer constructed out of elements $B$ to every contiguous figure of the image. 
 \medskip
-\begin{figure}
+\begin{figure}[h]
 	\centering
 	\includegraphics[width=0.5\linewidth]{images/Dilation-and-erosion.png}
 	\label{fig:dil-eros}
@@ -55,29 +104,3 @@ For that, we represent the resulting image as a sparse matrix in form of coordin
 In total, using this approaches we were able to bring the resulting model to a more physically feasible shape and to ensure that its volume has desired value.
 \medskip
 \todo{explanation on operations, a pseudocode}
-
-
-\subsection{Evaluation Means}
-
-The evaluation metrics chosen was an average Mean Squared Error (MSE) between the inferred and ground/truth materials layout in form of bitmaps, take and averaged for the testing dataset. 
-As a testing dataset, apart from several separately designated cases, we chose pairs of (initial conditions --- material layout) for every single load possible and with other parameters varying in the same way as on training data set.
-The variance of MSE was also analyzed to estimate the level of generality of the model.
-
-Separate cases were analyzed visually to define the issues of the model more precisely.
-For this, for  every test cases a pixel-wise difference of the ground-truth and inferred images was created.
-
-Was the purpose of visual analyzes of dependency of accuracy on the location of force application, in comparison to known cases, an \textit{accuracy heatmap} of same size as TO problem domain was created, where every pixel shows an accuracy of inference for a test case for which force is applied at this coordinate of the domain. 
-Such heatmaps were created for every force direction as well as for average accuracy for very type of force.
-
-For a total precise evaluation of model performance for 2D case, a small framework in form of an HTML file, using CSS and JavaScript, was created.
-This program, for a single evaluated model, shows heatmaps for every force direction and boundary conditions as well as the concrete ground-truth, inferred image, and their difference, based on the mouse position.
-This allowed to see how material layout obtained both by TO and by inference change with smooth movement of the force application, and define what are the principle groups of TO results for similar set up.
-\todo{motivation right?}
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=1.15\linewidth]{images/heapmaps_web_ex2.pdf}
-	\caption{A framework for result evaluation. Here accuracy heatmaps are shown for different BC (rows, BC shape indicated on the left) and forces direction (lines, directions indicated on the bottom) for a model trained for 25k steps on a set with 3 different BC, constant volume fraction of $0.2$, and for forces applied as indicated int upper left heat map with yellow. Here we can see every case for which accuracy is unsatisfactory (light shades of heatmap). We chosen to demonstrate difference between ground-truth and infered result for a cse of BC of corne points, and a force $(1.0,0.0)$ applied at $(23.0,31.0)$ }
-	\label{fig:to_flow}
-\end{figure}
-
-We also chosen to analyze dependency of mean and variance of MSE for different training datasets as well as depending on the training steps to enhance early stopping and choose the best model.
