@@ -43,7 +43,7 @@ It was implemented in a functional way as a sequence of scripts and has the view
 The first part of the system is the responsible for automatic data set generation.
 The outcome of a single run describe in \ref{alg:data_gen} is a number of datasets populated by data sample that could be directly fed to the network for the further training or evaluation.
 
-\begin{algorithm}[h]
+\begin{algorithm}[H]
 \caption{The dataset generation process}\label{alg:data_gen}
 \begin{algorithmic}[0]
 	\ForAll{TO problem parameter values combination in a grid}
@@ -67,7 +67,7 @@ The outcome of a single run describe in \ref{alg:data_gen} is a number of datase
 
 After we obtained different training datasets in a proper format, we can start training ANN models.
 The process of training the models is described as the following algorithm\ref{alg:network_training}. 
-\begin{algorithm}[h]
+\begin{algorithm}[H]
 	\caption{Procedure of CNN models training}\label{alg:network_training}
 	\begin{algorithmic}[0]
 		\ForAll{H-P values combination $h=(h_1,...,h_n)\in$ the H-P values grid $ H_{1} \times ... \times H_{n}$ e.g. (Training Data Set, Number of training steps)}
@@ -89,7 +89,7 @@ The process of training the models is described as the following algorithm\ref{a
 After that, we evaluate the created models and obtain the MSE measures.
 We chose the best model based on this parameter and, in our case, use it to infer results that will be used as an input for the IDeAs in order to evaluate how we can speed up the TO solution. 
 The evaluation is described in the next algorithm\ref{alg:network_eval}.
-\begin{algorithm}[h]
+\begin{algorithm}[H]
 	\caption{Procedure of CNN model evaluation}\label{alg:network_eval}
 	\begin{algorithmic}[0]
 		\ForAll{Every model checkpoint}

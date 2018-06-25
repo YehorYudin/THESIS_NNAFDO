@@ -3,9 +3,8 @@
 %\chapter{Theory}
 \label{chapter:Introduction}
 
-This chapter describes the principles of the Topology Optimization and give an overview of a typical workflow of the algorithm. 
-%Alongside with the explanation of Topology Optimization method, 
-In the second part, we give a description of Convolutional Neural Networks, their principles, and all their components.
+%This chapter describes the principles of the Topology Optimization and give an overview of a typical workflow of the algorithm. 
+%In the second part, we give a description of Convolutional Neural Networks, their principles, and all their components.
 
 
 %\section{Topology Optimization}
@@ -218,7 +217,7 @@ However, in many cases, we could reduce the number of parameters to train by fix
 
 Furthermore, there is an operation that allows increasing the size of the next layer, called \emph{deconvolutions} or \textit{transposed convolution}.
 They are, essentially, an interpolation of a previous lower-dimensional layer onto a higher resolution.
-For transposed convolution, every element of the input is element-wisely multiplied by the kernel and projected to the output. Thus, every element of the output is equal to sum of the elements of input multiplied by kernel of size $n$ in form $b_{ij} = \sum_{k=i-n+1,l=j-n+1}^{i,j} a_{kl}w_{i-k+1,j-l+1}$, which could be visually represented with \ref{fig:deconv_op}.
+For transposed convolution, every element of the input is element-wisely multiplied by the kernel and projected to the output. Thus, every element of the output is equal to sum of the elements of input multiplied by kernel of size $n$ in form $b_{ij} = \sum_{k=i-n+1,l=j-n+1}^{i,j} a_{kl}w_{i-k+1,j-l+1}$, which could be visually represented with Figure \ref{fig:deconv_op}.
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=0.5\linewidth]{images/cnn_dem_deconvop.pdf}
@@ -266,12 +265,12 @@ However, in case of ML, the value of gradient would depend on multiple data samp
 %values for different inputs.
 Essentially, to find a single gradient value for a fixed set of parameters in full form, it would require calculating and averaging gradient found for every sample in data set, which is practically infeasible.
 To avoid that, the \emph{Stochastic Gradient Descent (SGD)} is used, for which we use only one or a few samples chosen randomly, called a \emph{minibatch}, to calculate the gradient.
-Besides being much faster, this simplification shows good convergence and is very popular as an ANN optimizer\cite{}.
+Besides being much faster, this simplification shows good convergence and is very popular as an ANN optimizer\cite{bibl:gd-over}.
 \medskip
 
 However, the GD method has also multiple disadvantages.
 The algorithm gives a guarantee to converge only for the convex objective functions and generally converges slowly for ill-posed problems, with very slow evolution along the gradient.
-For the non-convex shapes of the function, there is a chance that the algorithm will converge to a local minimum, without any possibility to escape and discover other regions of the domain\cite{}.
+For the non-convex shapes of the function, there is a chance that the algorithm will converge to a local minimum, without any possibility to escape and discover other regions of the domain\cite{bibl:gd-over}.
 Nevertheless, this approach is still being the most common way to optimize the parameters, especially if several modifications are introduced as a remedy for the disadvantages.
 \begin{figure}[h]
 	\begin{multicols}{2}

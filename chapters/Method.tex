@@ -41,7 +41,7 @@ After the second convolution, we apply \emph{gating}, a different form of activa
 Every second block has stride for its second convolution equal to 2, which increase the size of the output in two times in every direction.
 Here we also apply average pooling and pad empty channels at the residual channel to fit the new size of the image.
 In total, the residual block of the encoder is represented visually with \ref{fig:res_block}.
-\begin{figure}[ht]
+\begin{figure}[h]
 	\centering
 	\includegraphics[width=0.4\linewidth]{images/Residual_Block2.pdf}
 	\label{fig:res_block}
@@ -65,7 +65,7 @@ Also, we need to restore the size of the image after the up-sampling, because th
 The encoder residual block could be easier understood using\ref{fig:res_block_upc}.
 
 \medskip
-\begin{figure}[ht]
+\begin{figure}[h]
 	\centering
 	\includegraphics[width=0.4\linewidth]{images/Residual_Upconv0.pdf}
 	\label{fig:res_block_upc}
@@ -82,7 +82,7 @@ In the end, based on the $128$ channels of low-dimensional representation, we ob
 The total architectural of our model could be visually with\ref{fig:arch_1}.
 The architecture for the 3D case is very similar to the 2D one, with every convolution replaced with a corresponding \emph{3D convolution}, where channels and kernels are cubes and summation happens across $3$ dimensions.
 
-\begin{figure}[ht]
+\begin{figure}[h]
 	\centering
 	\includegraphics[width=0.8\linewidth]{images/Architectue_resnet_cone.pdf}
 	\label{fig:arch_1}
