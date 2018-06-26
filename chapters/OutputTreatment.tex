@@ -62,6 +62,29 @@ Even having physically meaningful shape, this requirement will not be automatica
 \end{figure}
 \medskip
 
+Despite having issues for selected ill-posed questions, most of the optimized models were able to preserve main structural requirements on the element shape, meaning having the body of element connecting the BC and load application point, for most of the cases.
+This means that the cases with above mentioned issues could be potentially treated with a simple mechanistic post-processing approaches.
+\medskip
+
+The other issue related to the structural requirements on the resulting shapes was discovered by using the interactive result visualization framework.
+During the first trials on the 2D case a model was trained with a test set for which forces were applied at points creating a checkered grid.
+The evaluation results did not satisfy the requirement and were not able to reconstruct the relation between BC and load application force, as it is shown at figure \ref{fig:slide_problem}.
+This problem lead to future research on model configurations, in particular sampling patterns for training dataset.
+
+\begin{figure}[h]
+	\begin{multicols}{6}
+		\includegraphics[width=0.5\linewidth]{images/diff1_2000_27_17.png}
+		\includegraphics[width=0.5\linewidth]{images/diff1_2000_27_18.png}
+		\includegraphics[width=0.5\linewidth]{images/diff1_2000_27_19.png}
+		\includegraphics[width=0.5\linewidth]{images/diff1_2000_27_20.png}
+		\includegraphics[width=0.5\linewidth]{images/diff1_2000_27_21.png}
+		\includegraphics[width=1.2\linewidth]{images/hitmap_check8.png}	
+	\end{multicols}
+\caption{A recurring problem of incorrect structure reconstruction based on load application point observed for unoptimal training dataset sampling. With a smooth change of its coordinates the inferred result does not change smoothly and tend to leap between known cases from teh training dataset. The last image shows the error heatmap for the case and the sampling pattern that was used.}
+\label{fig:slide_problem}
+\end{figure}
+
+
 \subsection{Post-processing}
 
 In order to solve the issues described above, we decided to perform several post-processing operations on the output of the model.

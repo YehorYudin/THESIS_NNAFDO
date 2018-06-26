@@ -6,6 +6,7 @@
 In this chapter, we will describe the tests on model training, both for 2D and 3D domains, and results of their evaluation.
 We analyze the dependency of the model performance based on the data set properties, as well as ability to interpolate results for different variable parameters, and ways to prepare the model with the best performance based on several criteria. 
 The model is evaluated with respect to the accuracy of its results as well as its ability to improve the TO process is analyzed.
+\medskip
 
 The models for all cases are trained using GPU, which is also used to generate samples and evaluate TO speed-up and for 3D cases.
 The graphics card used is a single Nvidia GeForce GTX 1080 Ti, with 3584 CUDA cores. 
@@ -37,11 +38,12 @@ For this, we trained model with different loss function: with and without volume
 We took training dataset with models of variable volume with three different volume fraction values.
 For the evaluation, we used datasets composed of both models with known volumes and with models of volume fraction not used during the training.
 We evaluated both accuracy of the model and the accuracy of volume value as a separate parameter.
-The results show that considering volume fraction at loss function improves the accuracy of the model, as one can see from the table\ref{tab:vf_full}. 
+The results show that considering volume fraction at loss function improves the accuracy of the model, as one can see from the table \ref{tab:vf_full} and \ref{tab:vf_full_vf}. 
 \begin{table}[h]
-\begin{tabular}{ |c|c|c|c|c| }\\
+	\begin{center}
+\begin{tabular}{ |c|c|c|c|c| }
 	\hline
-	Model loss function vs. MSE(Var) Test Dataset & $V_f=0.2$ & $V_f=0.3$& $V_f=0.5$ &  $V_f=0.3$, resolution $28\times 28$\\ 
+	Loss function vs. $MSE(Var)$ & $V_f=0.2$ & $V_f=0.3$& $V_f=0.5$ &  $V_f=0.3$, res. $28\times 28$\\ 
 	\hline
 	$L=CE+R$ & 0.063(0.0001) & 0.072(0.0012) & 0.097(0.0013) & 0.168(0.006)  \\
 	$L=CE+R+\alpha L_{v_f}, \alpha=0.01$ & 0.060(0.008) & 0.070(0.0013) & 0.10(0.001) & 0.156(0.006)\\
@@ -49,41 +51,121 @@ The results show that considering volume fraction at loss function improves the 
 	$L=CE+R+\alpha L_{v_f}, \alpha=1.0$ & 0.063(0.001) & 0.073(0.0009) & 0.094(0.0008) & 0.177(0.005) \\
 	\hline
 \end{tabular}
-	\label{tab:vf_full}
-\caption{A table for test results evaluating influence of the volume fraction penalty term. Every model was trained on the same training dataset. For every model average MSE and its variance is calculated for the test datasets with same, intermediate and larger desired resulting volume }
+	\end{center}
+\caption{A table for test results evaluating influence of the volume fraction penalty term. Every model was trained on the same training dataset. For every model average MSE and its variance is calculated for the test datasets with same, intermediate and larger desired resulting volume }\label{tab:vf_full}
 \end{table}
 For the training set with intermediate volume fraction value, the model with volume fraction penalty and multiplicative constant of $0.2$ had an average MSE of $0.068$ and average volume error of $0.017$, comparing with $0.072$ and $0.02$ for a model without respectively.
 Testing model for new, intermediate, values of the input volume fraction help producing accurate results.
+\begin{figure}[H]
+	\begin{subfigure}[b]{0.5\linewidth}
+		\centering
+		\includegraphics[width=0.25\linewidth]{images/diff1_1_0200_28_6_03.png}
+		\caption{Volume fraction value $0.3$}
+		\label{fig:vf_example_1}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.5\linewidth}
+		\centering
+		\includegraphics[width=0.25\linewidth]{images/diff1_1_0200_28_5_05}
+		\caption{Volume fraction value $0.5$ }
+		\label{fig:vf_example_2}
+	\end{subfigure}
+ \caption{Results for the network trained using volume fraction penalty loss for interpolating and extrapolating outcome volumes.}
+	\label{fig:vf_example}
+\end{figure}
 Results extrapolation for input volume fraction larger than ones used for training, however, caused much worse results for models. 
 For the best model, the average MSE in this case was $0.092$ and the average volume error was $0.64$.
 This could be explained by convolutional nature of the model, with the fact that features found by the model are too subtle.  
 The application of the post-processing allowed bringing the higher accuracy and better volume reconstruction. 
-\todo{add table and example picture}
+\begin{table}[h]
+	\begin{center}
+		\begin{tabular}{ |c|c|c|c|c| }
+			\hline
+			Loss vs. $E_{V}(Var)$ & $V_f=0.2$ & $V_f=0.3$& $V_f=0.5$ &  $V_f=0.3$, res. $28\times 28$\\ 
+			\hline
+			$\alpha=0$ & 0.015(0.0001) & 0.020(0.0002) & 0.058(0.0004) & 0.054(0.001)  \\
+			$\alpha=0.01$ & 0.0017(0.0002) & 0.019(0.0002) & 0.007(0.0003) & 0.044(0.001)\\
+			$\alpha=0.2$ & 0.012(0.0001) & 0.017(0.0002)  & 0.064(0.0003)  & 0.046(0.001) \\
+			$\alpha=1.0$ & 0.011(0.001) & 0.031(0.0004) & 0.067(0.0003) & 0.07(0.002) \\
+			\hline
+		\end{tabular}
+	\end{center}
+	\caption{A table for test results evaluating influence of the volume fraction penalty term. Here we valuate the ability to reconstruct correct resulting volume.}\label{tab:vf_full_vf}
+\end{table}
 \medskip 
 
 \subsubsection{Test III: Scaling problem resolution}
 The next test had a goal of evaluation of the capability of the network to scale the results for different resolutions.
-For this, we prepared training dataset with two different resolutions and evaluation datasets with same resolutions, and with resolutions of previously unknown sizes.
+For this, we prepared training dataset with resolutions of previously unknown sizes.
 For an intermediate size of the domain, the model shows a good accuracy of the interpolation.
 For the larger resolutions, however, the ability to extrapolate was bad.
-This could be also explained by the fact that features of the model have only parts of smaller models.
-For the case, when we increased the size of the domain, without changing the physics of the model, the result was also inaccurate with empty domain populating with unphysical pixels.
-This phenomenon was partially eliminated with post-processing
+This could explained by the fact that features of the model describe only parts of much smaller models.
+As an additional case, we increased the size of the domain, without changing the physics of the model
+The result was also inaccurate with empty part of domain being populated with unphysical pixels.
+This phenomenon was partially eliminated with post-processing.
+\begin{figure}[h]
+	\begin{subfigure}[b]{0.3\linewidth}
+		\centering
+		\includegraphics[width=0.25\linewidth]{images/diff1_1_0100_26_4_2802.png}
+		\caption{Resolution $28 \times 28$}
+		\label{fig:resols_1}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.3\linewidth}
+	\centering
+	\includegraphics[width=0.25\linewidth]{images/diff1_1_0200_26_4_6464.png}
+	\caption{Resolution $64 \times 64$}
+	\label{fig:resols_2}
+\end{subfigure}
+	\begin{subfigure}[b]{0.3\linewidth}
+	\centering
+	\includegraphics[width=0.25\linewidth]{images/diff1_1_0200_28_4_3264.png}
+	\caption{Resolution $32 \times 64$}
+	\label{fig:resols_3}
+\end{subfigure}
+	\caption{A results inferred by model for domain resolutions not used for training. Only for case of $28\times 28$ results are meaningful, however, not accurate. }
+	\label{fig:resols}
+\end{figure}
 \medskip
 
 \subsubsection{Test IV: Comparison with other architectures}
 One of the tests goal was to compare the performance of different network architectures.
 We compared our encoder-decoder residual network with similar architectures, used for medical image segmentation.
-We considered \emph{V-Net}\cite{} and \emph{U-Net}\cite{} architectures with similar encoder-decoder structure.
-The former in our case and $...$ number of parameters and the latter has $...$.
-The U-Net network shows significantly worse results.
-The V-Net, having more parameters, in the end, was able to achieve comparable results, however, after much longer time spent training.
+We considered \emph{V-Net}\cite{bibl:vnet} and \emph{U-Net}\cite{bibl:unet} architectures with similar encoder-decoder structure.
+The former in our case and $9,007,601$ number of parameters and the latter has $2,028,385$, comparing to $4,011,585$ for our model.
+The U-Net network did not converge and was producing noise for any considered model configuration.
+%The V-Net, having more parameters, in the end, was able to achieve comparable results, however, after much longer time spent training.
+The V-Net achieved slightly better results for the evaluation set composed of cases with known resolution and volume.
+However, for the data with an intermediate size of the domain and volume fraction value the results were significantly worse, as shown in table \ref{tab:vnet}.
+Furthermore, the training of the V-net model took significantly more time.
+\begin{table}[h]
+	\begin{center}
+		\begin{tabular}{ |c|c c|c c| }
+			\hline
+			Test Dataset & \multicolumn{2}{c|}{$32 \times 32, V_f=0.2$} & \multicolumn{2}{c|}{$28 \times 28, V_f=0.3$} \\
+			\hline
+			Model  & $MSE$ & $E_V$ & $MSE$ & $E_V$ \\ 
+			\hline
+			Our Architecture & 0.058(0.0008) & 0.012(0.0001) & 0.162(0.005) & 0.046(0.001) \\
+			Our Architecture (w.o. SDF) & 0.048(0.0009) & 0.011(0.00006) & 0.172(0.004) & 0.072(0.001) \\
+			V-net & 0.056(0.0008) & 0.013(0.0001) & 0.180(0.003) & 0.085(0.0005) \\
+			\hline
+		\end{tabular}
+	\end{center}
+	\caption{A table for test results for different models.}\label{tab:vnet}
+\end{table}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.11\linewidth]{images/diff1_1_1200_23_1_vnet.png}
+	\caption{A result produced by V-Net for a case with intemediate resolution and volume}
+	\label{fig:vnet_pic}
+\end{figure}
 \medskip
 
 \subsubsection{Test V: Influence of pre-processing}
-The other test was done to evaluate the influence of using SDF of inputs and justify such approach.
-For that, we prepared two training datasets, one with initial bitmaps of the boundary conditions and load application points as inputs, and the second one with inputs after applying the pre-processing.
-The results show that with the pre-processing both time of training and final accuracy are much higher.
+The other test was done to evaluate the influence of applying SDF for inputs as pre-processing and justify such approach.
+For that, we prepared two training datasets, one with initial bitmaps of the boundary conditions and load application points as inputs, and the second one with inputs after applying the pre-processing for every channel.
+The case without SDF show much worse results for the data with new properties, however, show better results for problem size and volume fraction used for training, as shown in table \ref{tab:vnet}.
+%The results show that with the pre-processing both time of training and final accuracy are much higher.
 %The optimal model for the 
 \medskip
 
@@ -92,31 +174,49 @@ The results show that with the pre-processing both time of training and final ac
 In case of 3D domains, due to both smaller sample and more difficult perception of 3D data, we applied different visualization and evaluation methods.
 In order to choose the best model average MSE across the test set was used.
 The MSE variance was also used to estimate generality as well as accuracy heatmap.
+\medskip 
 
-However, as the main parameters, we took the influence of the inferred result on the conventional Topology Optimization process, performed by IDeAs.
+However, as the main parameters, we took the influence of the inferred result on the conventional TO process, performed by IDeAs.
 The first way is comparing the total time required need to perform TO. 
 In case of reference value it is average time of a single IDeAs run for fixed domain size, and in case of our method, it is the average time for result inference by ANN system and average IDeAs time after the initialization with inferred results. For these purposes we had to introduce changes in IDeAs implementation, adding means to state initial VTK file describing the material layout and to initialize the data structures describing initial material densities with the value read from the VTK.
+\medskip
 \todo{numbers, numbers...}
 
 As a different estimation of improvement, we measured how much the inferred result describe a bounding region of the ground-truth field after a slight increase of the volume with dilation.
 This estimation was done in terms of the size of the probability of voxel not to be covered by bounding region and the decrease in the number of elements of the problem after we found the new domain. 
 \todo{is is not done at all!!!}
 
-\subsubsection{Test I: Fining most accurate model for 3D data}
+\subsubsection{Test I: Finding most accurate model for 3D data}
 
 The first experiment was to find the best model after hyperparameter optimization.
 We used the training dataset with sampling modes similar to the 2D case.
 We pre-processed samples and the model had the loss function that included volume fraction penalty term.
 After the process, similar to the 2D case, the best model was produced by the training dataset with forces at the edge and show accuracy of ... on the evaluation dataset. 
 
-Typical results look as follows\ref{}.
+Typical results look as shown in Figure \ref{fig:3dres_ex}.
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1.1\linewidth]{images/28282800m1_4comp.png}
+	\caption{An example output for of the network(red) compared to the reference model (blue) for an ill-posed case. The model still correctly connects the BC (corners of the $X=0$ wall) and the load application point, however the overall shape is very distinct from the ground truth}
+	\label{fig:3dres_ex}
+\end{figure}
 
 \subsubsection{Test II: TO acceleration with IDeAs}
 
-After applying the elements layout produced by the following model as the input for the IDeAs, we achieved the following average duration of optimization with the number of iterations...
+After applying the elements layout produced by the following model as the input for the IDeAs, we achieved the average duration of optimization with the number of iterations equal $10$. 
+This number is almost equal to the number of iterations performed by the optimizer starting with the default initialization. 
+Te current implementation of the optimizer uses a straightforward optimizer ...
+\medskip
+
+In the case of initialization with an approximate solution, the objective function of the optimizer on the first function is already low. 
+For the educated guess initializer it has value of averagely $8$, when the default initializer gives averagely $250$ in absolute units, and the found minimum in both cases is averagely $3$.
+Starting in the vicinity of minimum is an ill-posed for current optimization rule, which means it is hard to utilize any educated initial guess approach to decrease the number of optimization iterations.
+The objective function for many TO problems might have multiple local minima with domains of low gradient in their vicinity, which will require sophisticated optimization techniques for successful fine-tuning\todo{reference?}.
 
 However, we with a probability of ... we manage to predict the new domain of the problem, close to the shape of the resulting model. 
 The volume of the new domain was averagely ... percent smaller than the whole box and contained on only ... percent of empty voxels in the result.
+That means that it possible to reduce the problem size by ..., than with proper implementation can significantly reduce optimization time. 
+
  
 
 

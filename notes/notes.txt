@@ -25,11 +25,11 @@ Variables:
 
 figures at data; check 3d results; numbers on 2d (see list) ;
 
-22.06:  test for 3x3 datset (32_0.2 allsdf) -in prog
-	maybe		 restrucure methodology ; arch to intro(resnet) ;
+test for 3x3 datset (32_0.2 allsdf) -in prog
+	maybe		 arch to intro(resnet)
 
 25.06:	use TO consistently -in prog ;previous work: another speedup arpoaches + novelty
-	add about other architecures ; add about typical problems at outputs -in porg
+	add about other architecures
 
 
 images: new for convoutions(x4), ? optimization(gradient descent), activation(smaller) , ?regularization(x2), post processing(before and after),

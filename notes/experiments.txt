@@ -13,11 +13,11 @@
 
 
  ---- SDF preprocessing:
-	model noSDF (2res,3Vf, 3Bc for 1) more samples!
-		eval on 28_0.3 : MSE () Vfe ()
+	model noSDF (2res,3Vf, 3Bc for 1) more samples!!!
+		eval on 28_0.3 : MSE 0.147(0.004) Vfe 0.065(0.002)
 		eval on 32_0.2 : MSE 0.03(0.0006) Vfe 0.011(0.00005)
 	model noSDF (2res,3Vf, 3Bc for 1)
-		eval on 28_0.3 : MSE () Vfe ()
+		eval on 28_0.3 : MSE 0.172(0.004) Vfe 0.072(0.001) --- worse
 		eval on 32_0.2 : MSE 0.048(0.0009) Vfe 0.011(0.00006)
 
 
@@ -48,29 +48,15 @@
  ---- Resolutions:
 	model CE_L2 (2res,3Vf, 3Bc for 1, all sdf)
 		eval on 28_0.2 : MSE 0.144(0.004) Vfe 0.029(0.0005)
-		eval on 32_0.2 : MSE () Vfe ()
+	???	eval on 28_0.2 : MSE 0.156(0.003) Vfe 0.026(0.0005)
+		eval on 32_0.2 : MSE 0.058(0.0007) Vfe 0.012(0.0001)
 		eval on 64_0.2 : MSE () Vfe ()
+		eval on 48_0.2 : MSE () Vfe ()
 
 
  ---- Generallfor Data Sets:
 
 	model sparse-cross 7_4 (CE_Vf_L2_0.2, 2res,3Vf, 3Bc for 1, all sdf) 200
-		eval on 32_0.2 : MSE () Vfe ()
-	model sparse-cross 7_4 (CE_Vf_L2_0.2, 2res,3Vf, 3Bc for 1, all sdf) 1000
-		eval on 32_0.2 : MSE () Vfe ()
-	model sparse-cross 7_4 (CE_Vf_L2_0.2, 2res,3Vf, 3Bc for 1, all sdf) 2500
-		eval on 32_0.2 : MSE () Vfe ()
-	model sparse-cross 7_4 (CE_Vf_L2_0.2, 2res,3Vf, 3Bc for 1, all sdf) 7500
-		eval on 32_0.2 : MSE () Vfe ()
-	model sparse-cross 7_4 (CE_Vf_L2_0.2, 2res,3Vf, 3Bc for 1, all sdf) 10000
-		eval on 32_0.2 : MSE () Vfe ()
-	model sparse-cross 7_4 (CE_Vf_L2_0.2, 2res,3Vf, 3Bc for 1, all sdf) 15000
-		eval on 32_0.2 : MSE () Vfe ()
-	model sparse-cross 7_4 (CE_Vf_L2_0.2, 2res,3Vf, 3Bc for 1, all sdf) 20000
-		eval on 32_0.2 : MSE () Vfe ()
-	model sparse-cross 7_4 (CE_Vf_L2_0.2, 2res,3Vf, 3Bc for 1, all sdf) 30000
-		eval on 32_0.2 : MSE () Vfe ()
-	model sparse-cross 7_4 (CE_Vf_L2_0.2, 2res,3Vf, 3Bc for 1, all sdf) 40000
 		eval on 32_0.2 : MSE () Vfe ()
 
 
