@@ -46,7 +46,7 @@
 		eval on 32_0.3: MSE 0.073(0.0009) Vfe 0.031(0.0004)
 
  ---- Resolutions:
-	model CE_L2 (2res,3Vf, 3Bc for 1, all sdf)
+	model CE_VF_L2 (2res,3Vf, 3Bc for 1, all sdf)
 		eval on 28_0.2 : MSE 0.144(0.004) Vfe 0.029(0.0005)
 	???	eval on 28_0.2 : MSE 0.156(0.003) Vfe 0.026(0.0005)
 		eval on 32_0.2 : MSE 0.058(0.0007) Vfe 0.012(0.0001)
@@ -59,4 +59,21 @@
 	model sparse-cross 7_4 (CE_Vf_L2_0.2, 2res,3Vf, 3Bc for 1, all sdf) 200
 		eval on 32_0.2 : MSE () Vfe ()
 
+
+------------------- 3D ------------------------------
+
+	model CE_L2 sparse 25k
+		eval MSE 0.048(0.003) Vfe ()
+	model CE_L2 sparse 50k
+		eval MSE 0.051(0.003) Vfe ()
+	model CE_L2 sparse 75k
+		eval MSE () Vfe ()
+
+	model CE_L2 edge 25k
+		eval MSE 0.147(0.01) Vfe ()
+	model CE_L2 edge 50k
+		eval MSE 0.048(0.003) Vfe ()
+	model CE_L2 edge 75k
+		eval MSE 0.140(0.01) Vfe ()
+	
 

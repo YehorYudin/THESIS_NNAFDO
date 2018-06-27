@@ -26,10 +26,15 @@ The dimensionality of the data also influenced the number of model parameters, w
 \medskip
 
 \subsubsection{Test I: Influence of training dataset size and sampling}
-One of the main tests set up by us was to find the dependency of the model performance based on the size of the dataset as well as to find the best training dataset sampling pattern.
-After some preliminary research, we decided to take three different sampling schemes and three with three different steps for each. 
+One of the main tests was to find the influence of the training dataset properties on the model performance.
+We performed evaluations for models trained with datasets of different size and of different sampling patterns, described in ``Data Preparation'' chapter.
+The goal of the test was to find the dependecy of the evaluation accuracy on the dataset size as well as to choose the best training dataset sampling pattern.
+\medskip
+ 
+After some preliminary research, we decided to take three different sampling schemes and three with three different sampling steps for each. 
 The most accurate model was produced by the training dataset with the domination of problems where loads were applied on the edge of the domain.
-The dependency on the size of the training set shows ...  dependency for each sampling.
+The dependency on the size of the training set, as shown with Figure \ref{} .
+
 \medskip
 
 \subsubsection{Test II: Loss function form and volume recovery}
@@ -111,13 +116,13 @@ This phenomenon was partially eliminated with post-processing.
 	\end{subfigure}
 	\begin{subfigure}[b]{0.3\linewidth}
 	\centering
-	\includegraphics[width=0.25\linewidth]{images/diff1_1_0200_26_4_6464.png}
+	\includegraphics[width=0.4\linewidth]{images/diff1_1_0200_26_4_6464.png}
 	\caption{Resolution $64 \times 64$}
 	\label{fig:resols_2}
 \end{subfigure}
 	\begin{subfigure}[b]{0.3\linewidth}
 	\centering
-	\includegraphics[width=0.25\linewidth]{images/diff1_1_0200_28_4_3264.png}
+	\includegraphics[width=0.5\linewidth]{images/diff1_1_0200_28_4_3264.png}
 	\caption{Resolution $32 \times 64$}
 	\label{fig:resols_3}
 \end{subfigure}
@@ -164,26 +169,31 @@ Furthermore, the training of the V-net model took significantly more time.
 \subsubsection{Test V: Influence of pre-processing}
 The other test was done to evaluate the influence of applying SDF for inputs as pre-processing and justify such approach.
 For that, we prepared two training datasets, one with initial bitmaps of the boundary conditions and load application points as inputs, and the second one with inputs after applying the pre-processing for every channel.
-The case without SDF show much worse results for the data with new properties, however, show better results for problem size and volume fraction used for training, as shown in table \ref{tab:vnet}.
+Models for both datasets were trained and then both were evaluated with two test sets, one is collection of TO cases for $32 \times 32$ domain size with $0.2$ of domain occupied by material, as well as for $28 \times 28 $ and $0.3$ respectively.
+\medskip
+
+The case without SDF show worse results for the data with new properties. 
+However, this model shows better results for problem size and volume fraction used for training, as shown in table \ref{tab:vnet}.
+The optimal model for a dataset without pre-processing also took more steps to train.
 %The results show that with the pre-processing both time of training and final accuracy are much higher.
 %The optimal model for the 
 \medskip
 
 \section{Results for 3D case}
 
-In case of 3D domains, due to both smaller sample and more difficult perception of 3D data, we applied different visualization and evaluation methods.
+In case of 3D domain, due to both smaller sample and more difficult perception of 3D data, we applied different visualization and evaluation methods.
 In order to choose the best model average MSE across the test set was used.
 The MSE variance was also used to estimate generality as well as accuracy heatmap.
 \medskip 
 
 However, as the main parameters, we took the influence of the inferred result on the conventional TO process, performed by IDeAs.
 The first way is comparing the total time required need to perform TO. 
-In case of reference value it is average time of a single IDeAs run for fixed domain size, and in case of our method, it is the average time for result inference by ANN system and average IDeAs time after the initialization with inferred results. For these purposes we had to introduce changes in IDeAs implementation, adding means to state initial VTK file describing the material layout and to initialize the data structures describing initial material densities with the value read from the VTK.
+In case of reference value, it is the average time of a single IDeAs run for fixed domain size, and in case of our method, it is the average time for result inference by ANN system and average IDeAs time after the initialization with inferred results.
+For these purposes, we had to introduce changes in IDeAs implementation, adding means to state initial VTK file describing the material layout and to initialize the data structures describing initial material densities with the value read from the VTK.
 \medskip
-\todo{numbers, numbers...}
 
-As a different estimation of improvement, we measured how much the inferred result describe a bounding region of the ground-truth field after a slight increase of the volume with dilation.
-This estimation was done in terms of the size of the probability of voxel not to be covered by bounding region and the decrease in the number of elements of the problem after we found the new domain. 
+As a different estimation of improvement, we measured how much the inferred result describe a bounding region of the ground-truth field after an increase of the volume with dilation.
+%This estimation was done in terms of the size of the probability of voxel not to be covered by bounding region and the decrease in the number of elements of the problem after we found the new domain. 
 \todo{is is not done at all!!!}
 
 \subsubsection{Test I: Finding most accurate model for 3D data}
@@ -191,7 +201,21 @@ This estimation was done in terms of the size of the probability of voxel not to
 The first experiment was to find the best model after hyperparameter optimization.
 We used the training dataset with sampling modes similar to the 2D case.
 We pre-processed samples and the model had the loss function that included volume fraction penalty term.
-After the process, similar to the 2D case, the best model was produced by the training dataset with forces at the edge and show accuracy of ... on the evaluation dataset. 
+After the process, similar to the 2D case, the best model was produced by the training dataset with forces at the edge and show accuracy of $0.14$ on the evaluation dataset, as seen from table \ref{tab:3d_valid}. 
+
+\begin{table}[h]
+	\begin{center}
+		\begin{tabular}{ |c|c|c|c| }
+			\hline
+			 Sampling vs. Number of  iterations & $25k$ & $50k$ &  $75k$ \\ 
+			\hline
+			Sparse grid sampling & 0.048(0.003) & 0.051(0.003) & ()  \\
+			Sampling at the edges & 0.147(0.01) & 0.140(0.003) & () \\
+			\hline
+		\end{tabular}
+	\end{center}
+	\caption{Validation results for models treating 3D data.}\label{tab:3d_valid}
+\end{table}
 
 Typical results look as shown in Figure \ref{fig:3dres_ex}.
 \begin{figure}[h]
