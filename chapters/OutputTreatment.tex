@@ -55,8 +55,8 @@ There also might occur the similar problem of the result not corresponding to so
 The other issues is material having the volume not equal to the one stated as input.
 Even having physically meaningful shape, this requirement will not be automatically met and required the additional handling.
 \begin{figure}[h]
-	\centering
-	\includegraphics[width=0.1\linewidth]{images/diff1_1_1100_22_12.png}
+	%\centering
+	\includegraphics[width=1.1\linewidth]{images/diff1_1_1100_22_12_topr.pdf}
 	\label{fig:element_cloudy_example}
 	\caption{An example of the case when the result given by the model have wrong volume fraction and physically incorrect parts.}
 \end{figure}
@@ -72,12 +72,13 @@ The evaluation results did not satisfy the requirement and were not able to reco
 This problem lead to future research on model configurations, in particular sampling patterns for training dataset.
 
 \begin{figure}[h]
-	\begin{multicols}{6}
-		\includegraphics[width=0.5\linewidth]{images/diff1_2000_27_17.png}
-		\includegraphics[width=0.5\linewidth]{images/diff1_2000_27_18.png}
-		\includegraphics[width=0.5\linewidth]{images/diff1_2000_27_19.png}
-		\includegraphics[width=0.5\linewidth]{images/diff1_2000_27_20.png}
-		\includegraphics[width=0.5\linewidth]{images/diff1_2000_27_21.png}
+	\begin{multicols}{7}
+		\includegraphics[width=0.4\linewidth]{images/diff1_2000_27_17.png}
+		\includegraphics[width=0.4\linewidth]{images/diff1_2000_27_18.png}
+		\includegraphics[width=0.4\linewidth]{images/diff1_2000_27_19.png}
+		\includegraphics[width=0.4\linewidth]{images/diff1_2000_27_20.png}
+		\includegraphics[width=0.4\linewidth]{images/diff1_2000_27_21.png}
+		\includegraphics[width=1.6\linewidth]{images/sliding_case.pdf}
 		\includegraphics[width=1.2\linewidth]{images/hitmap_check8.png}	
 	\end{multicols}
 \caption{A recurring problem of incorrect structure reconstruction based on load application point observed for unoptimal training dataset sampling. With a smooth change of its coordinates the inferred result does not change smoothly and tend to leap between known cases from teh training dataset. The last image shows the error heatmap for the case and the sampling pattern that was used.}

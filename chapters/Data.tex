@@ -22,7 +22,15 @@ To obtain a set of TO results that could be used as the training and testing sam
 
 As Boundary Condition we can choose to fix one of the sides of the domain (one of four walls). 
 We can also choose to leave the inner $\frac{1}{3}$ of the side unfixed or fix only the extreme points of the wall. 
-\todo{(Add picture of boundary conditions and add it as a caption)}
+\begin{figure}
+	\begin{multicols}{3}
+	\includegraphics[width=0.7\linewidth]{images/TOcase_init.pdf}
+	\includegraphics[width=0.7\linewidth]{images/TOcase_23bc.pdf}
+	\includegraphics[width=0.7\linewidth]{images/TOcase_2pbcsvg.pdf}
+	\end{multicols}
+	\caption{Boundary Conditions considered for 2D TO cases }
+	\label{fig:3bcs}
+\end{figure}
 \medskip
 
 As a simple load case, we consider only the situation where a force is applied to a single point of the element. 
@@ -117,21 +125,20 @@ The ambiguity for the force direction is solved by defining inner part of zero-s
 One of the ways to describe a set of geometrical points $\Omega$ within the domain is defining the distance to the boundary of $\Omega$ for every point of the domain. 
 The values of such function are typically negative if the point is located within $\Omega$ and positive is outside.
 In the end, we define the Signed Distance Field as a metric space $X$ with metrics $f$, or \emph{signed distance function} :    
-\[ 
-f(x) = 
-	\begin{cases}
+\begin{equation}
+f(x) = \begin{cases}
 			d(x, \partial \Omega) & \mbox{ if } x\in\Omega  \\
 			-d(x, \partial \Omega) & \mbox{ if } x\in\Omega^c 
-	\end{cases} 
+\end{cases} 
 	, \quad \mathrm{where} \; d(x, \partial \Omega) := \inf_{y \in \partial \Omega}d(x, y)
-\]
+\end{equation} 
 
 If $\Omega$ is a subset of Euclidean space and has smooth boundaries, then the gradient of the metrics is constant at every point and satisfies the \emph{Eikonal equation}.
 \medskip
 
-\[
+\begin{equation}
  |\nabla f(x)| = \mathbf{1}, \quad \forall x \in X
-\]
+\end{equation}
 
 This equation describes the propagation of the wavefront started from the boundary of the $\Omega$ and its solution will describe travel time of the wavefront to every point in case of the constant speed of propagation which is equal to the signed distance function.
 \begin{figure}[ht]

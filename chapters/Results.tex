@@ -8,7 +8,7 @@ We analyze the dependency of the model performance based on the data set propert
 The model is evaluated with respect to the accuracy of its results as well as its ability to improve the TO process is analyzed.
 \medskip
 
-The models for all cases are trained using GPU, which is also used to generate samples and evaluate TO speed-up and for 3D cases.
+The models for all cases are trained using GPU, which is also used to generate samples and measure TO speed-up and for 3D cases.
 The graphics card used is a single Nvidia GeForce GTX 1080 Ti, with 3584 CUDA cores. 
 
 
@@ -17,8 +17,8 @@ The graphics card used is a single Nvidia GeForce GTX 1080 Ti, with 3584 CUDA co
 %Initially, it was decided to create an architecture and system to treat 2D cases of TO problems.
 During the first practical part of work, only the 2D cases of TO was considered.
 Creation of architecture for 2D domains and analysis of its performance was an important step that proved a concept of such ANN approach for TO field.
-The decision was also dictated by availability and speed of dataset preparation, as 2D TO solutions takes significantly less time than 3D. 
-For a 2D case, we could generate prepare large training dataset with more variable parameters and experiment with different representations.
+The decision to perform 2D analysis was also dictated by availability and speed of dataset preparation, as 2D TO solutions takes significantly less time than 3D. 
+For a 2D case, we could generate large training dataset with more variable parameters and experiment with different representations.
 The dimensionality of the data also influenced the number of model parameters, which means that training a single model took much less time and it was possible to introduce changes or fine-tune the model.
 \todo{move to approach or data?}
 
@@ -26,14 +26,55 @@ The dimensionality of the data also influenced the number of model parameters, w
 \medskip
 
 \subsubsection{Test I: Influence of training dataset size and sampling}
+
 One of the main tests was to find the influence of the training dataset properties on the model performance.
 We performed evaluations for models trained with datasets of different size and of different sampling patterns, described in ``Data Preparation'' chapter.
-The goal of the test was to find the dependecy of the evaluation accuracy on the dataset size as well as to choose the best training dataset sampling pattern.
+The goal of the test was to find the dependency of the validation accuracy on the dataset size as well as to choose the best training dataset sampling pattern.
 \medskip
  
 After some preliminary research, we decided to take three different sampling schemes and three with three different sampling steps for each. 
-The most accurate model was produced by the training dataset with the domination of problems where loads were applied on the edge of the domain.
-The dependency on the size of the training set, as shown with Figure \ref{} .
+%The most accurate model was produced by the training dataset with the domination of problems where loads were applied on the edge of the domain.
+%This type of datasets shows slightly better results compared to others, even with smaller amount of training samples.
+We trained models for various numbers of iterations and observed the saturation of validation error after some point ($10^4$ training iterations) as its shown on figure \ref{fig:mse_vs_steps}.
+However, the case with domination of problems where loads were applied on the edge of the domain shows slightly better results compared to other with smaller amount of training samples.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.5\linewidth]{images/tempplot.png}
+	\caption{The dependency of model validation error on the numeber of training steps.}
+	\label{fig:mse_vs_steps}
+\end{figure}
+We also observed different patterns in the validation error heatmap.
+The longer the training the less uniform was error with respect to load application point for the test case. 
+For the coordinates of load application and their vicinity the error value became very low and for other points it increased. 
+However, as it seen from the validation error graph \ref{fig:mse_vs_steps} the average error stays almost the same.
+The validation technique requires more general approach, that will consider test set properties uniformity of error on the set.
+
+\begin{figure}[H]
+	\begin{subfigure}[b]{0.4\linewidth}
+		\centering
+		\includegraphics[width=1.5\linewidth]{images/hitmap_e16_15k_avg.pdf}
+		\caption{Number of iterations $15,000$}
+		\label{fig:heatmaps_overfit_1}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.4\linewidth}
+		\centering
+		\includegraphics[width=1.5\linewidth]{images/hitmap_dpcr13-40k_avg.pdf}
+		\caption{Number of iterations $40,000$}
+		\label{fig:heatmaps_overfit_2}
+	\end{subfigure}
+	\caption{Validation error heatmaps after different amount of training steps. With training the error distribution based on become less uniform. The error becomes more dependent on how close are known cases used in the training.}
+	\label{fig:heatmaps_overfit}
+\end{figure}
+
+\medskip
+The dependency on the size of the training set, as shown with Figure \ref{ig:mse_vs_size}.
+The validation error decreases almost equally for every sampling pattern and the dependency is close to inverse proportional.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.5\linewidth]{images/tempplot_SIZE.png}
+	\caption{The dependency of model validation error on the training dataset size.}
+	\label{fig:mse_vs_size}
+\end{figure}
 
 \medskip
 
@@ -48,16 +89,19 @@ The results show that considering volume fraction at loss function improves the 
 	\begin{center}
 \begin{tabular}{ |c|c|c|c|c| }
 	\hline
-	Loss function vs. $MSE(Var)$ & $V_f=0.2$ & $V_f=0.3$& $V_f=0.5$ &  $V_f=0.3$, res. $28\times 28$\\ 
+	Loss vs. $MSE(Var)$ & $V_f=0.2$ & $V_f=0.3$& $V_f=0.5$ &  $V_f=0.3$, res. $28\times 28$\\ 
 	\hline
-	$L=CE+R$ & 0.063(0.0001) & 0.072(0.0012) & 0.097(0.0013) & 0.168(0.006)  \\
-	$L=CE+R+\alpha L_{v_f}, \alpha=0.01$ & 0.060(0.008) & 0.070(0.0013) & 0.10(0.001) & 0.156(0.006)\\
-	$L=CE+R+\alpha L_{v_f}, \alpha=0.2$ & 0.058(0.0007)  & 0.068(0.0009)  & 0.092(0.001) & 0.162(0.005) \\
-	$L=CE+R+\alpha L_{v_f}, \alpha=1.0$ & 0.063(0.001) & 0.073(0.0009) & 0.094(0.0008) & 0.177(0.005) \\
+	$L_{(1)}$ & 0.063(0.0001) & 0.072(0.0012) & 0.097(0.0013) & 0.168(0.006)  \\
+	$L_{(2)}, \alpha=0.01$ & 0.060(0.008) & 0.070(0.0013) & 0.10(0.001) & 0.156(0.006)\\
+	$L_{(2)}, \alpha=0.2$ & 0.058(0.0007) & 0.068(0.0009) & 0.092(0.001) & 0.162(0.005) \\
+	$L_{(2)}, \alpha=1.0$ & 0.063(0.001) & 0.073(0.0009) & 0.094(0.0008) & 0.177(0.005) \\
 	\hline
 \end{tabular}
 	\end{center}
-\caption{A table for test results evaluating influence of the volume fraction penalty term. Every model was trained on the same training dataset. For every model average MSE and its variance is calculated for the test datasets with same, intermediate and larger desired resulting volume }\label{tab:vf_full}
+\caption{A table for test results evaluating influence of considering the volume fraction at loss function. 
+The loss function $L_{1}$ is a default loss as in formula \ref{eq:loss_reg} and the loss function $L_2$ has an additional volume fraction penalty term multiplied by $\alpha$ as in formula \ref{eq:loss_vfpen}. 
+Every model was trained on the same training dataset. For every model average MSE and its variance is calculated. 
+Test datasets with a known ($0.2$), intermediate ($0.3$) and larger ($0.5$) desired resulting volume fractions $V_{f}$ are used.}\label{tab:vf_full}
 \end{table}
 For the training set with intermediate volume fraction value, the model with volume fraction penalty and multiplicative constant of $0.2$ had an average MSE of $0.068$ and average volume error of $0.017$, comparing with $0.072$ and $0.02$ for a model without respectively.
 Testing model for new, intermediate, values of the input volume fraction help producing accurate results.

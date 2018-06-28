@@ -113,14 +113,15 @@ In this way, we define our loss function as a sum over every output pixel of log
 \todo{ add a cite ,description is also so-so}
 The loss function term has the next form:
 \begin{equation}
- L_{CE}(w|x, y, \hat{y}) = -\frac{1}{N} \sum_{y_{e}|y=(y_{e})}^{} [ y_{e} \log \hat{y_{e}} + (1-y_{e}) \log (1-\hat{y_{e}})] , \, \mathrm{where} \, \hat{y_{e}} = \frac{1}{1+e^{-\hat{y}^{out}_{e}}}
+ L_{(0)}=L_{CE}(w|x, y, \hat{y}) = -\frac{1}{N} \sum_{y_{e}|y=(y_{e})}^{} [ y_{e} \log \hat{y_{e}} + (1-y_{e}) \log (1-\hat{y_{e}})] , \, \mathrm{where} \, \hat{y_{e}} = \frac{1}{1+e^{-\hat{y}^{out}_{e}}}
+ \label{eq:loss_default}
 \end{equation}
 \medskip
 
 Furthermore, in order to prevent over-fitting, we incorporate a regularization term in form of a $L_{2}$ norm of all trained matrix parameters, multiplied by a small constant $\alpha_{reg}$
-\todo{describe regularization? how detailed or leave out?}
 \begin{equation}
- 	L(w) = L_{CE} + \alpha_{reg} R_{L_{2}}, \, \mathrm{where} \, R_{L_{2}}(w) = ( \sum_{i}^{} |w_{i}|^{2} )^{\frac{1}{2}} 
+ 	L_{(1)}(w) = L_{CE} + \alpha_{reg} R_{L_{2}}, \, \mathrm{where} \, R_{L_{2}}(w) = ( \sum_{i}^{} |w_{i}|^{2} )^{\frac{1}{2}} 
+ 	\label{eq:loss_reg}
 \end{equation}
 \medskip
 
@@ -130,7 +131,8 @@ One of the ways used in the system is adding a volume fraction penalty term to t
 For this, we calculate the volume of the inferred result as a count of the pixels for which the probability to be occupied is higher than threshold, took the ratio with the volume stated for the reference problem and add the absolute difference with the desired volume fraction to the loss function with some small multiplicative constant $\beta_{V_{f}}$.
 \todo{ more detail! general formula!}
 \begin{equation}
-	L(w) = L_{CE} + \alpha_{reg} R_{L_{2}} + \beta_{V_{f}}  L_{V_{f}} , \, \mathrm{where} \, L_{V_{f}} = \frac{1}{N} \sum_{i=1}^{N} |V_{f}(\hat{y}_{i}) - V_{f}^{\ast}|
+	L_{(2)}(w) = L_{CE} + \alpha_{reg} R_{L_{2}} + \beta_{V_{f}}  L_{V_{f}} , \, \mathrm{where} \, L_{V_{f}} = \frac{1}{N} \sum_{i=1}^{N} |V_{f}(\hat{y}_{i}) - V_{f}^{\ast}|
+	\label{eq:loss_vfpen}
 \end{equation}
 
 
