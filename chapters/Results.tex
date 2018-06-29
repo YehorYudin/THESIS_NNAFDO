@@ -25,7 +25,7 @@ The dimensionality of the data also influenced the number of model parameters, w
 %The results of the model evaluation, including the hyperparameter optimization, shows next tendencies. 
 \medskip
 
-\subsubsection{Test I: Influence of training dataset size and sampling}
+\subsubsection{Test I: Influence of training dataset size and sampling pattern}
 
 One of the main tests was to find the influence of the training dataset properties on the model performance.
 We performed evaluations for models trained with datasets of different size and of different sampling patterns, described in ``Data Preparation'' chapter.
@@ -39,7 +39,7 @@ We trained models for various numbers of iterations and observed the saturation 
 However, the case with domination of problems where loads were applied on the edge of the domain shows slightly better results compared to other with smaller amount of training samples.
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.5\linewidth]{images/tempplot.png}
+	\includegraphics[width=0.85\linewidth]{images/plot.pdf}
 	\caption{The dependency of model validation error on the numeber of training steps.}
 	\label{fig:mse_vs_steps}
 \end{figure}
@@ -49,16 +49,17 @@ For the coordinates of load application and their vicinity the error value becam
 However, as it seen from the validation error graph \ref{fig:mse_vs_steps} the average error stays almost the same.
 The validation technique requires more general approach, that will consider test set properties uniformity of error on the set.
 
-\begin{figure}[H]
+\begin{figure}[h]
+	\centering
 	\begin{subfigure}[b]{0.4\linewidth}
 		\centering
-		\includegraphics[width=1.5\linewidth]{images/hitmap_e16_15k_avg.pdf}
+		\includegraphics[width=1\linewidth]{images/hitmap_e16_15k_avg.pdf}
 		\caption{Number of iterations $15,000$}
 		\label{fig:heatmaps_overfit_1}
 	\end{subfigure}
 	\begin{subfigure}[b]{0.4\linewidth}
 		\centering
-		\includegraphics[width=1.5\linewidth]{images/hitmap_dpcr13-40k_avg.pdf}
+		\includegraphics[width=1\linewidth]{images/hitmap_dpcr13-40k_small.pdf}
 		\caption{Number of iterations $40,000$}
 		\label{fig:heatmaps_overfit_2}
 	\end{subfigure}
@@ -71,7 +72,7 @@ The dependency on the size of the training set, as shown with Figure \ref{ig:mse
 The validation error decreases almost equally for every sampling pattern and the dependency is close to inverse proportional.
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.5\linewidth]{images/tempplot_SIZE.png}
+	\includegraphics[width=0.7\linewidth]{images/plot_SIZE_O.pdf}
 	\caption{The dependency of model validation error on the training dataset size.}
 	\label{fig:mse_vs_size}
 \end{figure}
@@ -80,7 +81,14 @@ The validation error decreases almost equally for every sampling pattern and the
 
 \subsubsection{Test II: Loss function form and volume recovery}
 The next test was performed in order to find out the capabilities of the approach to restoring proper volume fraction of the material. 
-For this, we trained model with different loss function: with and without volume fraction penalty term, and for a different multiplicative constant for the term.
+For this, we trained model with different loss function: 
+\begin{itemize}
+	\item Without volume fraction treatment $L_{(1)}$ as in equation \ref{eq:loss_reg}
+	\item With additional penalty term as $L_{(2)}=L_{(1)}+\beta L_{V_{f}}$ as in \ref{eq:loss_vfpen}
+	\begin{itemize}
+		\item for a different multiplicative constant $\beta$ for the term
+	\end{itemize}
+\end{itemize}
 We took training dataset with models of variable volume with three different volume fraction values.
 For the evaluation, we used datasets composed of both models with known volumes and with models of volume fraction not used during the training.
 We evaluated both accuracy of the model and the accuracy of volume value as a separate parameter.
@@ -92,14 +100,14 @@ The results show that considering volume fraction at loss function improves the 
 	Loss vs. $MSE(Var)$ & $V_f=0.2$ & $V_f=0.3$& $V_f=0.5$ &  $V_f=0.3$, res. $28\times 28$\\ 
 	\hline
 	$L_{(1)}$ & 0.063(0.0001) & 0.072(0.0012) & 0.097(0.0013) & 0.168(0.006)  \\
-	$L_{(2)}, \alpha=0.01$ & 0.060(0.008) & 0.070(0.0013) & 0.10(0.001) & 0.156(0.006)\\
-	$L_{(2)}, \alpha=0.2$ & 0.058(0.0007) & 0.068(0.0009) & 0.092(0.001) & 0.162(0.005) \\
-	$L_{(2)}, \alpha=1.0$ & 0.063(0.001) & 0.073(0.0009) & 0.094(0.0008) & 0.177(0.005) \\
+	$L_{(2)}, \beta=0.01$ & 0.060(0.008) & 0.070(0.0013) & 0.10(0.001) & 0.156(0.006)\\
+	$L_{(2)}, \beta=0.2$ & 0.058(0.0007) & 0.068(0.0009) & 0.092(0.001) & 0.162(0.005) \\
+	$L_{(2)}, \beta=1.0$ & 0.063(0.001) & 0.073(0.0009) & 0.094(0.0008) & 0.177(0.005) \\
 	\hline
 \end{tabular}
 	\end{center}
 \caption{A table for test results evaluating influence of considering the volume fraction at loss function. 
-The loss function $L_{1}$ is a default loss as in formula \ref{eq:loss_reg} and the loss function $L_2$ has an additional volume fraction penalty term multiplied by $\alpha$ as in formula \ref{eq:loss_vfpen}. 
+The loss function $L_{(1)}$ is a default loss as in formula \ref{eq:loss_reg} and the loss function $L_{(2)}$ has an additional volume fraction penalty term multiplied by $\beta$ as in formula \ref{eq:loss_vfpen}. 
 Every model was trained on the same training dataset. For every model average MSE and its variance is calculated. 
 Test datasets with a known ($0.2$), intermediate ($0.3$) and larger ($0.5$) desired resulting volume fractions $V_{f}$ are used.}\label{tab:vf_full}
 \end{table}
@@ -131,10 +139,10 @@ The application of the post-processing allowed bringing the higher accuracy and 
 			\hline
 			Loss vs. $E_{V}(Var)$ & $V_f=0.2$ & $V_f=0.3$& $V_f=0.5$ &  $V_f=0.3$, res. $28\times 28$\\ 
 			\hline
-			$\alpha=0$ & 0.015(0.0001) & 0.020(0.0002) & 0.058(0.0004) & 0.054(0.001)  \\
-			$\alpha=0.01$ & 0.0017(0.0002) & 0.019(0.0002) & 0.007(0.0003) & 0.044(0.001)\\
-			$\alpha=0.2$ & 0.012(0.0001) & 0.017(0.0002)  & 0.064(0.0003)  & 0.046(0.001) \\
-			$\alpha=1.0$ & 0.011(0.001) & 0.031(0.0004) & 0.067(0.0003) & 0.07(0.002) \\
+			$\beta=0$ & 0.015(0.0001) & 0.020(0.0002) & 0.058(0.0004) & 0.054(0.001)  \\
+			$\beta=0.01$ & 0.0017(0.0002) & 0.019(0.0002) & 0.007(0.0003) & 0.044(0.001)\\
+			$\beta=0.2$ & 0.012(0.0001) & 0.017(0.0002)  & 0.064(0.0003)  & 0.046(0.001) \\
+			$\beta=1.0$ & 0.011(0.001) & 0.031(0.0004) & 0.067(0.0003) & 0.07(0.002) \\
 			\hline
 		\end{tabular}
 	\end{center}
@@ -179,7 +187,7 @@ This phenomenon was partially eliminated with post-processing.
 One of the tests goal was to compare the performance of different network architectures.
 We compared our encoder-decoder residual network with similar architectures, used for medical image segmentation.
 We considered \emph{V-Net}\cite{bibl:vnet} and \emph{U-Net}\cite{bibl:unet} architectures with similar encoder-decoder structure.
-The former in our case and $9,007,601$ number of parameters and the latter has $2,028,385$, comparing to $4,011,585$ for our model.
+The former has $9,007,601$ number of parameters and the latter has $2,028,385$, comparing to $4,011,585$ for our model.
 The U-Net network did not converge and was producing noise for any considered model configuration.
 %The V-Net, having more parameters, in the end, was able to achieve comparable results, however, after much longer time spent training.
 The V-Net achieved slightly better results for the evaluation set composed of cases with known resolution and volume.
@@ -237,8 +245,10 @@ For these purposes, we had to introduce changes in IDeAs implementation, adding 
 \medskip
 
 As a different estimation of improvement, we measured how much the inferred result describe a bounding region of the ground-truth field after an increase of the volume with dilation.
+We measure how many voxels of ground truth models averagely lie outside of the inferred bodies and the probability to be fully incorporated.
+The estimation of dilation size applied to the network output required to cover the real result up to statistical significance is given.\todo{not made :(}
+
 %This estimation was done in terms of the size of the probability of voxel not to be covered by bounding region and the decrease in the number of elements of the problem after we found the new domain. 
-\todo{is is not done at all!!!}
 
 \subsubsection{Test I: Finding most accurate model for 3D data}
 
@@ -249,12 +259,12 @@ After the process, similar to the 2D case, the best model was produced by the tr
 
 \begin{table}[h]
 	\begin{center}
-		\begin{tabular}{ |c|c|c|c| }
+		\begin{tabular}{ |c|c|c| }
 			\hline
-			 Sampling vs. Number of  iterations & $25k$ & $50k$ &  $75k$ \\ 
+			 Sampling vs. Number of  iterations & $25k$ & $50k$ \\ 
 			\hline
-			Sparse grid sampling & 0.048(0.003) & 0.051(0.003) & ()  \\
-			Sampling at the edges & 0.147(0.01) & 0.140(0.003) & () \\
+			Sparse grid sampling & 0.048(0.003) & 0.051(0.003) \\
+			Sampling at the edges & 0.147(0.01) & 0.140(0.003) \\
 			\hline
 		\end{tabular}
 	\end{center}
@@ -264,26 +274,40 @@ After the process, similar to the 2D case, the best model was produced by the tr
 Typical results look as shown in Figure \ref{fig:3dres_ex}.
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=1.1\linewidth]{images/28282800m1_4comp.png}
-	\caption{An example output for of the network(red) compared to the reference model (blue) for an ill-posed case. The model still correctly connects the BC (corners of the $X=0$ wall) and the load application point, however the overall shape is very distinct from the ground truth}
+	\includegraphics[width=1\linewidth]{images/24241600m1_4comp.png}
+	\caption{An example output for of the network (red) compared to the reference model (blue). The model correctly connects the BC (corners of the $X=0$ wall) and the load application point, however the overall shape is very distinct from the ground truth.}
 	\label{fig:3dres_ex}
 \end{figure}
 
 \subsubsection{Test II: TO acceleration with IDeAs}
 
 After applying the elements layout produced by the following model as the input for the IDeAs, we achieved the average duration of optimization with the number of iterations equal $10$. 
-This number is almost equal to the number of iterations performed by the optimizer starting with the default initialization. 
-Te current implementation of the optimizer uses a straightforward optimizer ...
+This number is almost equal to the number of iterations performed by the optimizer starting with the default initialization, which is equal to $9$ iterations. 
+%The current implementation of the optimizer uses a straightforward optimizer.
 \medskip
 
 In the case of initialization with an approximate solution, the objective function of the optimizer on the first function is already low. 
-For the educated guess initializer it has value of averagely $8$, when the default initializer gives averagely $250$ in absolute units, and the found minimum in both cases is averagely $3$.
+For the educated guess initializer it has value of averagely $7.9$, when the default initializer gives averagely $250$ in absolute units, and the found minimum in both cases is averagely $3.0$.
 Starting in the vicinity of minimum is an ill-posed for current optimization rule, which means it is hard to utilize any educated initial guess approach to decrease the number of optimization iterations.
 The objective function for many TO problems might have multiple local minima with domains of low gradient in their vicinity, which will require sophisticated optimization techniques for successful fine-tuning\todo{reference?}.
 
-However, we with a probability of ... we manage to predict the new domain of the problem, close to the shape of the resulting model. 
+The convergence graph for TO with and without educated guess like as shown in figure \ref{}.
+As it is seen, for the default implementation there is an initial phase during which the goal function magnitude decreases in two orders.
+Then the phase of fine-tuning follows, which takes approximately two time longer.
+For the case when educated guess is used, the convergence enter the fine-tuning phase after the first iteration. 
+However, due the shape of goal function and a simple optimizer rule, this phase takes about $33%$ longer than for default phase.
+
+In case when the optimization time is restricted, however, usage of the educated guess is beneficial.
+We restricted the maximum amount of optimization iterations to $3$ and 
+
+\subsubsection{Test III: Decreasing problem size}
+
+%However, we with a probability of ... we manage to predict the new domain of the problem, close to the shape of the resulting model. 
 The volume of the new domain was averagely ... percent smaller than the whole box and contained on only ... percent of empty voxels in the result.
 That means that it possible to reduce the problem size by ..., than with proper implementation can significantly reduce optimization time. 
+
+After averagely $4$ dilations we managed to make the network output cover the model for corresponding ground truth model with probability of $95\%$.
+
 
  
 

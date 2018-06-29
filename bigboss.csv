@@ -70,15 +70,15 @@ mixed_edges_16_6,0.7,10000,0.0828921055208897,0.0011375784780827043;;;;;;;;;;;;;
 mixed_edges_16_6,0.7,15000,0.06773766191490802,0.0008200554963992197;;;;;;;;;;;;;;; For training set mixed_edges_16_6 and num steps 15000 mean of MSE error: 0.06773766191490802 and MSE variance: 0.0008200554963992197
 mixed_edges_16_6,0.7,30000,0.06109720425516324,0.0009277652385149416;;;;;;;;;;;;;;; For training set mixed_edges_16_6 and num steps 30000 mean of MSE error: 0.06109720425516324 and MSE variance: 0.0009277652385149416
 mixed_edges_16_6,0.7,40000,0.06279810785731196,0.0010333630612863506;;;;;;;;;;;;;;; For training set mixed_edges_16_6 and num steps 40000 mean of MSE error: 0.06279810785731196 and MSE variance: 0.0010333630612863506
-;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;; For training set mixed_edges_32_12 and num steps 200 mean of MSE error: 0.6636057932139475 and MSE variance: 0.005422679239957707
+;;;;;;;;;;;;;;; For training set mixed_edges_32_12 and num steps 1000 mean of MSE error: 0.4596572369552106 and MSE variance: 0.004815656504155129
+;;;;;;;;;;;;;;; For training set mixed_edges_32_12 and num steps 2500 mean of MSE error: 0.17785140308638844 and MSE variance: 0.0008678179985262904
+;;;;;;;;;;;;;;; For training set mixed_edges_32_12 and num steps 7500 mean of MSE error: 0.10153658427889385 and MSE variance: 0.0018595042890355224
+;;;;;;;;;;;;;;; For training set mixed_edges_32_12 and num steps 10000 mean of MSE error: 0.07650620321518758 and MSE variance: 0.0011199277055777368
+;;;;;;;;;;;;;;; For training set mixed_edges_32_12 and num steps 15000 mean of MSE error: 0.07403888124408144 and MSE variance: 0.0010964074947570847
+;;;;;;;;;;;;;;; For training set mixed_edges_32_12 and num steps 20000 mean of MSE error: 0.06942434159536211 and MSE variance: 0.0010315666970008228
+;;;;;;;;;;;;;;; For training set mixed_edges_32_12 and num steps 30000 mean of MSE error: 0.06117547986139295 and MSE variance: 0.0009871302455802926
+;;;;;;;;;;;;;;; For training set mixed_edges_32_12 and num steps 40000 mean of MSE error: 0.05611326099302173 and MSE variance: 0.0009064470741823834
 mixed_check_4,0.7,200,0.4980942807328305,0.007252111116828087;;;;;;;;;;;;;;; For training set mixed_check_4 and num steps 200 mean of MSE error: 0.4980942807328305 and MSE variance: 0.007252111116828087
 mixed_check_4,0.7,1000,0.7699850063131313,0.0005742788092410704;;;;;;;;;;;;;;; For training set mixed_check_4 and num steps 1000 mean of MSE error: 0.7699850063131313 and MSE variance: 0.0005742788092410704
 mixed_check_4,0.7,2500,0.143568404997238,0.0020147582722797193;;;;;;;;;;;;;;; For training set mixed_check_4 and num steps 2500 mean of MSE error: 0.143568404997238 and MSE variance: 0.0020147582722797193
@@ -97,40 +97,14 @@ mixed_check_6,0.7,15000,0.059845741349037244,0.0009187798172446223;;;;;;;;;;;;;;
 mixed_check_6,0.7,20000,0.05357517170871663,0.0009029846681868636;;;;;;;;;;;;;;; For training set mixed_check_6 and num steps 20000 mean of MSE error: 0.05357517170871663 and MSE variance: 0.0009029846681868636
 mixed_check_6,0.7,30000,0.05335648441727543,0.0010033644869260647;;;;;;;;;;;;;;; For training set mixed_check_6 and num steps 30000 mean of MSE error: 0.05335648441727543 and MSE variance: 0.0010033644869260647
 mixed_check_6,0.7,40000,0.053421945282907196,0.0010319854649071887;;;;;;;;;;;;;;; For training set mixed_check_6 and num steps 40000 mean of MSE error: 0.053421945282907196 and MSE variance: 0.0010319854649071887
-mixed_check_6,0.7,30000,0.05335648441727543,0.0010033644869260647;;;;;;;;;;;;;;; For training set mixed_check_6 and num steps 30000 mean of MSE error: 0.05335648441727543 and MSE variance: 0.0010033644869260647
-mixed_check_6,0.7,40000,0.05342192326445256,0.001031985516687571;;;;;;;;;;;;;;; For training set mixed_check_6 and num steps 40000 mean of MSE error: 0.05342192326445256 and MSE variance: 0.001031985516687571
-;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;
+mixed_check_6,0.7,40000,0.053421945282907196,0.0010319854649071887;;;;;;;;;;;;;;; For training set mixed_check_6 and num steps 30000 mean of MSE error: 0.05335648441727543 and MSE variance: 0.0010033644869260647
+mixed_check_6,0.7,40000,0.053421945282907196,0.0010319854649071887;;;;;;;;;;;;;;; For training set mixed_check_6 and num steps 40000 mean of MSE error: 0.05342192326445256 and MSE variance: 0.001031985516687571
+mixed_check_6,0.7,40000,0.053421945282907196,0.0010319854649071887;;;;;;;;;;;;;;; For training set mixed_check_8 and num steps 200 mean of MSE error: 0.6988754822922303 and MSE variance: 0.0005910970694099827
+mixed_check_6,0.7,40000,0.053421945282907196,0.0010319854649071887;;;;;;;;;;;;;;; For training set mixed_check_8 and num steps 1000 mean of MSE error: 0.50513118066829 and MSE variance: 0.020529709663243845
+mixed_check_6,0.7,40000,0.053421945282907196,0.0010319854649071887;;;;;;;;;;;;;;; For training set mixed_check_8 and num steps 2500 mean of MSE error: 0.15383012779863367 and MSE variance: 0.001753340174157839
+mixed_check_6,0.7,40000,0.053421945282907196,0.0010319854649071887;;;;;;;;;;;;;;; For training set mixed_check_8 and num steps 7500 mean of MSE error: 0.08364575318615845 and MSE variance: 0.0014272908531219226
+mixed_check_6,0.7,40000,0.053421945282907196,0.0010319854649071887;;;;;;;;;;;;;;; For training set mixed_check_8 and num steps 10000 mean of MSE error: 0.07101695843761273 and MSE variance: 0.001157732637631019
+mixed_check_6,0.7,40000,0.053421945282907196,0.0010319854649071887;;;;;;;;;;;;;;; For training set mixed_check_8 and num steps 15000 mean of MSE error: 0.07043468040477317 and MSE variance: 0.0011790068107730798
+mixed_check_6,0.7,40000,0.053421945282907196,0.0010319854649071887;;;;;;;;;;;;;;; For training set mixed_check_8 and num steps 20000 mean of MSE error: 0.06857266777005547 and MSE variance: 0.0013530017675286708
+mixed_check_6,0.7,40000,0.053421945282907196,0.0010319854649071887;;;;;;;;;;;;;;; For training set mixed_check_8 and num steps 30000 mean of MSE error: 0.06936220551638032 and MSE variance: 0.0014706927656213662
+mixed_check_6,0.7,40000,0.053421945282907196,0.0010319854649071887;;;;;;;;;;;;;;; For training set mixed_check_8 and num steps 40000 mean of MSE error: 0.0710960707451186 and MSE variance: 0.0015723659024937612

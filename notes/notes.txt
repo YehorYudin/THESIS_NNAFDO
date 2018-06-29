@@ -23,9 +23,9 @@ Variables:
 ---------------------------------------------
 
 
-figures at data; check 3d results; numbers on 2d (see list) ;
+figures at data;
 
-test for 3x3 datset (32_0.2 allsdf) -in prog
+
 		 arch to intro(resnet)
 
 25.06:	use TO consistently -in prog ;previous work: another speedup arpoaches + novelty
@@ -35,10 +35,10 @@ test for 3x3 datset (32_0.2 allsdf) -in prog
 images: new for convoutions(x4), ? optimization(gradient descent), activation(smaller) , ?regularization(x2), post processing(before and after),
 	
 
-genrate images: plot( on size, on number of steps), training loss for datsets, examples of results (good, bad , horrible), single heatmap, example soution + BC&load
-	examples for dataset choice(porblems with changin coordinates) 
+genrate images: training loss for datsets, examples of results (good, bad, horrible), single heatmap, example soution + BC&load
 	3d results: original + BC&load, compare GT and model, compare GT and new
-generate numbers: paramter number for 3D, time to train for 3d and 2d,
+
+generate numbers:  time to train for 3d and 2d,
 	          ideas iterations for all 3 cases
 
 	
